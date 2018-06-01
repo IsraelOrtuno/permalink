@@ -11,7 +11,7 @@ class PermalinkServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
 
-        (new Router($this->app, $this->app['router']))->load();
+        (new Router($this->app['router']))->load();
     }
 
     public function register()

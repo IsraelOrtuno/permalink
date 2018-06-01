@@ -25,12 +25,10 @@ class Router
     /**
      * Router constructor.
      *
-     * @param Application $app
      * @param LaravelRouter $router
      */
-    public function __construct(Application $app, LaravelRouter $router)
+    public function __construct(LaravelRouter $router)
     {
-        $this->app = $app;
         $this->router = $router;
     }
 
@@ -43,7 +41,7 @@ class Router
     {
         $callback = function ($router) {
             foreach ($this->getPermalinkTree() as $permalink) {
-                Node::make($router, $permalink);
+                Route::make($router, $permalink);
             }
         };
 

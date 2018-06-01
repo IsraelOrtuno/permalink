@@ -3,8 +3,9 @@
 namespace Devio\Permalink\Routing;
 
 use Illuminate\Routing\Router;
+use Devio\Permalink\Contracts\ActionResolver;
 
-class Node
+class Route
 {
     /**
      * The router instance.
@@ -14,13 +15,20 @@ class Node
     protected $router;
 
     /**
+     * @var ActionResolver
+     */
+    protected $resolver;
+
+    /**
      * Node constructor.
      *
      * @param Router $router
+     * @param ActionResolver $resolver
      */
-    public function __construct(Router $router)
+    public function __construct(Router $router, ActionResolver $resolver)
     {
         $this->router = $router;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -41,11 +49,8 @@ class Node
      */
     public function register($permalink)
     {
-        if (count($permalink->children)) {
-            return $this->group($permalink);
-        }
-
-        $this->route($permalink);
+        count($permalink->children) ?
+            $this->group($permalink) : $this->route($permalink);
     }
 
     /**
@@ -63,8 +68,6 @@ class Node
         if ($permalink->permalinkable) {
             $route->defaults($permalink->permalinkable_type, $permalink->permalinkable);
         }
-
-        return $route;
     }
 
     /**
