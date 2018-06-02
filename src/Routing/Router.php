@@ -3,6 +3,7 @@
 namespace Devio\Permalink\Routing;
 
 use Devio\Permalink\Permalink;
+use Devio\Permalink\Contracts\ActionResolver;
 use Illuminate\Routing\Router as LaravelRouter;
 use Illuminate\Contracts\Foundation\Application;
 
@@ -23,13 +24,22 @@ class Router
     protected $router;
 
     /**
+     * The resolver instance.
+     *
+     * @var ActionResolver
+     */
+    protected $resolver;
+
+    /**
      * Router constructor.
      *
      * @param LaravelRouter $router
+     * @param ActionResolver $resolver
      */
-    public function __construct(LaravelRouter $router)
+    public function __construct(LaravelRouter $router, ActionResolver $resolver)
     {
         $this->router = $router;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -41,7 +51,7 @@ class Router
     {
         $callback = function ($router) {
             foreach ($this->getPermalinkTree() as $permalink) {
-                Route::make($router, $permalink);
+                (new Route($this->router, $this->resolver))->register($permalink);
             }
         };
 

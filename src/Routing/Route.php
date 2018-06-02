@@ -61,7 +61,7 @@ class Route
      */
     protected function route($permalink)
     {
-        $action = 'App\\Http\\Controllers\\UserController@index';
+        $action = $this->resolver->resolve($permalink);
 
         $route = $this->router->get($permalink->slug, $action);
 
