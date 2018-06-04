@@ -4,6 +4,18 @@ namespace Devio\Permalink;
 
 trait HasPermalinks
 {
+    public static function bootHasPermalinks()
+    {
+        static::saved(function ($model) {
+            $shouldUpdate = method_exists($model, 'updatePermalinkOnSave') ?
+                call_user_func([$model, 'updatePermalinkOnSave']) : false;
+
+            if ($shouldUpdate) {
+                $model->updatePermalink();
+            }
+        });
+    }
+
     /**
      * Relation to the permalinks table.
      *

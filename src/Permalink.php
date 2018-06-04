@@ -3,9 +3,12 @@
 namespace Devio\Permalink;
 
 use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class Permalink extends Model
 {
+    use Sluggable;
+
     /**
      * Polymorphic relationship to any entity.
      *
@@ -35,5 +38,22 @@ class Permalink extends Model
     {
         return $this->hasMany(static::class, 'parent_id')
                     ->with('children');
+    }
+
+    /**
+     * Return the sluggable configuration array for this model.
+     *
+     * @return array
+     */
+    public function sluggable(): array
+    {
+        $source = $this->permalinkable->slugSource();
+
+        // We will look for slug source at the permalinkable entity. That method
+        // should return an array with a 'source' key in it. This way the user
+        // will be able to provide more parameters to the sluggable options.
+        return [
+            'slug' => array_key_exists('source', $source) ? $source : compact('source')
+        ];
     }
 }
