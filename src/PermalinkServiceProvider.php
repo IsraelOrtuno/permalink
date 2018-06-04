@@ -8,6 +8,9 @@ use Illuminate\Support\ServiceProvider;
 
 class PermalinkServiceProvider extends ServiceProvider
 {
+    /**
+     * Boot the service provider.
+     */
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
@@ -15,6 +18,9 @@ class PermalinkServiceProvider extends ServiceProvider
         (new Router($this->app['router'], new ActionResolver))->load();
     }
 
+    /**
+     * Register the service provider.
+     */
     public function register()
     {
 
