@@ -9,6 +9,12 @@ class Permalink extends Model
 {
     use Sluggable;
 
+    public static function boot()
+    {
+        // Look for a parent for this permalink. The default parent would be anyone with the same
+        // permalinkable_type and no permalinkable_id.
+    }
+
     /**
      * Polymorphic relationship to any entity.
      *
@@ -47,7 +53,7 @@ class Permalink extends Model
      */
     public function sluggable(): array
     {
-        $source = $this->permalinkable->slugSource();
+        $source = (array) $this->permalinkable->slugSource();
 
         // We will look for slug source at the permalinkable entity. That method
         // should return an array with a 'source' key in it. This way the user

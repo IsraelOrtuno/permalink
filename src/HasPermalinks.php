@@ -6,14 +6,16 @@ trait HasPermalinks
 {
     public static function bootHasPermalinks()
     {
-        static::saved(function ($model) {
-            $shouldUpdate = method_exists($model, 'updatePermalinkOnSave') ?
-                call_user_func([$model, 'updatePermalinkOnSave']) : false;
-
-            if ($shouldUpdate) {
-                $model->updatePermalink();
-            }
+        static::created(function ($model) {
+            $model->permalink()->create();
         });
+
+//        static::saved(function ($model) {
+//            if (method_exists($model, 'updatePermalinkOnSave') &&
+//                call_user_func([$model, 'updatePermalinkOnSave'])) {
+//                $model->updatePermalink();
+//            }
+//        });
     }
 
     /**

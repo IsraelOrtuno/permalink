@@ -16,5 +16,5 @@ interface Permalinkable
      *
      * @return array
      */
-    public function slugSource();
+    public function slugSource(): array;
 }
