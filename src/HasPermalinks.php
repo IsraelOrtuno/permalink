@@ -4,18 +4,19 @@ namespace Devio\Permalink;
 
 trait HasPermalinks
 {
+    /**
+     * Booting the trait.
+     */
     public static function bootHasPermalinks()
     {
+        // When an entity has been fully created and stored, we will check if
+        // the automatic creation of permalinks is enabled. If so, we will
+        // just create the permalink accordingly to the new stored model.
         static::created(function ($model) {
-            $model->permalink()->create();
+            if ($model->createPermalink ?? true) {
+                $model->permalink()->create();
+            }
         });
-
-//        static::saved(function ($model) {
-//            if (method_exists($model, 'updatePermalinkOnSave') &&
-//                call_user_func([$model, 'updatePermalinkOnSave'])) {
-//                $model->updatePermalink();
-//            }
-//        });
     }
 
     /**

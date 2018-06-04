@@ -9,12 +9,6 @@ class Permalink extends Model
 {
     use Sluggable;
 
-    public static function boot()
-    {
-        // Look for a parent for this permalink. The default parent would be anyone with the same
-        // permalinkable_type and no permalinkable_id.
-    }
-
     /**
      * Polymorphic relationship to any entity.
      *
