@@ -32,17 +32,6 @@ class Route
     }
 
     /**
-     * Alias for creating and registering a permalink.
-     *
-     * @param $router
-     * @param $permalink
-     */
-    public static function make($router, $permalink)
-    {
-        return (new static($router))->register($permalink);
-    }
-
-    /**
      * Register a permalink into the router.
      *
      * @param $permalink
