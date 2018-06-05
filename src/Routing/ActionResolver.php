@@ -2,10 +2,10 @@
 
 namespace Devio\Permalink\Routing;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
 use UnexpectedValueException;
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Contracts\Permalinkable;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Devio\Permalink\Contracts\ActionResolver as ActionResolverInterface;
 
 class ActionResolver implements ActionResolverInterface

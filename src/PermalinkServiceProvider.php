@@ -2,9 +2,9 @@
 
 namespace Devio\Permalink;
 
-use Devio\Permalink\Routing\ActionResolver;
 use Devio\Permalink\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Devio\Permalink\Routing\ActionResolver;
 
 class PermalinkServiceProvider extends ServiceProvider
 {
@@ -15,7 +15,7 @@ class PermalinkServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
 
-        (new Router($this->app['router'], new ActionResolver))->load();
+//        (new Router($this->app['router'], new ActionResolver))->load();
     }
 
     /**

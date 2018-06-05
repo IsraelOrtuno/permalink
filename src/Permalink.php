@@ -4,6 +4,8 @@ namespace Devio\Permalink;
 
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class Permalink extends Model
 {
@@ -39,6 +41,46 @@ class Permalink extends Model
         return $this->hasMany(static::class, 'parent_id')
                     ->with('children');
     }
+
+//    public function newQuery()
+//    {
+//        dd($this);
+//    }
+
+//    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey)
+//    {
+//        if (str_contains($target, '@')) {
+////            return null;
+//            return new ActionRelation($this->newQuery(), $this);
+//        }
+//
+////        $instance = $this->newRelatedInstance(
+////            static::getActualClassNameForMorph($target)
+////        );
+////
+////        return $this->newMorphTo(
+////            $instance->newQuery(), $this, $id, $ownerKey ?? $instance->getKeyName(), $type, $name
+////        );
+//        return parent::morphInstanceTo($target, $name, $type, $id, $ownerKey);
+//    }
+
+    /**
+     * Create a new model instance for a related model.
+     *
+     * @param  string $class
+     * @return mixed
+     */
+//    protected function newRelatedInstance($class)
+//    {
+//        // We need to override the default newRelatedInstance method as when
+//        // a browseable type is related to a controller action, the query
+//        // will fail. We will just provide an instance of this class.
+//        if (str_contains($class, '@')) {
+//            return null;
+//        }
+//
+//        return parent::newRelatedInstance($class);
+//    }
 
     /**
      * Return the sluggable configuration array for this model.

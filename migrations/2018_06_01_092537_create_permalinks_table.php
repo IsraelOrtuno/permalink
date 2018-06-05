@@ -20,9 +20,14 @@ class CreatePermalinksTable extends Migration
             $table->unsignedInteger('parent_id');
             $table->text('parameters')->nullable(); // TODO: Consider removing this?
 
-            $table->morphs('permalinkable');
+            $table->string("permalinkable_type")->nullable();
+            $table->unsignedBigInteger("permalinkable_id")->nullable();
+
+            $table->string('action')->nullable();
 
             $table->timestamps();
+
+            $table->index(["permalinkable_type", "permalinkable_id"]);
         });
     }
 

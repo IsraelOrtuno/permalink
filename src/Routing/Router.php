@@ -68,7 +68,7 @@ class Router
         // We will query all the root permalinks and then load all their children
         // relationships recursively. This way we will obtain a tree structured
         // collection in which we can easily iterate from parents to children.
-        return Permalink::with('children')
+        return Permalink::with('children', 'permalinkable')
                         ->whereNull('parent_id')
                         ->get();
     }
