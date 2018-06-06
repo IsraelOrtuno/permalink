@@ -37,7 +37,7 @@ abstract class Builder implements MetaBuilder
         if ($data === false) {
             $this->disable();
         }
-        
+
         foreach ($data as $key => $content) {
             // If the content is a closure, we will just run it and assume that
             // the closure will handle the entire process of communicating to
@@ -56,8 +56,8 @@ abstract class Builder implements MetaBuilder
             // If the key matches a method in the SEO helper we will just pass
             // the content as parameter. This gives a lot of flexibility as
             // it allows to manage the package directly from database.
-            elseif (method_exists($this->helper, $method)) {
-                call_user_func_array([$this->helper, $method], (array) $content);
+            elseif (method_exists($target = $this->helper->$key(), $method)) {
+                call_user_func_array([$target, $method], (array) $content);
             }
         }
     }
