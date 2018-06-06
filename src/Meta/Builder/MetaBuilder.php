@@ -9,7 +9,7 @@ class MetaBuilder extends Builder
      *
      * @param $content
      */
-    protected function robots($content)
+    protected function setRobots($content)
     {
         $this->helper->meta()->getMiscEntity()->add('robots', $content);
     }
@@ -19,7 +19,7 @@ class MetaBuilder extends Builder
      *
      * @param $content
      */
-    public function canonical($content)
+    public function setCanonical($content)
     {
         $this->helper->meta()->getMiscEntity()->setUrl($content);
     }

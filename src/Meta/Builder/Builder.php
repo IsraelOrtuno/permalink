@@ -27,9 +27,10 @@ abstract class Builder implements MetaBuilder
     /**
      * Translate the current instance from database to the SEO helper.
      *
+     * @param $builder
      * @param array $data
      */
-    public function translate($data = []): void
+    public function translate($builder, $data = []): void
     {
         // If the data is false, will mean that the object we are suppose to build
         // has a value of "false" and will be therefore disabled. This way we is
@@ -39,27 +40,43 @@ abstract class Builder implements MetaBuilder
         }
 
         foreach ($data as $key => $content) {
-            // If the content is a closure, we will just run it and assume that
-            // the closure will handle the entire process of communicating to
-            // the SEO helper package. This is mostly for testing purposes.
-            if (is_callable($content)) {
-                $content();
-            }
+            $key = studly_case($key);
 
             // Then we will check if there is a method with that name in this
             // class. If so, we'll use it as it may contain any extra logic
             // like compiling the content or doing some transformations.
-            elseif (method_exists($this, $method = camel_case($key))) {
+            if ($method = $this->methodExists($this, $key)) {
                 call_user_func_array([$this, $method], compact('content'));
             }
 
             // If the key matches a method in the SEO helper we will just pass
             // the content as parameter. This gives a lot of flexibility as
             // it allows to manage the package directly from database.
-            elseif (method_exists($target = $this->helper->$key(), $method)) {
+            elseif (method_exists($this->helper, $builder)
+                && $method = $this->methodExists($target = $this->helper->$builder(), $key)) {
                 call_user_func_array([$target, $method], (array) $content);
             }
         }
+    }
+
+    /**
+     * Check if the method exists into the given object.
+     *
+     * @param $object
+     * @param $name
+     * @return bool|mixed
+     */
+    protected function methodExists($object, $name)
+    {
+        $methods = collect(["set{$name}", "add{$name}"]);
+
+        foreach ($methods as $method) {
+            if (method_exists($object, $method)) {
+                return $method;
+            }
+        }
+
+        return false;
     }
 
     /**
