@@ -25,9 +25,6 @@ class ActionResolver implements ActionResolverInterface
             return $permalink->action;
         }
 
-        // We will resolve the morphed model just in case the user has set an alias
-        // for the entity model class. If this is the case, we will fetch it from
-        // the relation class, otherwise we will assume it is a valid class name.
         $permalinkable = Relation::getMorphedModel($permalink->permalinkable_type) ?? $permalink->permalinkable_type;
 
         // If the permalink has a proper permalinkable relationship, we can then
