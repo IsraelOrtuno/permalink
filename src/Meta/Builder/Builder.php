@@ -37,25 +37,33 @@ abstract class Builder implements MetaBuilder
         if ($data === false) {
             $this->disable();
         }
-
-        // Meanwhile, if we get an array with pairs of key and values, we will
-        // search for the method matching the key name in the class and this
-        // method will pipe the content of the database to the SEO helper.
+        
         foreach ($data as $key => $content) {
-            // The content of the array may be a closure. If it is not a closure
-            // we'll look for a method matching the key name prefixed by "set"
+            // If the content is a closure, we will just run it and assume that
+            // the closure will handle the entire process of communicating to
+            // the SEO helper package. This is mostly for testing purposes.
             if (is_callable($content)) {
                 $content();
-            } elseif (method_exists($this, $method = 'set' . studly_case($key))) {
+            }
+
+            // Then we will check if there is a method with that name in this
+            // class. If so, we'll use it as it may contain any extra logic
+            // like compiling the content or doing some transformations.
+            elseif (method_exists($this, $method = camel_case($key))) {
                 call_user_func_array([$this, $method], compact('content'));
+            }
+
+            // If the key matches a method in the SEO helper we will just pass
+            // the content as parameter. This gives a lot of flexibility as
+            // it allows to manage the package directly from database.
+            elseif (method_exists($this->helper, $method)) {
+                call_user_func_array([$this->helper, $method], (array) $content);
             }
         }
     }
 
     /**
-     * Defines how to disable the translator.
-     *
-     * @return mixed
+     * @inheritdoc
      */
-    abstract protected function disable(): void;
+    abstract public function disable(): void;
 }

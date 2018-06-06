@@ -16,5 +16,5 @@ interface MetaBuilder
      *
      * @return void
      */
-    protected function disable(): void;
+    public function disable(): void;
 }
