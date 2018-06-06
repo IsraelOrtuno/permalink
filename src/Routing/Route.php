@@ -46,7 +46,7 @@ class Route
      * Add a simple route to the router.
      *
      * @param $permalink
-     * @return \Illuminate\Routing\Route
+     * @return void
      */
     protected function route($permalink)
     {
