@@ -49,6 +49,10 @@ class Router
      */
     public function load()
     {
+        if (! \Schema::hasTable('permalinks')) {
+            return;
+        }
+
         $callback = function ($router) {
             foreach ($this->getPermalinkTree() as $permalink) {
                 (new Route($this->router, $this->resolver))->register($permalink);

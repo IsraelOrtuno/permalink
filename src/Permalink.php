@@ -17,6 +17,15 @@ class Permalink extends Model
     public $fillable = ['slug', 'action'];
 
     /**
+     * Casting attributes.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'seo' => 'json'
+    ];
+
+    /**
      * Array to map action class paths to their alias names in database.
      *
      * @var

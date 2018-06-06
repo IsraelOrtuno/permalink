@@ -31,7 +31,7 @@ class ActionResolver implements ActionResolverInterface
         // use the permalinkAction from the model to get the route action. It
         // should include an @ too in order to identify controller/action.
         if (is_subclass_of($permalinkable, Permalinkable::class)) {
-            return $permalink->permalinkable->permalinkAction();
+            return $permalink->getRelation('permalinkable')->permalinkAction();
         }
 
         // Is trivial to resolve every route action as it will be risky to create

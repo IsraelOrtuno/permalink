@@ -6,6 +6,7 @@ use Illuminate\Routing\Route;
 use Devio\Permalink\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Devio\Permalink\Routing\ActionResolver;
+use Arcanedev\SeoHelper\Contracts\SeoHelper;
 
 class PermalinkServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,9 @@ class PermalinkServiceProvider extends ServiceProvider
         (new Router($this->app['router'], new ActionResolver))->load();
     }
 
+    /**
+     * Create the permalink macro.
+     */
     protected function definePermalinkMacro()
     {
         // Adding a permalink macro to the Route object will let us store a
@@ -31,9 +35,7 @@ class PermalinkServiceProvider extends ServiceProvider
                 return $this->permalink;
             }
 
-            $permalink->setRelations([]);
-
-            $this->permalink = $permalink;
+            $this->permalink = $permalink->setRelations([]);
         });
     }
 
@@ -42,6 +44,16 @@ class PermalinkServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $builders = [
+            'meta'      => \Devio\Permalink\Meta\Builder\MetaBuilder::class,
+            'opengraph' => \Devio\Permalink\Meta\Builder\OpenGraphBuilder::class,
+            'twitter'   => \Devio\Permalink\Meta\Builder\TwitterBuilder::class,
+        ];
 
+        foreach ($builders as $alias => $builder) {
+            $this->app->singleton("permalink.$alias", function ($app) use ($builder) {
+                return (new $builder($app->make(SeoHelper::class)));
+            });
+        }
     }
 }
