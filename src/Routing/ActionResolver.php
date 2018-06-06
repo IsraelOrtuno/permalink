@@ -21,7 +21,7 @@ class ActionResolver implements ActionResolverInterface
         // Even if the permalink has a permalinkable relationship, if there is
         // an action, it will override the default entity action. This will
         // provide a lot of flexibility as any route can be overwritten.
-        if ($permalink->action && str_contains($permalink->action, '@')) {
+        if ($permalink->action) {
             return $permalink->action;
         }
 

@@ -4,12 +4,33 @@ namespace Devio\Permalink;
 
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class Permalink extends Model
 {
     use Sluggable;
+
+    /**
+     * Fillable attributes.
+     *
+     * @var array
+     */
+    public $fillable = ['slug', 'action'];
+
+    /**
+     * Array to map action class paths to their alias names in database.
+     *
+     * @var
+     */
+    public static $actionMap = [];
+
+    public static function boot()
+    {
+        static::registerModelEvent('slugging', function($model) {
+            return (bool) $model->slug;
+        });
+
+        parent::boot();
+    }
 
     /**
      * Polymorphic relationship to any entity.
@@ -42,46 +63,6 @@ class Permalink extends Model
                     ->with('children', 'permalinkable');
     }
 
-//    public function newQuery()
-//    {
-//        dd($this);
-//    }
-
-//    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey)
-//    {
-//        if (str_contains($target, '@')) {
-////            return null;
-//            return new ActionRelation($this->newQuery(), $this);
-//        }
-//
-////        $instance = $this->newRelatedInstance(
-////            static::getActualClassNameForMorph($target)
-////        );
-////
-////        return $this->newMorphTo(
-////            $instance->newQuery(), $this, $id, $ownerKey ?? $instance->getKeyName(), $type, $name
-////        );
-//        return parent::morphInstanceTo($target, $name, $type, $id, $ownerKey);
-//    }
-
-    /**
-     * Create a new model instance for a related model.
-     *
-     * @param  string $class
-     * @return mixed
-     */
-//    protected function newRelatedInstance($class)
-//    {
-//        // We need to override the default newRelatedInstance method as when
-//        // a browseable type is related to a controller action, the query
-//        // will fail. We will just provide an instance of this class.
-//        if (str_contains($class, '@')) {
-//            return null;
-//        }
-//
-//        return parent::newRelatedInstance($class);
-//    }
-
     /**
      * Return the sluggable configuration array for this model.
      *
@@ -97,5 +78,53 @@ class Permalink extends Model
         return [
             'slug' => array_key_exists('source', $source) ? $source : compact('source')
         ];
+    }
+
+    /**
+     * Replace the action by an alias if any.
+     *
+     * @param $value
+     */
+    public function setActionAttribute($value)
+    {
+        $this->attributes['action'] = array_search($value, static::actionMap()) ?: $value;
+    }
+
+    /**
+     * Convert an alias to a full action path if any.
+     *
+     * @return null|string
+     */
+    public function getActionAttribute()
+    {
+        return static::getAliasedAction($this->attributes['action']) ?? $this->attributes['action'];
+    }
+
+    /**
+     * Set or get the alias map for aliased actions
+     *
+     * @param  array|null $map
+     * @param  bool $merge
+     * @return array
+     */
+    public static function actionMap(array $map = null, $merge = true)
+    {
+        if (! is_null($map)) {
+            static::$actionMap = $merge && static::$actionMap
+                ? $map + static::$actionMap : $map;
+        }
+
+        return static::$actionMap;
+    }
+
+    /**
+     * Get the action associated with a custom alias.
+     *
+     * @param  string $alias
+     * @return string|null
+     */
+    public static function getAliasedAction($alias)
+    {
+        return static::$actionMap[$alias] ?? null;
     }
 }
