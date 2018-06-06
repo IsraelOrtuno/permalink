@@ -18,19 +18,17 @@ class ActionResolver implements ActionResolverInterface
      */
     public function resolve(Permalink $permalink)
     {
-        $morph = $permalink->permalinkable_type;
-
-        // If the permalink does not have a polymorphic id we will assume the type
-        // will be containing a controller@index path so we will be returning it
-        // as the action route. It must include an @ to split controller/method.
-        if (is_null($permalink->permalinkable_id) && str_contains($morph, '@')) {
-            return $morph;
+        // Even if the permalink has a permalinkable relationship, if there is
+        // an action, it will override the default entity action. This will
+        // provide a lot of flexibility as any route can be overwritten.
+        if ($permalink->action && str_contains($permalink->action, '@')) {
+            return $permalink->action;
         }
 
         // We will resolve the morphed model just in case the user has set an alias
         // for the entity model class. If this is the case, we will fetch it from
         // the relation class, otherwise we will assume it is a valid class name.
-        $permalinkable = Relation::getMorphedModel($morph) ?? $morph;
+        $permalinkable = Relation::getMorphedModel($permalink->permalinkable_type) ?? $permalink->permalinkable_type;
 
         // If the permalink has a proper permalinkable relationship, we can then
         // use the permalinkAction from the model to get the route action. It
