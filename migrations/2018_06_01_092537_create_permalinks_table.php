@@ -17,13 +17,14 @@ class CreatePermalinksTable extends Migration
             $table->increments('id');
 
             $table->string('slug');
-            $table->unsignedInteger('parent_id');
+            $table->unsignedInteger('parent_id')->nullable();
             $table->text('parameters')->nullable(); // TODO: Consider removing this?
 
             $table->string("permalinkable_type")->nullable();
             $table->unsignedBigInteger("permalinkable_id")->nullable();
 
             $table->string('action')->nullable();
+            $table->text('seo')->nullable();
 
             $table->timestamps();
 
