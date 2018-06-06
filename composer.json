@@ -13,9 +13,18 @@
         "cviebrock/eloquent-sluggable": "^4.5",
         "arcanedev/seo-helper": "^1.5.0"
     },
+    "require-dev": {
+        "orchestra/testbench": "^3.6",
+        "phpunit/phpunit": "~7.0"
+    },
     "autoload": {
         "psr-4": {
             "Devio\\Permalink\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Devio\\Permalink\\Tests\\": "tests"
         }
     },
     "extra": {
