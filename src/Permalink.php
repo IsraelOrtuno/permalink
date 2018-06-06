@@ -39,7 +39,7 @@ class Permalink extends Model
     public function children()
     {
         return $this->hasMany(static::class, 'parent_id')
-                    ->with('children');
+                    ->with('children', 'permalinkable');
     }
 
 //    public function newQuery()

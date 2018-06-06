@@ -66,11 +66,14 @@ class Route
      */
     protected function group($parent)
     {
-        $callback = function () use ($parent) {
-            if ($parent->permalinkable) {
-                $this->route($parent);
-            }
+        if ($parent->action || $parent->pemalinkable) {
+            $this->route($parent);
+        }
 
+        // If the parent has an action or a permalinkable model we will create
+        // that route as "root" just before creating any children into the
+        // route group, then the children can be nested within a group.
+        $callback = function () use ($parent) {
             foreach ($parent->children as $permalink) {
                 $this->register($permalink);
             }
