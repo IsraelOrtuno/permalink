@@ -54,6 +54,11 @@ class Route
 
         $route = $this->router->get($permalink->slug, $action);
 
+        // We will bind our permalink model to the model itself. This way access
+        // the permalink directly from the current Route instance. It'll even
+        // keep bounded when the application's route list has been cached.
+        $route->permalink($permalink);
+
         if ($permalink->permalinkable) {
             $route->defaults($permalink->permalinkable_type, $permalink->permalinkable);
         }
