@@ -2,6 +2,7 @@
 
 namespace Devio\Permalink;
 
+use Devio\Permalink\Commands\PermalinkResourcesCommand;
 use Illuminate\Routing\Route;
 use Devio\Permalink\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +21,12 @@ class PermalinkServiceProvider extends ServiceProvider
         $this->definePermalinkMacro();
 
         (new Router($this->app['router'], new ActionResolver))->load();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                PermalinkResourcesCommand::class
+            ]);
+        }
     }
 
     /**
