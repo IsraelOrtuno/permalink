@@ -2,12 +2,12 @@
 
 namespace Devio\Permalink;
 
-use Devio\Permalink\Commands\PermalinkResourcesCommand;
 use Illuminate\Routing\Route;
 use Devio\Permalink\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Devio\Permalink\Routing\ActionResolver;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
+use Devio\Permalink\Commands\PermalinkResourcesCommand;
 
 class PermalinkServiceProvider extends ServiceProvider
 {
