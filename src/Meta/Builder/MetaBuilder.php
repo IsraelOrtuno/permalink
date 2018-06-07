@@ -29,8 +29,8 @@ class MetaBuilder extends Builder
      */
     public function disable(): void
     {
-        // In this particular case we will assume that the Meta translator can
-        // not be disabled as it will disable the page title. To change this
-        // behaviour, feel free to replace this class using the container.
+        // In this case we won't perform any action for the Meta builder so it
+        // can not be disabled as it would disable the page title. To modify
+        // this behaviour, feel free to replace the class in the container.
     }
 }
