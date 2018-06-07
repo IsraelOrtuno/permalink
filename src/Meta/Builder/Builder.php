@@ -37,6 +37,7 @@ abstract class Builder implements MetaBuilder
         // possible to control whether we want Twitter or OpenGraph meta tags.
         if ($data === false) {
             $this->disable();
+            return;
         }
 
         foreach ($data as $key => $content) {
