@@ -10,7 +10,7 @@ interface MetaBuilder
      * @param $builder
      * @param array $data
      */
-    public function translate($builder, $data = []): void;
+    public function build($builder, $data = []): void;
 
     /**
      * Defines how to disable the translator.

@@ -30,7 +30,7 @@ abstract class Builder implements MetaBuilder
      * @param $builder
      * @param array $data
      */
-    public function translate($builder, $data = []): void
+    public function build($builder, $data = []): void
     {
         // If the data is false, will mean that the object we are suppose to build
         // has a value of "false" and will be therefore disabled. This way we is
