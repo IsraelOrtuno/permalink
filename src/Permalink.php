@@ -2,6 +2,7 @@
 
 namespace Devio\Permalink;
 
+use Devio\Permalink\Contracts\Permalinkable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
@@ -113,6 +114,23 @@ class Permalink extends Model
     public function scopeWithUniqueSlugConstraints(Builder $query, Model $model, $attribute, $config, $slug)
     {
         return $query->where('parent_id', $model->parent_id);
+    }
+
+    /**
+     * Find the parent for the given model.
+     *
+     * @param $model
+     * @return mixed
+     */
+    public static function findParentFor($model)
+    {
+        if (! is_object($model)) {
+            $model = new $model;
+        }
+
+        $model = $model->getMorphClass();
+
+        return static::where('parent_for', $model)->first();
     }
 
     /**
