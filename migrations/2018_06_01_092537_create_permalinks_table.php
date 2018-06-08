@@ -29,6 +29,7 @@ class CreatePermalinksTable extends Migration
             $table->timestamps();
 
             $table->index(["permalinkable_type", "permalinkable_id"]);
+            $table->unique(['slug', 'parent_id']);
         });
     }
 
