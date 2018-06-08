@@ -3,7 +3,9 @@
 namespace Devio\Permalink;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class Permalink extends Model
 {
@@ -14,7 +16,7 @@ class Permalink extends Model
      *
      * @var array
      */
-    public $fillable = ['slug', 'action'];
+    public $fillable = ['slug', 'action', 'seo'];
 
     /**
      * Casting attributes.
@@ -32,10 +34,18 @@ class Permalink extends Model
      */
     public static $actionMap = [];
 
+    /**
+     * Booting the model.
+     */
     public static function boot()
     {
-        static::registerModelEvent('slugging', function($model) {
-            return (bool) $model->slug;
+        static::saving(function ($model) {
+            // If the user has provided an slug manually, we have to make sure
+            // that that slug is unique. If it is not, the SlugService class
+            // will append an incremental suffix to ensure its uniqueness.
+            if ($model->isDirty('slug')) {
+                $model->slug = SlugService::createSlug($model, 'slug', $model->slug);
+            }
         });
 
         parent::boot();
@@ -87,6 +97,21 @@ class Permalink extends Model
         return [
             'slug' => array_key_exists('source', $source) ? $source : compact('source')
         ];
+    }
+
+    /**
+     * Unique slug constraints.
+     *
+     * @param Builder $query
+     * @param Model $model
+     * @param $attribute
+     * @param $config
+     * @param $slug
+     * @return Builder+
+     */
+    public function scopeWithUniqueSlugConstraints(Builder $query, Model $model, $attribute, $config, $slug)
+    {
+        return $query->where('parent_id', $model->parent_id);
     }
 
     /**
