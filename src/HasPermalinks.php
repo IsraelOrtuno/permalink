@@ -4,6 +4,11 @@ namespace Devio\Permalink;
 
 trait HasPermalinks
 {
+    /**
+     * Permalink attributes.
+     *
+     * @var null
+     */
     protected $permalinkAttributes = null;
 
     /**
@@ -11,7 +16,7 @@ trait HasPermalinks
      */
     public static function bootHasPermalinks()
     {
-        static::observe(PermalinkObserver::class);
+        static::observe(PermalinkableObserver::class);
     }
 
     /**

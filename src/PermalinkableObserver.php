@@ -6,8 +6,13 @@ use Devio\Permalink\Contracts\Permalinkable;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
-class PermalinkObserver
+class PermalinkableObserver
 {
+    /**
+     * Created model event handler.
+     *
+     * @param Model $model
+     */
     public function created(Model $model)
     {
         if (! $this->managePermalinks($model)) {
@@ -18,7 +23,7 @@ class PermalinkObserver
     }
 
     /**
-     * Saved model event handler.
+     * Updated model event handler.
      *
      * @param Model $model
      */
