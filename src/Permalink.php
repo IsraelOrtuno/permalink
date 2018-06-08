@@ -2,12 +2,10 @@
 
 namespace Devio\Permalink;
 
-use Devio\Permalink\Contracts\Permalinkable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\Services\SlugService;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Permalink extends Model
 {
