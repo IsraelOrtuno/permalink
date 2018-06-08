@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\Services\SlugService;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Permalink extends Model
 {
@@ -16,7 +17,7 @@ class Permalink extends Model
      *
      * @var array
      */
-    public $fillable = ['slug', 'action', 'seo'];
+    public $fillable = ['parent_id', 'slug', 'action', 'seo'];
 
     /**
      * Casting attributes.
@@ -43,7 +44,7 @@ class Permalink extends Model
             // If the user has provided an slug manually, we have to make sure
             // that that slug is unique. If it is not, the SlugService class
             // will append an incremental suffix to ensure its uniqueness.
-            if ($model->isDirty('slug')) {
+            if ($model->isDirty('slug') && ! empty($model->slug)) {
                 $model->slug = SlugService::createSlug($model, 'slug', $model->slug);
             }
         });

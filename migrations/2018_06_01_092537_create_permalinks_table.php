@@ -18,7 +18,7 @@ class CreatePermalinksTable extends Migration
 
             $table->string('slug');
             $table->unsignedInteger('parent_id')->nullable();
-            $table->text('parameters')->nullable(); // TODO: Consider removing this?
+            $table->text('parent_for')->nullable();
 
             $table->string("permalinkable_type")->nullable();
             $table->unsignedBigInteger("permalinkable_id")->nullable();

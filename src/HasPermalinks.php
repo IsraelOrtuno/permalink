@@ -12,6 +12,13 @@ trait HasPermalinks
     protected $permalinkAttributes = null;
 
     /**
+     * The permalink parent id.
+     *
+     * @var null
+     */
+    protected $permalinkParent = null;
+
+    /**
      * Booting the trait.
      */
     public static function bootHasPermalinks()
@@ -50,6 +57,16 @@ trait HasPermalinks
     public function permalink()
     {
         return $this->morphOne(Permalink::class, 'permalinkable');
+    }
+
+    public function setPermalinkParentAttribute($value)
+    {
+        $this->permalinkParent = $value;
+    }
+
+    public function getPermalinkParentAttribute()
+    {
+        return $this->permalinkParent;
     }
 
     /**
