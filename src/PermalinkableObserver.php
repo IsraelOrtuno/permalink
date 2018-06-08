@@ -8,33 +8,49 @@ use Illuminate\Database\Eloquent\Model;
 
 class PermalinkableObserver
 {
-    /**
-     * Created model event handler.
-     *
-     * @param Model $model
-     */
-    public function created(Model $model)
+//    /**
+//     * Created model event handler.
+//     *
+//     * @param Model $model
+//     */
+//    public function created(Model $model)
+//    {
+//        if (! $this->managePermalinks($model)) {
+//            return;
+//        }
+//
+//        $model->permalink()->create($this->gatherAttributes($model->getPermalinkAttributes()));
+//    }
+
+    public function saved(Model $model)
     {
         if (! $this->managePermalinks($model)) {
             return;
         }
 
-        $model->permalink()->create($this->gatherAttributes($model));
-    }
-
-    /**
-     * Updated model event handler.
-     *
-     * @param Model $model
-     */
-    public function updated(Model $model)
-    {
-        if (! $this->managePermalinks($model) || ! $model->permalink) {
-            return;
+        if ($model->wasRecentlyCreated) {
+            $model->permalink()->create($this->gatherAttributes($model->getPermalinkAttributes()));
+        } elseif ($model->permalink) {
+            $model->permalink->update($this->gatherAttributes($model->getPermalinkAttributes()));
         }
-
-        $model->permalink()->update($this->gatherAttributes($model));
     }
+
+//    /**
+//     * Updated model event handler.
+//     *
+//     * @param Model $model
+//     */
+//    public function updated(Model $model)
+//    {
+//        dd($model->saved);
+//        if (! $this->managePermalinks($model) || ! $model->permalink) {
+//            return;
+//        }
+//
+//        dd('test');
+//
+//        $model->permalink()->update($this->gatherAttributes($model->getPermalinkAttributes()));
+//    }
 
     /**
      * Check if the model should auto manage the permalinks.
@@ -55,10 +71,6 @@ class PermalinkableObserver
      */
     protected function gatherAttributes($attributes = null)
     {
-        if ($attributes instanceof Permalinkable) {
-            return $attributes->getPermalinkAttributes();
-        }
-
         $attributes = $attributes ?: request();
 
         return ($attributes instanceof Request ? $attributes->get('permalink') : $attributes) ?? [];
