@@ -2,7 +2,6 @@
 
 namespace Devio\Permalink;
 
-use Devio\Permalink\Contracts\Permalinkable;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
