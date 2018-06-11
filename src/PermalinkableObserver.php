@@ -30,7 +30,7 @@ class PermalinkableObserver
         // Then we are ready to perform the creation or update action based on
         // the model existence. If the model was recently created, we'll add
         // a new permalink, otherwise, we'll update the existing permalink.
-        if ($model->wasRecentlyCreated) {
+        if ($model->wasRecentlyCreated || ! $model->permalink) {
             $model->permalink()->create($attributes);
         } elseif ($model->permalink) {
             $model->permalink->update($attributes);
