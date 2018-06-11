@@ -144,9 +144,12 @@ class Permalink extends Model
         }
 
         $slugs = [];
-        $permalink = $model->permalink ?: static::parentFor($model)->with('parent')->first();
 
         $callable = function ($permalink) use (&$callable, &$slugs) {
+            if (is_null($permalink)) {
+                return;
+            }
+
             if ($permalink->parent) {
                 array_push($slugs, $callable($permalink->parent));
             }
@@ -154,7 +157,7 @@ class Permalink extends Model
             return $permalink->slug;
         };
 
-        $callable($permalink);
+        $callable($model->permalink ?: static::parentFor($model)->with('parent')->first());
 
         return $slugs;
     }
