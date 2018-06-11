@@ -11,6 +11,13 @@ use Arcanedev\SeoHelper\Contracts\SeoHelper;
 class PermalinkServiceProvider extends ServiceProvider
 {
     /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = true;
+
+    /**
      * Boot the service provider.
      */
     public function boot()
@@ -18,8 +25,6 @@ class PermalinkServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
 
         $this->definePermalinkMacro();
-
-        (new Router($this->app['router'], new ActionResolver))->load();
     }
 
     /**
@@ -55,5 +60,13 @@ class PermalinkServiceProvider extends ServiceProvider
                 return (new $builder($app->make(SeoHelper::class)));
             });
         }
+
+        $this->app->singleton(\Devio\Permalink\Contracts\ActionResolver::class, ActionResolver::class);
+
+        $this->app->singleton(\Devio\Permalink\Contracts\Router::class, function () {
+            return new Router($this->app['router'], $this->app[\Devio\Permalink\Contracts\ActionResolver::class]);
+        });
+
+        $this->app->alias(\Devio\Permalink\Contracts\Router::class, 'permalink');
     }
 }

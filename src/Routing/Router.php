@@ -6,8 +6,9 @@ use Devio\Permalink\Permalink;
 use Devio\Permalink\Contracts\ActionResolver;
 use Illuminate\Routing\Router as LaravelRouter;
 use Illuminate\Contracts\Foundation\Application;
+use Devio\Permalink\Contracts\Router as PermalinkRouter;
 
-class Router
+class Router implements PermalinkRouter
 {
     /**
      * The application instance.
