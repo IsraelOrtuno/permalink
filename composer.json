@@ -32,6 +32,7 @@
             "aliases": {
             },
             "providers": [
+                "Devio\\Permalink\\PermalinkServiceProvider"
             ]
         }
     }
