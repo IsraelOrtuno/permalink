@@ -23,7 +23,7 @@ class PermalinkableObserver
         // Once we have the attributes we need to set, we will perform a new
         // query in order to find if there is any parent class set for the
         // current permalinkable entity. If so, we'll add it as parent.
-        if ($parent = Permalink::findParentFor($model)) {
+        if ($parent = Permalink::parentFor($model)->first()) {
             $attributes['parent_id'] = $parent->getKey();
         }
 

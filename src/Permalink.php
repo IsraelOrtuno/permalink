@@ -68,7 +68,7 @@ class Permalink extends Model
      */
     public function parent()
     {
-        return $this->belongsTo(static::class);
+        return $this->belongsTo(static::class)->with('parent');
     }
 
     /**
@@ -120,7 +120,7 @@ class Permalink extends Model
      * @param $model
      * @return mixed
      */
-    public static function findParentFor($model)
+    public static function parentFor($model)
     {
         if (! is_object($model)) {
             $model = new $model;
@@ -128,7 +128,35 @@ class Permalink extends Model
 
         $model = $model->getMorphClass();
 
-        return static::where('parent_for', $model)->first();
+        return static::where('parent_for', $model);
+    }
+
+    /**
+     * Get the parent route path.
+     *
+     * @param $model
+     * @return array
+     */
+    public static function parentPath($model)
+    {
+        if (! is_object($model)) {
+            $model = new $model;
+        }
+
+        $slugs = [];
+        $permalink = $model->permalink ?: static::parentFor($model)->with('parent')->first();
+
+        $callable = function ($permalink) use (&$callable, &$slugs) {
+            if ($permalink->parent) {
+                array_push($slugs, $callable($permalink->parent));
+            }
+
+            return $permalink->slug;
+        };
+
+        $callable($permalink);
+
+        return $slugs;
     }
 
     /**
