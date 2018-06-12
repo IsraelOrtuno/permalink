@@ -57,7 +57,7 @@ $router->group(['prefix' => 'users'], function() {
 The configuration is pretty simple, simply use the `HasPermalinks` trait and implement the `Permalinkable` interface in the models you want to provide the permalink functionality and implement the following methods:
 
 ```php
-class Product extends Model implements \Devio\Permalink\Contracts\Permalinkable {
+class User extends Model implements \Devio\Permalink\Contracts\Permalinkable {
   use \Devio\Permalink\HasPermalinks;
 
   /**
@@ -67,7 +67,7 @@ class Product extends Model implements \Devio\Permalink\Contracts\Permalinkable 
    */
   public function permalinkAction()
   {
-    return UserController::class . '@index';
+    return UserController::class . '@show';
   }
 
   /**
@@ -90,13 +90,35 @@ The `permalinkAction` method should return the default action hanlder for this m
 
 **NOTE:** Be aware that Laravel cannot cache `Closure` based routes.
 
-We are now ready to create a new `Product` and the permalink will be automatically generated for us.
+We are now ready to create a new `User` and the permalink will be automatically generated for us.
 
 ```php
-$product = Product::create(['name' => 'Laravel Sticker']);
+$product = User::create(['name' => 'Israel Ortuño']);
 
-// $permalink = [
-//    'slug'      => 'laravel-sticker',
-//    'parent_id' => NULL,
+// Permalink (
+//  slug:               israel-ortuno
+//  parent_id:          NULL
+//  permalinkable_type: App\Product
+//  permalinkable_id:   1
+//  action:             NULL
+// )
+```
 
+Whenever we visit `/israel-ortuno` we will be executing `UserController@show` action. This action will receive the binded model as parameter:
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Product;
+use Illuminate\Http\Request;
+
+class UserController
+{
+    public function show(Request $request, User $user)
+    {
+        return $user;
+    }
+}
 ```
