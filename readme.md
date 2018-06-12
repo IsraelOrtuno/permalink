@@ -89,3 +89,14 @@ The package uses [cviebrock/eloquent-sluggable](https://github.com/cviebrock/elo
 The `permalinkAction` method should return the default action hanlder for this model, just like if we were setting a route here: `Controller@action`. You could even return a `Closure`.
 
 **NOTE:** Be aware that Laravel cannot cache `Closure` based routes.
+
+We are now ready to create a new `Product` and the permalink will be automatically generated for us.
+
+```php
+$product = Product::create(['name' => 'Laravel Sticker']);
+
+// $permalink = [
+//    'slug'      => 'laravel-sticker',
+//    'parent_id' => NULL,
+
+```
