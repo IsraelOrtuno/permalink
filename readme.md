@@ -88,4 +88,4 @@ The package uses [cviebrock/eloquent-sluggable](https://github.com/cviebrock/elo
 
 The `permalinkAction` method should return the default action hanlder for this model, just like if we were setting a route here: `Controller@action`. You could even return a `Closure`.
 
-** NOTE:** Be aware that Laravel cannot cache `Closure` based routes.
+**NOTE:** Be aware that Laravel cannot cache `Closure` based routes.
