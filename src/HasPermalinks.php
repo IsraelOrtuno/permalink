@@ -59,6 +59,33 @@ trait HasPermalinks
         return $this->morphOne(Permalink::class, 'permalinkable');
     }
 
+    /**
+     * Store a permalink for this the current entity.
+     *
+     * @param array $attributes
+     * @return $this
+     */
+    public function storePermalink($attributes = [])
+    {
+        // Once we have the attributes we need to set, we will perform a new
+        // query in order to find if there is any parent class set for the
+        // current permalinkable entity. If so, we'll add it as parent.
+        if ($parent = Permalink::findParentFor($this)) {
+            $attributes['parent_id'] = $parent->getKey();
+        }
+
+        // Then we are ready to perform the creation or update action based on
+        // the model existence. If the model was recently created, we'll add
+        // a new permalink, otherwise, we'll update the existing permalink.
+        if ($this->wasRecentlyCreated || ! $this->permalink) {
+            $this->permalink()->create($attributes);
+        } elseif ($this->permalink) {
+            $this->permalink->update($attributes);
+        }
+
+        return $this;
+    }
+
     public function setPermalinkParentAttribute($value)
     {
         $this->permalinkParent = $value;

@@ -20,21 +20,7 @@ class PermalinkableObserver
 
         $attributes = $this->gatherAttributes($model->getPermalinkAttributes());
 
-        // Once we have the attributes we need to set, we will perform a new
-        // query in order to find if there is any parent class set for the
-        // current permalinkable entity. If so, we'll add it as parent.
-        if ($parent = Permalink::parentFor($model)->first()) {
-            $attributes['parent_id'] = $parent->getKey();
-        }
-
-        // Then we are ready to perform the creation or update action based on
-        // the model existence. If the model was recently created, we'll add
-        // a new permalink, otherwise, we'll update the existing permalink.
-        if ($model->wasRecentlyCreated || ! $model->permalink) {
-            $model->permalink()->create($attributes);
-        } elseif ($model->permalink) {
-            $model->permalink->update($attributes);
-        }
+        $model->storePermalink($attributes);
     }
 
     /**
