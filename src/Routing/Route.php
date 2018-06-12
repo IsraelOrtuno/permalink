@@ -2,6 +2,7 @@
 
 namespace Devio\Permalink\Routing;
 
+use Devio\Permalink\Permalink;
 use Illuminate\Routing\Router;
 use Devio\Permalink\Contracts\ActionResolver;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -54,7 +55,7 @@ class Route
         $action = $this->resolver->resolve($permalink);
 
         $route = $this->router->get($permalink->slug, $action)
-                              ->name('permalink.' . $permalink->getKey());
+                              ->name($this->getRouteName($permalink));
 
         if ($permalink->permalinkable) {
             $route->defaults(
@@ -89,5 +90,39 @@ class Route
         };
 
         $this->router->group(['prefix' => $parent->slug], $callback);
+    }
+
+    /**
+     * Get the route name.
+     *
+     * @param $permalink
+     * @return null|string
+     */
+    protected function getRouteName($permalink)
+    {
+        if ($permalinkable = $permalink->permalinkable) {
+            return $permalinkable->permalinkRouteName() . '.' . $permalink->getKey();
+        }
+
+        $action = $permalink->rawAction;
+
+        return str_contains($action, '@') ? $this->getRouteNameFromAction($action) : $action;
+    }
+
+    /**
+     * Extract the route name from the fully qualified action.
+     *
+     * @param $action
+     * @return string
+     * @throws \ReflectionException
+     */
+    protected function getRouteNameFromAction($action)
+    {
+        list ($class, $method) = explode('@', $permalink->action);
+        $name = (new \ReflectionClass($class))->getShortName();
+
+        $name = str_replace('Controller', '', $name);
+
+        return strtolower($name . '.' . $method);
     }
 }

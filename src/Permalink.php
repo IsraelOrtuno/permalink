@@ -184,7 +184,17 @@ class Permalink extends Model
      */
     public function getActionAttribute()
     {
-        return static::getAliasedAction($this->attributes['action']) ?? $this->attributes['action'];
+        return static::getMappedAction($this->attributes['action']) ?? $this->attributes['action'];
+    }
+
+    /**
+     * Get the raw action value.
+     *
+     * @return mixed
+     */
+    public function getRawActionAttribute()
+    {
+        return $this->attributes['action'];
     }
 
     /**
@@ -210,7 +220,7 @@ class Permalink extends Model
      * @param  string $alias
      * @return string|null
      */
-    public static function getAliasedAction($alias)
+    public static function getMappedAction($alias)
     {
         return static::$actionMap[$alias] ?? null;
     }

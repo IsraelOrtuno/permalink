@@ -113,7 +113,18 @@ trait HasPermalinks
      */
     public function getRouteAttribute()
     {
-        return ($this->exists && $this->hasPermalink()) ? route('permalink.' . $this->permalink->getKey()) : '#';
+        return ($this->exists && $this->hasPermalink()) ?
+            route($this->permalinkRouteName() . '.' . $this->permalink->getKey()) : '#';
+    }
+
+    /**
+     * Get the entity route name prefix.
+     *
+     * @return string
+     */
+    public function permalinkRouteName()
+    {
+        return 'permalink';
     }
 
     /**
