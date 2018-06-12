@@ -86,4 +86,6 @@ This model is now fully ready to work with.
 
 The package uses [cviebrock/eloquent-sluggable](https://github.com/cviebrock/eloquent-sluggable) for the automatic slug generation, so the `slugSource` method should return an array of options compatible with the `eloquent-sluggable` options. By just providing the `source` key should be enough for most cases, but in case you want to update other options, here you can do so. Basically we are pointing that the slug will be generated from the `name` field of the `permalinkable` relationship of the permalink model, which will be the current model.
 
-The `permalinkAction` method should return the default action hanlder for this model, just like if we were setting a route here: `Controller@action`. You could also return a `Closure` but be aware that Laravel cannot cache `Closure` based routes so you will miss this functionality.
+The `permalinkAction` method should return the default action hanlder for this model, just like if we were setting a route here: `Controller@action`. You could even return a `Closure`.
+
+** NOTE:** Be aware that Laravel cannot cache `Closure` based routes.
