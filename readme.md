@@ -10,6 +10,7 @@ This package is currenlyt being developed and tested. Would love feedback ❤️
 - [ ] Add testing and maybe a sandbox app.
 - [ ] Better docs organization using VuePress or similar.
 - [ ] Add docs about how to handle automatic SEO tags.
+- [ ] [Resources for visual SEO management](https://github.com/IsraelOrtuno/permalink-form)
 - [ ] Consider adding middleware support.
 - [ ] Consider adding a parameters column.
 
