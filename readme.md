@@ -59,7 +59,18 @@ $router->group(['prefix' => 'users'], function() {
 
 ## Usage
 
-The configuration is pretty simple, simply use the `HasPermalinks` trait and implement the `Permalinkable` interface in the models you want to provide the permalink functionality and implement the following methods:
+Call the permalink route loader from the `boot` method from any of your application service providers: `AppServiceProvider` or `RouteServiceProviderp` are good examples:
+
+```php
+class AppServiceProvider extends ServiceProvider {
+    public function boot()
+    {
+        $this->app->make('permalink')->load();
+    }
+}
+```
+
+The configuration in the models is pretty simple, simply use the `HasPermalinks` trait and implement the `Permalinkable` interface in the models you want to provide the permalink functionality and implement the following methods:
 
 ```php
 class User extends Model implements \Devio\Permalink\Contracts\Permalinkable {
