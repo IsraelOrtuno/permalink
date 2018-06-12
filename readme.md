@@ -122,3 +122,44 @@ class UserController
     }
 }
 ```
+
+#### Creating/Updating Permalinks Manually
+
+By default, this package comes with an observer class which is linked to the `saved` event of your model. Whenever a model is saved, this package will create/update accordingly.
+
+**NOTE:** By default, slugs are only set when createing, they won't be modified when updating unless you explicitly configured the `slugSource` options to do so.
+
+To disable the automatic permalink management you can simply set the value of the property `managePermalinks` of your model to `false`:
+
+```php
+class User ... {
+    public $managePermalinks = false;
+}
+```
+
+This will disable any permalink creation/update and you will be then responisble of doing this manually. As the `Permalink` model is actually a polymorphic relationship, you can just create or update the permalink as any other relationship:
+
+```php
+$user = User::create(['name' => 'Israel Ortuño']);
+
+$user->permalink()->create(); // This is enough unless you want to manually specify an slug or other options
+
+// or if the permalink exists...
+$user->permalink->update([...]);
+```
+
+#### Overwriting The Default Action
+
+When a permalink is binded to a model, we will guess which action it points to the `permalinkAction` method defined in our `Permalinkable` model. However, we can override this action for a certain model by just specifiying a value into the `action` column of the permalink record:
+
+| id | slug          | permalinkable_type | permalinkable_id | action              
+| -- | ------------- | ------------------ | ---------------- | --------------------
+| 1  | israel-ortuno | App\User           | 1                | OtherController@action
+
+You could update your model via code as any other normal relationship, for example:
+
+```php
+$user = User::find(1);
+
+$user->permalink->update(['action' => 'OtherController@action']);
+```
