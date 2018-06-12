@@ -127,7 +127,7 @@ class UserController
 
 By default, this package comes with an observer class which is linked to the `saved` event of your model. Whenever a model is saved, this package will create/update accordingly.
 
-**NOTE:** By default, slugs are only set when createing, they won't be modified when updating unless you explicitly configured the `slugSource` options to do so.
+**NOTE:** By default, slugs are only set when creating. They won't be modified when updating unless you explicitly configured the `slugSource` options to do so.
 
 To disable the automatic permalink management you can simply set the value of the property `managePermalinks` of your model to `false`:
 
