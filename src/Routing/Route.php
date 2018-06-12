@@ -4,6 +4,7 @@ namespace Devio\Permalink\Routing;
 
 use Illuminate\Routing\Router;
 use Devio\Permalink\Contracts\ActionResolver;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Route
 {
@@ -56,7 +57,9 @@ class Route
                               ->name('permalink.' . $permalink->getKey());
 
         if ($permalink->permalinkable) {
-            $route->defaults($permalink->permalinkable_type, $permalink->permalinkable);
+            $route->defaults(
+                Relation::getMorphedModel($permalink->permalinkable_type) ?? $permalink->permalinkable_type, $permalink->permalinkable
+            );
         }
 
         // We will bind our permalink model to the model itself. This way access
