@@ -38,7 +38,7 @@ Let's review a very basic example to understand how it works:
 | 1  | users         | NULL      | App\User   | NULL               | NULL             | UserController@index
 | 2  | israel-ortuno | 1         | NULL       | App\User           | 1                | NULL
 
-This will run the following:
+It will run the following (this example tries to be as explicit as possible, internally it uses eager loading and some other performance optimizations):
 
 ```php
 $router->get('users', 'UserController@index');
@@ -52,4 +52,38 @@ $router->group(['prefix' => 'users'], function() {
 //    /users/israelOrtuno   Whatever action configured into the permalinkAction method
 ```
 
-### 
+### Usage
+
+The configuration is pretty simple, simply use the `HasPermalinks` trait and implement the `Permalinkable` interface in the models you want to provide the permalink functionality and implement the following methods:
+
+```php
+class Product extends Model implements \Devio\Permalink\Contracts\Permalinkable {
+  use \Devio\Permalink\HasPermalinks;
+
+  /**
+   * Get the model action.
+   *
+   * @return string
+   */
+  public function permalinkAction()
+  {
+    return UserController::class . '@index';
+  }
+
+  /**
+   * Get the options for the sluggable package.
+   *
+   * @return array
+   */
+  public function slugSource(): array
+  {
+    return ['source' => 'permalinkable.name'];
+  }
+}
+```
+
+This model is now fully ready to work with. 
+
+The package uses [cviebrock/eloquent-sluggable](https://github.com/cviebrock/eloquent-sluggable) for the automatic slug generation, so the `slugSource` method should return an array of options compatible with the `eloquent-sluggable` options. By just providing the `source` key should be enough for most cases, but in case you want to update other options, here you can do so. Basically we are pointing that the slug will be generated from the `name` field of the `permalinkable` relationship of the permalink model, which will be the current model.
+
+The `
