@@ -14,6 +14,10 @@ This package allows to create dynamic routes right from database, just like Word
 - [Getting Started](#getting-started)
 - [Usage](#usage)
   - [Routes And Route Groups](#routes-and-route-groups)
+  - [Nesting Routes](#nesting-routes)
+  - [Creating/Updating Permalinks Manually](#creatingupdating-permalinks-manually)
+  - [Overwriting The Default Action](#overriding-the-default-action)
+  - [Support For morphMap And aliasMap](#support-for-morphmap-and-aliasmap)
 
 ## Installation
 
