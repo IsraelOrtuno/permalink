@@ -5,7 +5,7 @@ namespace Devio\Permalink\Tests;
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Routing\ActionResolver;
 
-class ActionResolverTest extends TestCase
+class ActionResolver extends TestCase
 {
     /** @test */
     public function resolve_the_default_row_action()

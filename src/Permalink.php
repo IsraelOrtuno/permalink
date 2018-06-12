@@ -184,7 +184,11 @@ class Permalink extends Model
      */
     public function getActionAttribute()
     {
-        return static::getMappedAction($this->attributes['action']) ?? $this->attributes['action'];
+        if ($action = static::getMappedAction($this->attributes['action']) ?? $this->attributes['action']) {
+            return $action;
+        }
+
+        return $this->getRelationValue('permalinkable')->permalinkAction();
     }
 
     /**

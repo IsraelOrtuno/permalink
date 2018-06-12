@@ -51,7 +51,7 @@ class Route
      */
     protected function route($permalink)
     {
-        $action = $this->resolver->resolve($permalink);
+        $action = $permalink->action; //  $this->resolver->resolve($permalink);
 
         $route = $this->router->get($permalink->slug, $action)
                               ->name($this->getRouteName($permalink));
