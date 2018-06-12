@@ -23,7 +23,7 @@ This package is currently being developed and tested. Would love feedback ❤️
 - [Routes and route groups](#routes-and-route-groups)
 - [Nesting routes](#nesting-routes)
 - [Creating/updating permalinks manually](#creatingupdating-permalinks-manually)
-- [Overwriting the default action](#overriding-the-default-action)
+- [Overriding the default action](#overriding-the-default-action)
 - [Support for morphMap & aliasMap](#support-for-morphmap-and-aliasmap)
 
 ## Installation
@@ -241,7 +241,7 @@ $user->permalink()->create(); // This is enough unless you want to manually spec
 $user->permalink->update([...]);
 ```
 
-## Overwriting the default action
+## Overriding the default action
 
 When a permalink is binded to a model, we will guess which action it points to the `permalinkAction` method defined in our `Permalinkable` model. However, we can override this action for a certain model by just specifiying a value into the `action` column of the permalink record:
 
