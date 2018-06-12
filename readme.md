@@ -2,6 +2,10 @@
 
 This package allows to create dynamic routes right from database, just like WordPress and other CMS do.
 
+## Roadmap
+- [ ] Add testing and maybe a sandbox app.
+- [ ] Better docs organization using VuePress or similar.
+
 ## Installation
 
 ### Install the package
