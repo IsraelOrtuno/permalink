@@ -175,13 +175,13 @@ The `parent_for` will be `NULL` in most cases.
 
 ## Getting The Permalink Route
 
-When a route is registered, it will be named as its `id` prefixed by `permalink`.
+When routes are loaded, they will receive a name of its `id` prefixed by `permalink`.
 
 ```php
 route('permalink.1'); // Get the route of the permalink with id = 1
 ```
 
-When we are manipulating our model, we do not really want to care about the key of its permalink. Despite we could resolve routes just like in the previous examplej, `HasPermalinks` trait includes a `route` accessor which will resolve the fully qualified route for the current entity permalink:
+When we are manipulating our model, we do not really want to care about the key of its permalink. Despite we could resolve routes just like in the previous example, `HasPermalinks` trait includes a `route` accessor which will resolve the fully qualified route for the current entity permalink:
 
 ```php
 $route = $user->route;
