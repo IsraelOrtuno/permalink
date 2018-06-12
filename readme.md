@@ -6,6 +6,8 @@ This package allows to create dynamic routes right from database, just like Word
 - [ ] Add testing and maybe a sandbox app.
 - [ ] Better docs organization using VuePress or similar.
 - [ ] Add docs about how to handle automatic SEO tags.
+- [ ] Consider adding middleware support.
+- [ ] Consider adding a parameters column.
 
 ## Installation
 
