@@ -31,9 +31,25 @@ Basically, the package stores routes in a `permalinks` table which contains info
 
 #### Example
 
-Let's show an example of how it works:
+Let's review a very basic example to understand how it works:
 
-| id | slug          | parent_id | parent_for | permalinkable_type | permalinkable_id |
-| -- | ------------- | --------- | ---------- | ------------------ | ---------------- |
-| 1  | users         | NULL      | App\User   | NULL               | NULL             |
-| 2  | israel-ortuno | 1         | 
+| id | slug          | parent_id | parent_for | permalinkable_type | permalinkable_id | action              
+| -- | ------------- | --------- | ---------- | ------------------ | ---------------- | --------------------
+| 1  | users         | NULL      | App\User   | NULL               | NULL             | UserController@index
+| 2  | israel-ortuno | 1         | NULL       | App\User           | 1                | NULL
+
+This will run the following:
+
+```php
+$router->get('users', 'UserController@index');
+
+$router->group(['prefix' => 'users'], function() {
+  $user->get('israel-ortuno', User::find(1)->permalinkAction())
+});
+
+// Which will produce:
+//    /users                UserController@index
+//    /users/israelOrtuno   Whatever action configured into the permalinkAction method
+```
+
+### 
