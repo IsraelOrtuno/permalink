@@ -39,16 +39,17 @@ class Permalink extends Model
      */
     public static function boot()
     {
+        parent::boot();
+
         static::saving(function ($model) {
             // If the user has provided an slug manually, we have to make sure
             // that that slug is unique. If it is not, the SlugService class
             // will append an incremental suffix to ensure its uniqueness.
             if ($model->isDirty('slug') && ! empty($model->slug)) {
-                $model->slug = SlugService::createSlug($model, 'slug', $model->slug);
+                $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
             }
         });
 
-        parent::boot();
     }
 
     /**
@@ -89,7 +90,11 @@ class Permalink extends Model
      */
     public function sluggable(): array
     {
-        $source = (array) $this->permalinkable->slugSource();
+        if (! $permalinkable = $this->permalinkable) {
+            return [];
+        }
+
+        $source = (array) $permalinkable->slugSource();
 
         // We will look for slug source at the permalinkable entity. That method
         // should return an array with a 'source' key in it. This way the user
