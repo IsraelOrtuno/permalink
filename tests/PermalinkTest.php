@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class PermalinkTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+
+        // Reset maps
+        Relation::morphMap([], false);
+        Permalink::actionMap([], false);
+    }
 
     /** @test */
     public function permalink_is_automatically_created_by_default()
@@ -70,5 +78,53 @@ class PermalinkTest extends TestCase
         $user = factory(DummyUser::class)->create(['permalink' => ['action' => 'UserController@foo']]);
 
         $this->assertEquals('UserController@foo', $user->permalink->action);
+    }
+
+    /** @test */
+    public function permalink_attributes_can_be_set_when_creating_resource()
+    {
+        $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
+
+        $this->assertEquals('foo', $user->permalink->slug);
+        $this->assertDatabaseHas('permalinks', ['slug' => 'foo']);
+    }
+
+    /** @test */
+    public function provided_permalink_slug_will_always_be_unique()
+    {
+        Permalink::create(['slug' => 'foo', 'action' => 'bar']);
+        $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
+
+        $this->assertEquals('foo-1', $user->permalink->slug);
+        $this->assertDatabaseHas('permalinks', ['slug' => 'foo-1']);
+    }
+
+    /** @test */
+    public function permalink_is_automatically_nested_if_default_parent_is_set()
+    {
+        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => DummyUser::class, 'action' => 'bar']);
+        $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
+
+        $this->assertEquals($parent->id, $user->permalink->parent_id);
+    }
+
+    /** @test */
+    public function permalink_is_nested_with_morphed_model_name()
+    {
+        Relation::morphMap(['user' => DummyUser::class]);
+        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => 'user', 'action' => 'bar']);
+        $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
+
+        $this->assertEquals($parent->id, $user->permalink->parent_id);
+    }
+
+    /** @test */
+    public function permalink_is_nested_with_morphed_model_name_with_full_class_name()
+    {
+        Relation::morphMap(['user' => DummyUser::class]);
+        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => DummyUser::class, 'action' => 'bar']);
+        $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
+
+        $this->assertEquals($parent->id, $user->permalink->parent_id);
     }
 }

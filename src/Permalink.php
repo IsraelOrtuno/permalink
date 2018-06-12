@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\Services\SlugService;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Permalink extends Model
 {
@@ -16,7 +17,7 @@ class Permalink extends Model
      *
      * @var array
      */
-    public $fillable = ['parent_id', 'slug', 'action', 'seo'];
+    public $fillable = ['parent_id', 'parent_for', 'slug', 'action', 'seo'];
 
     /**
      * Casting attributes.
@@ -199,6 +200,20 @@ class Permalink extends Model
     public function getRawActionAttribute()
     {
         return $this->attributes['action'];
+    }
+
+    /**
+     * Set the parent for from the morph map if exists.
+     *
+     * @param $value
+     */
+    public function setParentForAttribute($value)
+    {
+        if (! Relation::getMorphedModel($value)) {
+            $value = array_search($value, Relation::morphMap()) ?: $value;
+        }
+
+        $this->attributes['parent_for'] = $value;
     }
 
     /**
