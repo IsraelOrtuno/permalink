@@ -4,7 +4,7 @@ This package allows to create dynamic routes right from database, just like Word
 
 ## Work In Progress
 
-This package is currenlyt being developed and tested. Would love feedback ❤️.
+This package is currently being developed and tested. Would love feedback ❤️.
 
 ## Roadmap
 - [ ] Add testing and maybe a sandbox app.
