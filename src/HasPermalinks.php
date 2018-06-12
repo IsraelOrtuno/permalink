@@ -70,7 +70,7 @@ trait HasPermalinks
         // Once we have the attributes we need to set, we will perform a new
         // query in order to find if there is any parent class set for the
         // current permalinkable entity. If so, we'll add it as parent.
-        if ($parent = Permalink::parentFor($this)) {
+        if ($parent = Permalink::parentFor($this)->first()) {
             $attributes['parent_id'] = $parent->getKey();
         }
 
