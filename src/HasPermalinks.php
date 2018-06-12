@@ -86,11 +86,21 @@ trait HasPermalinks
         return $this;
     }
 
+    /**
+     * Set the permalink parent.
+     *
+     * @param $value
+     */
     public function setPermalinkParentAttribute($value)
     {
         $this->permalinkParent = $value;
     }
 
+    /**
+     * Get the permalink parent.
+     *
+     * @return null
+     */
     public function getPermalinkParentAttribute()
     {
         return $this->permalinkParent;
