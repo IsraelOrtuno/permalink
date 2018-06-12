@@ -9,6 +9,12 @@ This package allows to create dynamic routes right from database, just like Word
 - [ ] Consider adding middleware support.
 - [ ] Consider adding a parameters column.
 
+## Documentation
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+  - [Routes And Route Groups](#routes-and-route-groups)
+
 ## Installation
 
 ### Install the package
