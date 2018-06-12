@@ -97,6 +97,16 @@ trait HasPermalinks
     }
 
     /**
+     * Resolve the full permalink route.
+     *
+     * @return string
+     */
+    public function getRouteAttribute()
+    {
+        return $this->exists ? route('permalink.' . $this->getKey()) : '#';
+    }
+
+    /**
      * Check if the page has a permalink relation.
      *
      * @return bool
