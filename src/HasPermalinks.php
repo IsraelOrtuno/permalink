@@ -113,7 +113,7 @@ trait HasPermalinks
      */
     public function getRouteAttribute()
     {
-        return $this->exists ? route('permalink.' . $this->getKey()) : '#';
+        return ($this->exists && $this->hasPermalink()) ? route('permalink.' . $this->permalink->getKey()) : '#';
     }
 
     /**
