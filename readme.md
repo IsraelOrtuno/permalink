@@ -141,6 +141,25 @@ class UserController
 }
 ```
 
+### Routes And Route Groups
+
+If a route is not binded to a model and its action is also `NULL`, it will be threated as a route group but won't be registered:
+
+| id | slug          | parent_id | parent_for | permalinkable_type | permalinkable_id | action              
+| -- | ------------- | --------- | ---------- | ------------------ | ---------------- | --------------------
+| 1  | users         | NULL      | App\User   | NULL               | NULL             | NULL
+| 2  | israel-ortuno | 1         | NULL       | App\User           | 1                | NULL
+
+The example above will not generate a `/users` route, `users` will only act as parent of other routes but won't be registered.
+
+### Nesting Routes
+
+At this point, you may be wondering why do we need a `parent_for` column if there's already a `parent_id` being used as foreign key for parent child nesting.
+
+`parent_for` is used in order to automatically discover which route will be the parent of a new stored permalink. Using the table above this section, whenever we store a permalink for a `App\User` model, it will be automatically linked to the permalink `1`.
+
+The `parent_for` will be `NULL` in most cases.
+
 ### Creating/Updating Permalinks Manually
 
 By default, this package comes with an observer class which is linked to the `saved` event of your model. Whenever a model is saved, this package will create/update accordingly.
@@ -181,3 +200,32 @@ $user = User::find(1);
 
 $user->permalink->update(['action' => 'OtherController@action']);
 ```
+
+### Support For morphMap And aliasMap
+
+This package provides support for `morphMap`. As you may know, Laravel ships with a `morphMap` method to where you can define a relationship "morph map" to instruct Eloquent to use a custom name for each model instead of the class name.
+
+In adition to the `morphMap` method, this package includes a `aliasMap` static method under the `Permalink` model where you can also define a relationship "alias map" just like the "morph map" but for the permalink actions:
+
+```php
+use Illuminate\Database\Eloquent\Relations\Relation;
+
+Relation::morphMap([
+    'users' => 'App\User',
+    'posts' => 'App\Post',
+]);
+
+use Devio\Permalink\Permalink;
+
+Permalink::aliasMap([
+    'user.index'  => 'App\Http\Controllers\UserController@index',
+    'user.show'   => 'App\Http\Controllers\UserController@show',
+]);
+```
+
+You can register these maps in the boot method of your `AppServiceProvider`. The example above will make the `permalinkable_type` and `action` columns look much more readable than showing fully qualified class names.
+
+
+| id | ... | permalinkable_type | ... | action              
+| -- | --- | ------------------ | --- | --------------------
+| 1  |     | user               |     | user.show
