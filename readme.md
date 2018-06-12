@@ -13,6 +13,7 @@ This package allows to create dynamic routes right from database, just like Word
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
+- [Get The Route](#get-the-route)
 - [Routes And Route Groups](#routes-and-route-groups)
 - [Nesting Routes](#nesting-routes)
 - [Creating/Updating Permalinks Manually](#creatingupdating-permalinks-manually)
@@ -121,12 +122,14 @@ The `permalinkAction` method should return the default action hanlder for this m
 We are now ready to create a new `User` and the permalink will be automatically generated for us.
 
 ```php
-$product = User::create(['name' => 'Israel Ortuño']);
+$user = User::create(['name' => 'Israel Ortuño']);
+
+$route = $user->route; // 'http://localhost/israel-ortuno
 
 // Permalink (
 //  slug:               israel-ortuno
 //  parent_id:          NULL
-//  permalinkable_type: App\Product
+//  permalinkable_type: App\User
 //  permalinkable_id:   1
 //  action:             NULL
 // )
@@ -169,6 +172,24 @@ At this point, you may be wondering why do we need a `parent_for` column if ther
 `parent_for` is used in order to automatically discover which route will be the parent of a new stored permalink. Using the table above this section, whenever we store a permalink for a `App\User` model, it will be automatically linked to the permalink `1`.
 
 The `parent_for` will be `NULL` in most cases.
+
+## Getting The Permalink Route
+
+When a route is registered, it will be named as its `id` prefixed by `permalink`.
+
+```php
+route('permalink.1'); // Get the route of the permalink with id = 1
+```
+
+When we are manipulating our model, we do not really want to care about the key of its permalink. Despite we could resolve routes just like in the previous examplej, `HasPermalinks` trait includes a `route` accessor which will resolve the fully qualified route for the current entity permalink:
+
+```php
+$route = $user->route;
+// this is just an alias for:
+route('permalink.' . $user->permalink->id);
+```
+
+Cool and neat!
 
 ## Creating/Updating Permalinks Manually
 
