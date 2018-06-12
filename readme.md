@@ -1,4 +1,4 @@
-# Laravel Permalinks and SEO
+# Advanced Laravel Permalinks And SEO Management
 
 This package allows to create dynamic routes right from database, just like WordPress and other CMS do.
 
