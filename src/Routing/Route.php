@@ -2,7 +2,6 @@
 
 namespace Devio\Permalink\Routing;
 
-use Devio\Permalink\Permalink;
 use Illuminate\Routing\Router;
 use Devio\Permalink\Contracts\ActionResolver;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -118,7 +117,7 @@ class Route
      */
     protected function getRouteNameFromAction($action)
     {
-        list ($class, $method) = explode('@', $permalink->action);
+        list ($class, $method) = explode('@', $action);
         $name = (new \ReflectionClass($class))->getShortName();
 
         $name = str_replace('Controller', '', $name);

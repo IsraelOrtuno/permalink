@@ -2,14 +2,12 @@
 
 namespace Devio\Permalink\Tests;
 
-use Devio\Permalink\Contracts\SeoBuilder;
-use Devio\Permalink\Meta\Builder\Builder;
-use Devio\Permalink\Permalink;
+use Mockery as m;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
-use Illuminate\Routing\Router;
-use Mockery as m;
+use Devio\Permalink\Permalink;
 use Devio\Permalink\Middleware\BuildSeo;
+use Devio\Permalink\Contracts\SeoBuilder;
 
 class MiddlewareTest extends TestCase
 {
