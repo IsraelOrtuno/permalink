@@ -2,7 +2,7 @@
 
 namespace Devio\Permalink\Middleware;
 
-class BuildMetas
+class BuildSeo
 {
     /**
      * Handle the incoming request.
@@ -30,7 +30,9 @@ class BuildMetas
         }
 
         foreach ($permalink->seo as $type => $meta) {
-            app("permalink.$type")->build($type, $meta);
+            if (!is_null($meta)) {
+                app("permalink.$type")->build($type, $meta);
+            }
         }
     }
 }

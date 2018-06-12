@@ -2,7 +2,7 @@
 
 namespace Devio\Permalink\Contracts;
 
-interface MetaBuilder
+interface SeoBuilder
 {
     /**
      * Translate the current instance from database to the SEO helper.

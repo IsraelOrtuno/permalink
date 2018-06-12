@@ -2,10 +2,10 @@
 
 namespace Devio\Permalink\Meta\Builder;
 
-use Devio\Permalink\Contracts\MetaBuilder;
+use Devio\Permalink\Contracts\SeoBuilder;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
 
-abstract class Builder implements MetaBuilder
+abstract class Builder implements SeoBuilder
 {
     /**
      * The SEO helper instance.
