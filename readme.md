@@ -2,21 +2,21 @@
 
 This package allows to create dynamic routes right from database, just like WordPress and other CMS do.
 
-### Installation
+## Installation
 
-#### Install the package
+### Install the package
 
 ```shell
 composer require devio/permalink
 ```
 
-#### Run the migrations
+### Run the migrations
 
 ```shell
 php artisan migrate
 ```
 
-### Getting Started
+## Getting Started
 
 This package handles dynamic routing directly from our database. It also supports slug inheritance so we can easily create routes like this `jobs/frontend-web-developer`.
 
@@ -29,7 +29,7 @@ Basically, the package stores routes in a `permalinks` table which contains info
 - Action
 - SEO
 
-#### Example
+### Example
 
 Let's review a very basic example to understand how it works:
 
@@ -52,7 +52,7 @@ $router->group(['prefix' => 'users'], function() {
 //    /users/israelOrtuno   Whatever action configured into the permalinkAction method
 ```
 
-### Usage
+## Usage
 
 The configuration is pretty simple, simply use the `HasPermalinks` trait and implement the `Permalinkable` interface in the models you want to provide the permalink functionality and implement the following methods:
 
@@ -123,7 +123,7 @@ class UserController
 }
 ```
 
-#### Creating/Updating Permalinks Manually
+### Creating/Updating Permalinks Manually
 
 By default, this package comes with an observer class which is linked to the `saved` event of your model. Whenever a model is saved, this package will create/update accordingly.
 
@@ -148,7 +148,7 @@ $user->permalink()->create(); // This is enough unless you want to manually spec
 $user->permalink->update([...]);
 ```
 
-#### Overwriting The Default Action
+### Overwriting The Default Action
 
 When a permalink is binded to a model, we will guess which action it points to the `permalinkAction` method defined in our `Permalinkable` model. However, we can override this action for a certain model by just specifiying a value into the `action` column of the permalink record:
 
