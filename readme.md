@@ -13,11 +13,11 @@ This package allows to create dynamic routes right from database, just like Word
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
-  - [Routes And Route Groups](#routes-and-route-groups)
-  - [Nesting Routes](#nesting-routes)
-  - [Creating/Updating Permalinks Manually](#creatingupdating-permalinks-manually)
-  - [Overwriting The Default Action](#overriding-the-default-action)
-  - [Support For morphMap And aliasMap](#support-for-morphmap-and-aliasmap)
+- [Routes And Route Groups](#routes-and-route-groups)
+- [Nesting Routes](#nesting-routes)
+- [Creating/Updating Permalinks Manually](#creatingupdating-permalinks-manually)
+- [Overwriting The Default Action](#overriding-the-default-action)
+- [Support For morphMap And aliasMap](#support-for-morphmap-and-aliasmap)
 
 ## Installation
 
@@ -151,7 +151,7 @@ class UserController
 }
 ```
 
-### Routes And Route Groups
+## Routes And Route Groups
 
 If a route is not binded to a model and its action is also `NULL`, it will be threated as a route group but won't be registered:
 
@@ -162,7 +162,7 @@ If a route is not binded to a model and its action is also `NULL`, it will be th
 
 The example above will not generate a `/users` route, `users` will only act as parent of other routes but won't be registered.
 
-### Nesting Routes
+## Nesting Routes
 
 At this point, you may be wondering why do we need a `parent_for` column if there's already a `parent_id` being used as foreign key for parent child nesting.
 
@@ -170,7 +170,7 @@ At this point, you may be wondering why do we need a `parent_for` column if ther
 
 The `parent_for` will be `NULL` in most cases.
 
-### Creating/Updating Permalinks Manually
+## Creating/Updating Permalinks Manually
 
 By default, this package comes with an observer class which is linked to the `saved` event of your model. Whenever a model is saved, this package will create/update accordingly.
 
@@ -195,7 +195,7 @@ $user->permalink()->create(); // This is enough unless you want to manually spec
 $user->permalink->update([...]);
 ```
 
-### Overwriting The Default Action
+## Overwriting The Default Action
 
 When a permalink is binded to a model, we will guess which action it points to the `permalinkAction` method defined in our `Permalinkable` model. However, we can override this action for a certain model by just specifiying a value into the `action` column of the permalink record:
 
@@ -211,7 +211,7 @@ $user = User::find(1);
 $user->permalink->update(['action' => 'OtherController@action']);
 ```
 
-### Support For morphMap And aliasMap
+## Support For morphMap And aliasMap
 
 This package provides support for `morphMap`. As you may know, Laravel ships with a `morphMap` method to where you can define a relationship "morph map" to instruct Eloquent to use a custom name for each model instead of the class name.
 
