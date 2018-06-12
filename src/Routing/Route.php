@@ -52,7 +52,8 @@ class Route
     {
         $action = $this->resolver->resolve($permalink);
 
-        $route = $this->router->get($permalink->slug, $action);
+        $route = $this->router->get($permalink->slug, $action)
+                              ->name('permalink.' . $permalink->getKey());
 
         if ($permalink->permalinkable) {
             $route->defaults($permalink->permalinkable_type, $permalink->permalinkable);
