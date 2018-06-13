@@ -3,8 +3,8 @@
 namespace Devio\Permalink\Tests;
 
 use Devio\Permalink\Permalink;
-use Devio\Permalink\Tests\Dummy\DummyController;
-use Devio\Permalink\Tests\Dummy\DummyUser;
+use Devio\Permalink\Tests\other\DummyController;
+use Devio\Permalink\Tests\other\DummyUser;
 
 class RouteLoadingTest extends TestCase
 {

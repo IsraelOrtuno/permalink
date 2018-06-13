@@ -3,7 +3,7 @@
 namespace Devio\Permalink\Tests;
 
 use Devio\Permalink\Permalink;
-use Devio\Permalink\Tests\Dummy\DummyUser;
+use Devio\Permalink\Tests\other\DummyUser;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class PermalinkCreationTest extends TestCase

@@ -1,7 +1,7 @@
 <?php
 
 use Faker\Generator as Faker;
-use Devio\Permalink\Tests\Dummy\DummyUser;
+use Devio\Permalink\Tests\other\DummyUser;
 
 $factory->define(DummyUser::class, function (Faker $faker) {
     return [

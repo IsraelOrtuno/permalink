@@ -1,6 +1,6 @@
 <?php
 
-namespace Devio\Permalink\Tests\Dummy;
+namespace Devio\Permalink\Tests\other;
 
 use Devio\Permalink\HasPermalinks;
 use Illuminate\Database\Eloquent\Model;
