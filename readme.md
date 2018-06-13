@@ -1,5 +1,7 @@
 # Advanced Laravel Permalinks And SEO Management
 
+[![Build Status](https://travis-ci.com/IsraelOrtuno/permalink.svg?branch=master)](https://travis-ci.org/IsraelOrtuno/permalink)
+
 This package allows to create dynamic routes right from database, just like WordPress and other CMS do.
 
 ## Work In Progress
