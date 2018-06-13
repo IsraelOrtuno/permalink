@@ -9,8 +9,6 @@ This package allows to create dynamic routes right from database, just like Word
 This package is currently being developed and tested. Would love feedback ❤️.
 
 ## Roadmap
-- [ ] Add testing and maybe a sandbox app.
-- [ ] Better docs organization using VuePress or similar.
 - [ ] Add docs about how to handle automatic SEO tags.
 - [ ] [Resources for visual SEO management](https://github.com/IsraelOrtuno/permalink-form) (in progress)
 
