@@ -2,12 +2,11 @@
 
 namespace Devio\Permalink\Tests;
 
-use Devio\Permalink\Middleware\BuildSeo;
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Tests\Dummy\DummyUser;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-class PermalinkTest extends TestCase
+class PermalinkCreationTest extends TestCase
 {
     public function setUp()
     {
@@ -38,7 +37,7 @@ class PermalinkTest extends TestCase
     }
 
     /** @test */
-    public function entity_permalinkable_supports_morph_map()
+    public function permalinkable_entity_supports_morph_map()
     {
         Relation::morphMap(['user' => DummyUser::class]);
         factory(DummyUser::class)->create();

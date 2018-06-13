@@ -6,7 +6,7 @@ use Devio\Permalink\Permalink;
 use Devio\Permalink\Tests\Dummy\DummyController;
 use Devio\Permalink\Tests\Dummy\DummyUser;
 
-class RouteTest extends TestCase
+class RouteLoadingTest extends TestCase
 {
     /** @test */
     public function routes_can_be_resolved_from_resource()
@@ -59,5 +59,17 @@ class RouteTest extends TestCase
         $this->reloadRoutes();
 
         $this->assertStringEndsWith('foo/bar/baz', route('dummy.baz'));
+    }
+
+    /** @test */
+    public function permalink_model_is_bound_to_the_route_instance()
+    {
+        $root = Permalink::create(['slug' => 'foo', 'action' => DummyController::class . '@foo']);
+        $this->reloadRoutes();
+
+        $route = $this->app['router']->getRoutes()->getIterator()->current();
+        $this->assertNotNull($route->permalink);
+        $this->assertEquals($root->id, $route->permalink->id);
+        $this->assertEquals('foo', $route->permalink->slug);
     }
 }
