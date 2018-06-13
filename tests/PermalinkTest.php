@@ -4,6 +4,7 @@ namespace Devio\Permalink\Tests;
 
 use Devio\Permalink\Middleware\BuildSeo;
 use Devio\Permalink\Permalink;
+use Devio\Permalink\Tests\Dummy\DummyUser;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class PermalinkTest extends TestCase

@@ -33,4 +33,9 @@ class TestCase extends \Orchestra\Testbench\TestCase
             \Cviebrock\EloquentSluggable\ServiceProvider::class
         ];
     }
+
+    protected function reloadRoutes()
+    {
+        $this->app['permalink']->load();
+    }
 }

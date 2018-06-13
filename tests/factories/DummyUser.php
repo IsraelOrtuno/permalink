@@ -1,8 +1,9 @@
 <?php
 
 use Faker\Generator as Faker;
+use Devio\Permalink\Tests\Dummy\DummyUser;
 
-$factory->define(\Devio\Permalink\Tests\DummyUser::class, function (Faker $faker) {
+$factory->define(DummyUser::class, function (Faker $faker) {
     return [
         'name'     => $faker->name,
         'email'    => $faker->email,
