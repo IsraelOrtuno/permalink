@@ -1,0 +1,9 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+
+install: composer update ${COMPOSER_ARGS} --no-interaction
+
+script: vendor/bin/phpunit --verbose
