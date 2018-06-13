@@ -160,8 +160,7 @@ class UserController
 
 ## Route names
 
-When routes are loaded, they will receive names based based on the model or action.
-
+When routes are loaded, they will be named based on their related model or action.
 
 ### Route names for permalinks with models
 
