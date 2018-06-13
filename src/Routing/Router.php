@@ -3,7 +3,6 @@
 namespace Devio\Permalink\Routing;
 
 use Devio\Permalink\Permalink;
-use Devio\Permalink\Contracts\ActionResolver;
 use Illuminate\Routing\Router as LaravelRouter;
 use Illuminate\Contracts\Foundation\Application;
 use Devio\Permalink\Contracts\Router as PermalinkRouter;
@@ -35,12 +34,10 @@ class Router implements PermalinkRouter
      * Router constructor.
      *
      * @param LaravelRouter $router
-     * @param ActionResolver $resolver
      */
-    public function __construct(LaravelRouter $router, ActionResolver $resolver)
+    public function __construct(LaravelRouter $router)
     {
         $this->router = $router;
-        $this->resolver = $resolver;
     }
 
     /**

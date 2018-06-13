@@ -54,10 +54,8 @@ class PermalinkServiceProvider extends ServiceProvider
             });
         }
 
-        $this->app->singleton(\Devio\Permalink\Contracts\ActionResolver::class, ActionResolver::class);
-
         $this->app->singleton(\Devio\Permalink\Contracts\Router::class, function () {
-            return new Router($this->app['router'], $this->app[\Devio\Permalink\Contracts\ActionResolver::class]);
+            return new Router($this->app['router']);
         });
 
         $this->app->alias(\Devio\Permalink\Contracts\Router::class, 'permalink');

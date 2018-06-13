@@ -3,7 +3,6 @@
 namespace Devio\Permalink\Routing;
 
 use Illuminate\Routing\Router;
-use Devio\Permalink\Contracts\ActionResolver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Route
@@ -16,20 +15,13 @@ class Route
     protected $router;
 
     /**
-     * @var ActionResolver
-     */
-    protected $resolver;
-
-    /**
      * Node constructor.
      *
      * @param Router $router
-     * @param ActionResolver $resolver
      */
-    public function __construct(Router $router, ActionResolver $resolver)
+    public function __construct(Router $router)
     {
         $this->router = $router;
-        $this->resolver = $resolver;
     }
 
     /**
@@ -51,9 +43,7 @@ class Route
      */
     protected function route($permalink)
     {
-        $action = $permalink->action; //  $this->resolver->resolve($permalink);
-
-        $route = $this->router->get($permalink->slug, $action)
+        $route = $this->router->get($permalink->slug, $permalink->action)
                               ->name($this->getRouteName($permalink));
 
         if ($permalink->permalinkable) {
