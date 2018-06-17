@@ -22,7 +22,7 @@ This package is currently being developed and tested. Would love feedback ❤️
 - [Nesting routes](#nesting-routes)
 - [Creating/updating permalinks manually](#creatingupdating-permalinks-manually)
 - [Overriding the default action](#overriding-the-default-action)
-- [Support for morphMap & aliasMap](#support-for-morphmap-and-aliasmap)
+- [Support for morphMap & aliasMap](#support-for-morphmap--aliasmap)
 
 ## Installation
 
