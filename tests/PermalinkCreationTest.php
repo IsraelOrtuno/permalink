@@ -4,6 +4,7 @@ namespace Devio\Permalink\Tests;
 
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Tests\Dummy\DummyUser;
+use Devio\Permalink\Tests\Dummy\DummyUserWithFallback;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class PermalinkCreationTest extends TestCase
@@ -131,11 +132,34 @@ class PermalinkCreationTest extends TestCase
     /** @test */
     public function permalink_creation_accepts_dot_nested_arrays()
     {
-        $user = factory(DummyUser::class)->create(['permalink' => [
-            'seo.meta' => ['title' => 'foo', 'description' => 'bar']
-        ]]);
+        $user = factory(DummyUser::class)->create([
+            'permalink' => [
+                'seo.meta' => ['title' => 'foo', 'description' => 'bar']
+            ]
+        ]);
 
         $this->assertEquals('foo', $user->permalink->seo['meta']['title']);
         $this->assertEquals('bar', $user->permalink->seo['meta']['description']);
+    }
+
+    /** @test */
+    public function fallback_function_will_populate_seo_attributes()
+    {
+        $user = factory(DummyUserWithFallback::class)->create();
+
+        $this->assertEquals('foo', $user->permalink->seo['meta']['title']);
+        $this->assertEquals('bar', $user->permalink->seo['meta']['description']);
+    }
+
+    /** @test */
+    public function fallback_function_will_be_skiped_if_value_is_given()
+    {
+        $user = factory(DummyUserWithFallback::class)->create([
+            'permalink' => [
+                'seo.meta' => ['title' => 'custom']
+            ]
+        ]);
+
+        $this->assertEquals('custom', $user->permalink->seo['meta']['title']);
     }
 }

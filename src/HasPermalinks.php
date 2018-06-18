@@ -67,7 +67,7 @@ trait HasPermalinks
      */
     public function storePermalink($attributes = [])
     {
-        $attributes = array_undot($attributes);
+        $attributes = $this->preparePermalinkAttributes($attributes);
 
         // Once we have the attributes we need to set, we will perform a new
         // query in order to find if there is any parent class set for the
@@ -75,7 +75,6 @@ trait HasPermalinks
         if ($parent = Permalink::parentFor($this)->first()) {
             $attributes['parent_id'] = $parent->getKey();
         }
-
 
         // Then we are ready to perform the creation or update action based on
         // the model existence. If the model was recently created, we'll add
@@ -87,6 +86,29 @@ trait HasPermalinks
         }
 
         return $this;
+    }
+
+    /**
+     * Prepare the seo attributes looking for default values in fallback methods.
+     *
+     * @param array $attributes
+     * @return array
+     */
+    protected function preparePermalinkAttributes($attributes = [])
+    {
+        $attributes = array_undot($attributes);
+
+        $checks = ['seo.meta.title', 'seo.meta.description'];
+
+        foreach ($checks as $check) {
+            $method = 'permalink' . studly_case(str_replace('.', ' ', $check));
+
+            if (! array_has($attributes, $check) && method_exists($this, $method)) {
+                array_set($attributes, $check, call_user_func([$this, $method]));
+            }
+        }
+
+        return $attributes;
     }
 
     /**

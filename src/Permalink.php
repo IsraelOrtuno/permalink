@@ -50,7 +50,6 @@ class Permalink extends Model
                 $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
             }
         });
-
     }
 
     /**
