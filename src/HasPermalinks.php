@@ -67,6 +67,8 @@ trait HasPermalinks
      */
     public function storePermalink($attributes = [])
     {
+        $attributes = array_undot($attributes);
+
         // Once we have the attributes we need to set, we will perform a new
         // query in order to find if there is any parent class set for the
         // current permalinkable entity. If so, we'll add it as parent.

@@ -127,4 +127,15 @@ class PermalinkCreationTest extends TestCase
 
         $this->assertEquals($parent->id, $user->permalink->parent_id);
     }
+
+    /** @test */
+    public function permalink_creation_accepts_dot_nested_arrays()
+    {
+        $user = factory(DummyUser::class)->create(['permalink' => [
+            'seo.meta' => ['title' => 'foo', 'description' => 'bar']
+        ]]);
+
+        $this->assertEquals('foo', $user->permalink->seo['meta']['title']);
+        $this->assertEquals('bar', $user->permalink->seo['meta']['description']);
+    }
 }
