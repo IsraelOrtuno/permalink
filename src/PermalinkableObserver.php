@@ -24,6 +24,19 @@ class PermalinkableObserver
     }
 
     /**
+     * Deleted model event handler.
+     *
+     * @param Model $model
+     */
+    public function deleted(Model $model)
+    {
+        // The permalink should be deleted if the main entity gets destroyed as
+        // it won't be able to find the related resource. Not deleting would
+        // cause problems when pre-loading the permalink route collection.
+        $model->permalink->delete();
+    }
+
+    /**
      * Check if the model should auto manage the permalinks.
      *
      * @param Model $model
