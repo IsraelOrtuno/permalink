@@ -11,7 +11,9 @@ class MetaBuilder extends Builder
      */
     protected function setRobots($content)
     {
-        $this->helper->meta()->getMiscEntity()->add('robots', $content);
+        $this->helper->meta()->getMiscEntity()->add(
+            'robots', implode(' ', (array) $content)
+        );
     }
 
     /**
