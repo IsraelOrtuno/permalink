@@ -1,6 +1,6 @@
 <?php
 
-namespace Devio\Permalink\Meta\Builder;
+namespace Devio\Permalink\Builders;
 
 use Devio\Permalink\Contracts\SeoBuilder;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
@@ -41,8 +41,6 @@ abstract class Builder implements SeoBuilder
         }
 
         foreach ($data as $key => $content) {
-            $key = studly_case($key);
-
             // Then we will check if there is a method with that name in this
             // class. If so, we'll use it as it may contain any extra logic
             // like compiling the content or doing some transformations.
@@ -55,7 +53,7 @@ abstract class Builder implements SeoBuilder
             // it allows to manage the package directly from database.
             elseif (method_exists($this->helper, $builder)
                 && $method = $this->methodExists($target = $this->helper->$builder(), $key)) {
-                call_user_func_array([$target, $method], (array) $content);
+                call_user_func_array([$target, $method], compact('content'));
             }
         }
     }
@@ -69,6 +67,7 @@ abstract class Builder implements SeoBuilder
      */
     protected function methodExists($object, $name)
     {
+        $name = studly_case($name);
         $methods = collect(["set{$name}", "add{$name}"]);
 
         foreach ($methods as $method) {

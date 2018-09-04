@@ -1,6 +1,6 @@
 <?php
 
-namespace Devio\Permalink\Meta\Builder;
+namespace Devio\Permalink\Builders;
 
 class TwitterBuilder extends Builder
 {
