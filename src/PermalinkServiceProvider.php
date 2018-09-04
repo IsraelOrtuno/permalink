@@ -43,9 +43,9 @@ class PermalinkServiceProvider extends ServiceProvider
     public function register()
     {
         $builders = [
-            'meta'      => \Devio\Permalink\Meta\Builder\MetaBuilder::class,
-            'opengraph' => \Devio\Permalink\Meta\Builder\OpenGraphBuilder::class,
-            'twitter'   => \Devio\Permalink\Meta\Builder\TwitterBuilder::class,
+            'meta'      => \Devio\Permalink\Builders\MetaBuilder::class,
+            'opengraph' => \Devio\Permalink\Builders\OpenGraphBuilder::class,
+            'twitter'   => \Devio\Permalink\Builders\TwitterBuilder::class,
         ];
 
         foreach ($builders as $alias => $builder) {
