@@ -102,6 +102,19 @@ class PermalinkManager implements Manager
     }
 
     /**
+     * Set the request instance.
+     *
+     * @param $request
+     * @return $this
+     */
+    public function request($request)
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
      * Get the container instance.
      *
      * @return Container

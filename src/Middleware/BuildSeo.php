@@ -15,7 +15,7 @@ class BuildSeo
      */
     public function handle($request, \Closure $next)
     {
-        app(Manager::class)->runBuilders();
+        app(Manager::class)->request($request)->runBuilders();
 
         return $next($request);
     }
