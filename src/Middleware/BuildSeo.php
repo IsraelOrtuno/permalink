@@ -2,6 +2,8 @@
 
 namespace Devio\Permalink\Middleware;
 
+use Devio\Permalink\Contracts\Manager;
+
 class BuildSeo
 {
     /**
@@ -13,26 +15,8 @@ class BuildSeo
      */
     public function handle($request, \Closure $next)
     {
-        $this->build($request->route()->permalink());
+        app(Manager::class)->runBuilders();
 
         return $next($request);
-    }
-
-    /**
-     * Run the builders for the current permalink.
-     *
-     * @param $permalink
-     */
-    protected function build($permalink)
-    {
-        if (! $permalink || ! $permalink->seo) {
-            return;
-        }
-
-        foreach ($permalink->seo as $type => $meta) {
-            if (!is_null($meta)) {
-                app("permalink.$type")->build($type, $meta);
-            }
-        }
     }
 }

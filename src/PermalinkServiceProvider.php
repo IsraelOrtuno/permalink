@@ -4,8 +4,8 @@ namespace Devio\Permalink;
 
 use Illuminate\Routing\Route;
 use Devio\Permalink\Routing\Router;
+use Devio\Permalink\Contracts\Manager;
 use Illuminate\Support\ServiceProvider;
-use Devio\Permalink\Routing\ActionResolver;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
 
 class PermalinkServiceProvider extends ServiceProvider
@@ -53,6 +53,10 @@ class PermalinkServiceProvider extends ServiceProvider
                 return (new $builder($app->make(SeoHelper::class)));
             });
         }
+
+        $this->app->singleton(Manager::class, function() {
+            return new PermalinkManager($this->app['request'], $this->app);
+        });
 
         $this->app->singleton(\Devio\Permalink\Contracts\Router::class, function () {
             return new Router($this->app['router']);
