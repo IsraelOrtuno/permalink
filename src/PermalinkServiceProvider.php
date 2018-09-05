@@ -7,6 +7,7 @@ use Devio\Permalink\Routing\Router;
 use Devio\Permalink\Contracts\Manager;
 use Illuminate\Support\ServiceProvider;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
+use Devio\Permalink\Contracts\Router as PermalinkRouter;
 
 class PermalinkServiceProvider extends ServiceProvider
 {
@@ -58,10 +59,10 @@ class PermalinkServiceProvider extends ServiceProvider
             return new PermalinkManager($this->app['request'], $this->app);
         });
 
-        $this->app->singleton(\Devio\Permalink\Contracts\Router::class, function () {
+        $this->app->singleton(PermalinkRouter::class, function () {
             return new Router($this->app['router']);
         });
 
-        $this->app->alias(\Devio\Permalink\Contracts\Router::class, 'permalink');
+        $this->app->alias(PermalinkRouter::class, 'permalink');
     }
 }
