@@ -51,7 +51,7 @@ class PermalinkManager implements Manager
         }
 
         foreach ($permalink as $type => $data) {
-            if (! is_null($data) && $this->getContainer()->has($binding = 'permalink.' . $type)) {
+            if ($this->getContainer()->has($binding = 'permalink.' . $type) && ! is_null($data)) {
                 $this->getContainer()->make($binding)->build($type, $data);
             }
         }
@@ -79,7 +79,8 @@ class PermalinkManager implements Manager
      * @param $permalinks
      * @return $this
      */
-    public function permalinks($permalinks) {
+    public function permalinks($permalinks)
+    {
         $this->staticPermalinks = $permalinks;
 
         return $this;
@@ -92,7 +93,8 @@ class PermalinkManager implements Manager
      * @param array $permalink
      * @return $this
      */
-    public function addPermalink($route, $permalink = []) {
+    public function addPermalink($route, $permalink = [])
+    {
         $this->permalinks[$route] = $permalink;
 
         return $this;
@@ -104,7 +106,8 @@ class PermalinkManager implements Manager
      * @param $request
      * @return $this
      */
-    public function request($request) {
+    public function request($request)
+    {
         $this->request = $request;
 
         return $this;
@@ -125,7 +128,8 @@ class PermalinkManager implements Manager
      *
      * @param $container
      */
-    public function setContainer($container) {
+    public function setContainer($container)
+    {
         $this->container = $container;
     }
 }
