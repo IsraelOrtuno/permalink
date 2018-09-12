@@ -12,7 +12,7 @@ class MetaBuilder extends Builder
     protected function setRobots($content)
     {
         $this->helper->meta()->getMiscEntity()->add(
-            'robots', implode(' ', (array) $content)
+            'robots', implode(',', (array) $content)
         );
     }
 
