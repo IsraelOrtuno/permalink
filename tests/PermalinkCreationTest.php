@@ -4,7 +4,7 @@ namespace Devio\Permalink\Tests;
 
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Tests\Dummy\DummyUser;
-use Devio\Permalink\Tests\Dummy\DummyUserWithFallback;
+use Devio\Permalink\Tests\Dummy\DummyUserWithMutators;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class PermalinkCreationTest extends TestCase
@@ -145,7 +145,7 @@ class PermalinkCreationTest extends TestCase
     /** @test */
     public function fallback_function_will_populate_seo_attributes()
     {
-        $user = factory(DummyUserWithFallback::class)->create();
+        $user = factory(DummyUserWithMutators::class)->create();
 
         $this->assertEquals('foo', $user->permalink->seo['meta']['title']);
         $this->assertEquals('bar', $user->permalink->seo['meta']['description']);
@@ -154,7 +154,7 @@ class PermalinkCreationTest extends TestCase
     /** @test */
     public function fallback_function_will_be_skiped_if_value_is_given()
     {
-        $user = factory(DummyUserWithFallback::class)->create([
+        $user = factory(DummyUserWithMutators::class)->create([
             'permalink' => [
                 'seo.meta' => ['title' => 'custom']
             ]

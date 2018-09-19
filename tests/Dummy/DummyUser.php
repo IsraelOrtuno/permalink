@@ -14,6 +14,8 @@ class DummyUser extends Model implements Permalinkable
 
     public $table = 'users';
 
+    public $managePermalinks = true;
+
     public static function boot()
     {
         parent::boot();

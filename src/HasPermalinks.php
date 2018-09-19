@@ -109,6 +109,7 @@ trait HasPermalinks
      */
     protected function preparePermalinkSeoAttributes($attributes = [])
     {
+        $attributes = array_undot($attributes);
         $values = array_dot($this->getEmptyPermalinkSeoArray());
 
         foreach ($values as $key => $value) {
