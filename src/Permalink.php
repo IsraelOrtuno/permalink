@@ -5,8 +5,8 @@ namespace Devio\Permalink;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
-use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class Permalink extends Model
 {

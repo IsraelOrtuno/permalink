@@ -67,20 +67,18 @@ trait HasPermalinks
      */
     public function storePermalink($attributes = [])
     {
-        $attributes = $this->preparePermalinkAttributes($attributes);
-
         // Once we have the attributes we need to set, we will perform a new
         // query in order to find if there is any parent class set for the
         // current permalinkable entity. If so, we'll add it as parent.
-        if ($parent = Permalink::parentFor($this)->first()) {
-            $attributes['parent_id'] = $parent->getKey();
-        }
+        $attributes = $this->setPermalinkParentIfAny($attributes);
 
         // Then we are ready to perform the creation or update action based on
         // the model existence. If the model was recently created, we'll add
         // a new permalink, otherwise, we'll update the existing permalink.
         if ($this->wasRecentlyCreated || ! $this->permalink) {
-            $this->permalink()->create($attributes);
+            $this->permalink()->create(
+                $this->preparePermalinkSeoAttributes($attributes)
+            );
         } elseif ($this->permalink) {
             $this->permalink->update($attributes);
         }
@@ -89,26 +87,55 @@ trait HasPermalinks
     }
 
     /**
+     * Set the permalink parent if any.
+     *
+     * @param array $attributes
+     * @return array
+     */
+    protected function setPermalinkParentIfAny($attributes = [])
+    {
+        if ($parent = Permalink::parentFor($this)->first()) {
+            $attributes['parent_id'] = $parent->getKey();
+        }
+
+        return $attributes;
+    }
+
+    /**
      * Prepare the seo attributes looking for default values in fallback methods.
      *
      * @param array $attributes
      * @return array
      */
-    protected function preparePermalinkAttributes($attributes = [])
+    protected function preparePermalinkSeoAttributes($attributes = [])
     {
-        $attributes = array_undot($attributes);
+        $values = array_dot($this->getEmptyPermalinkSeoArray());
 
-        $checks = ['seo.meta.title', 'seo.meta.description'];
+        foreach ($values as $key => $value) {
+            $attribute = studly_case(str_replace('.', ' ', $key));
 
-        foreach ($checks as $check) {
-            $method = 'permalink' . studly_case(str_replace('.', ' ', $check));
-
-            if (! array_has($attributes, $check) && method_exists($this, $method)) {
-                array_set($attributes, $check, call_user_func([$this, $method]));
+            if (! array_get($attributes, $key) && $value = $this->getAttribute($attribute)) {
+                array_set($attributes, $key, $value);
             }
         }
 
         return $attributes;
+    }
+
+    /**
+     * Get a value empty seo column structure.
+     *
+     * @return array
+     */
+    protected function getEmptyPermalinkSeoArray()
+    {
+        $fields = ['title' => null, 'description' => null];
+
+        return [
+            'seo' => [
+                'meta' => $fields, 'twitter' => $fields, 'opengraph' => $fields
+            ]
+        ];
     }
 
     /**

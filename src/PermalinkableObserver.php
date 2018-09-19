@@ -40,11 +40,11 @@ class PermalinkableObserver
      * Check if the model should auto manage the permalinks.
      *
      * @param Model $model
-     * @return bool|mixed
+     * @return bool
      */
     protected function managePermalinks(Model $model)
     {
-        return $model->managePermalinks ?? true;
+        return $model->managePermalinks ?? null;
     }
 
     /**
