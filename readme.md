@@ -213,7 +213,7 @@ At this point, you may be wondering why do we need a `parent_for` column if ther
 The `parent_for` will be `NULL` in most cases.
 
 
-## Creating/updating permalinks manually
+## Creating/updating permalinks
 
 By default, this package comes with an observer class which is linked to the `saved` event of your model. Whenever a model is saved, this package will create/update accordingly.
 
@@ -237,6 +237,11 @@ $user->permalink()->create(); // This is enough unless you want to manually spec
 // or if the permalink exists...
 $user->permalink->update([...]);
 ```
+
+The values for the newly created or updated permalink will be extracted from:
+
+- A `permalink` key passed into the creation array.
+- A `permalink` key from the current request.
 
 ## Overriding the default action
 
