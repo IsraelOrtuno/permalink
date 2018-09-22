@@ -247,17 +247,19 @@ The values for the newly created or updated permalink will be extracted from:
 
 When a permalink is binded to a model, we will guess which action it points to the `permalinkAction` method defined in our `Permalinkable` model. However, we can override this action for a certain model by just specifiying a value into the `action` column of the permalink record:
 
-| id | slug          | permalinkable_type | permalinkable_id | action              
-| -- | ------------- | ------------------ | ---------------- | --------------------
-| 1  | israel-ortuno | App\User           | 1                | OtherController@action
+| id | slug   | permalinkable_type | permalinkable_id | action              
+| -- | ------ | ------------------ | ---------------- | --------------------
+| 1  | madrid | App\City           | 1                | App\Http\Controllers\CityController@show
 
 You could update your model via code as any other normal relationship, for example:
 
 ```php
-$user = User::find(1);
+$city = City::find(1);
 
-$user->permalink->update(['action' => 'OtherController@action']);
+$city->permalink->update(['action' => 'App\Http\Controllers\CityController@show']);
 ```
+
+*NOTE:* The action namespace should always be a fully qualified name unless you are using the `aliasMap` explained below.
 
 ## Support for morphMap & aliasMap
 
