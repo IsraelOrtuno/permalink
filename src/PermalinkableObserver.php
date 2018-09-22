@@ -44,7 +44,7 @@ class PermalinkableObserver
      */
     protected function managePermalinks(Model $model)
     {
-        return $model->managePermalinks ?? null;
+        return $model->managePermalinks ?? true;
     }
 
     /**
