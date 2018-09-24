@@ -5,6 +5,7 @@ namespace Devio\Permalink\Tests;
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Tests\Dummy\DummyUser;
 use Devio\Permalink\Tests\Dummy\DummyUserWithMutators;
+use Devio\Permalink\Tests\Dummy\DummyUserWithoutPermalinkManager;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class PermalinkCreationTest extends TestCase
@@ -26,6 +27,14 @@ class PermalinkCreationTest extends TestCase
         $this->assertNotNull($user->permalink);
 
         $this->assertDatabaseHas('permalinks', ['slug' => 'israel-ortuno']);
+    }
+
+    /** @test */
+    public function permalink_is_not_created_if_manager_is_disabled()
+    {
+        $user = factory(DummyUserWithoutPermalinkManager::class)->create(['name' => 'Israel Ortuño']);
+
+        $this->assertNull($user->permalink);
     }
 
     /** @test */

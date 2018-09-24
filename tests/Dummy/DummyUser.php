@@ -13,9 +13,7 @@ class DummyUser extends Model implements Permalinkable
     protected $guarded = [];
 
     public $table = 'users';
-
-    public $managePermalinks = true;
-
+    
     public static function boot()
     {
         parent::boot();
