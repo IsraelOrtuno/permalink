@@ -261,11 +261,11 @@ $city->permalink->update(['action' => 'App\Http\Controllers\CityController@show'
 
 *NOTE:* The action namespace should always be a fully qualified name unless you are using the `aliasMap` explained below.
 
-## Support for morphMap & aliasMap
+## Support for morphMap & actionMap
 
 This package provides support for `morphMap`. As you may know, Laravel ships with a `morphMap` method to where you can define a relationship "morph map" to instruct Eloquent to use a custom name for each model instead of the class name.
 
-In adition to the `morphMap` method, this package includes a `aliasMap` static method under the `Permalink` model where you can also define a relationship "alias map" just like the "morph map" but for the permalink actions:
+In adition to the `morphMap` method, this package includes an `actionMap` static method under the `Permalink` model where you can also define a relationship "action map" just like the "morph map" but for the permalink actions:
 
 ```php
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -277,7 +277,7 @@ Relation::morphMap([
 
 use Devio\Permalink\Permalink;
 
-Permalink::aliasMap([
+Permalink::actionMap([
     'user.index'  => 'App\Http\Controllers\UserController@index',
     'user.show'   => 'App\Http\Controllers\UserController@show',
 ]);
