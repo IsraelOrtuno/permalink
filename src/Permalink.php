@@ -184,7 +184,8 @@ class Permalink extends Model
      */
     public function getActionAttribute()
     {
-        if ($action = static::getMappedAction($this->attributes['action']) ?? $this->attributes['action']) {
+        if (isset($this->attributes['action']) &&
+            $action = static::getMappedAction($this->attributes['action']) ?? $this->attributes['action']) {
             return $action;
         }
 

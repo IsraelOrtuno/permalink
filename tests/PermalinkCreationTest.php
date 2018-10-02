@@ -47,6 +47,14 @@ class PermalinkCreationTest extends TestCase
     }
 
     /** @test */
+    public function permalink_relation_is_autoatically_loaded_when_automatically_created()
+    {
+        $user = factory(DummyUser::class)->create(['name' => 'Israel Ortuño']);
+
+        $this->assertTrue($user->relationLoaded('permalink'));
+    }
+
+    /** @test */
     public function permalinkable_entity_supports_morph_map()
     {
         Relation::morphMap(['user' => DummyUser::class]);

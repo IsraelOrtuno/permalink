@@ -70,15 +70,19 @@ trait HasPermalinks
         // Once we have the attributes we need to set, we will perform a new
         // query in order to find if there is any parent class set for the
         // current permalinkable entity. If so, we'll add it as parent.
-        $attributes = $this->setPermalinkParentIfAny($attributes);
+        if (! isset($attributes['parent_id'])) {
+            $attributes = $this->setPermalinkParentIfAny($attributes);
+        }
 
         // Then we are ready to perform the creation or update action based on
         // the model existence. If the model was recently created, we'll add
         // a new permalink, otherwise, we'll update the existing permalink.
         if ($this->wasRecentlyCreated || ! $this->permalink) {
-            $this->permalink()->create(
+            $permalink = $this->permalink()->create(
                 $this->preparePermalinkSeoAttributes($attributes)
             );
+
+            $this->setRelation('permalink', $permalink);
         } elseif ($this->permalink) {
             $this->permalink->update($attributes);
         }
