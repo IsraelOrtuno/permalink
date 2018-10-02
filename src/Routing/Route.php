@@ -54,7 +54,7 @@ class Route
 
         // We will bind our permalink model to the model itself. This way access
         // the permalink directly from the current Route instance. It'll even
-        // keep bounded when the application's route list has been cached.
+        // keep bound when the application's route list has been cached.
         $route->permalink($permalink);
     }
 
