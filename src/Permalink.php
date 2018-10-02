@@ -188,7 +188,11 @@ class Permalink extends Model
             return $action;
         }
 
-        return $this->getRelationValue('permalinkable')->permalinkAction();
+        if ($relation = $this->getRelationValue('permalinkable')) {
+            return $relation->permalinkAction();
+        }
+
+        return null;
     }
 
     /**

@@ -171,6 +171,24 @@ trait HasPermalinks
     }
 
     /**
+     * Get the entity slug.
+     *
+     * @return null
+     */
+    public function getSlugAttribute()
+    {
+        return $this->hasPermalink() ? $this->permalink->slug : null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFullSlugAttribute()
+    {
+        return $this->hasPermalink() ? trim(parse_url($this->route)['path'], '/') : null;
+    }
+
+    /**
      * Get the entity route name prefix.
      *
      * @return string
