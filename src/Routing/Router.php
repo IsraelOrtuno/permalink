@@ -24,13 +24,6 @@ class Router implements PermalinkRouter
     protected $router;
 
     /**
-     * The resolver instance.
-     *
-     * @var ActionResolver
-     */
-    protected $resolver;
-
-    /**
      * Router constructor.
      *
      * @param LaravelRouter $router
@@ -53,7 +46,7 @@ class Router implements PermalinkRouter
 
         $callback = function ($router) {
             foreach ($this->getPermalinkTree() as $permalink) {
-                (new Route($this->router, $this->resolver))->register($permalink);
+                (new Route($this->router))->register($permalink);
             }
         };
 
