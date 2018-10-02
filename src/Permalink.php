@@ -42,13 +42,17 @@ class Permalink extends Model
     {
         parent::boot();
 
-        static::saving(function ($model) {
+        static::saving(function (Permalink $model) {
             // If the user has provided an slug manually, we have to make sure
             // that that slug is unique. If it is not, the SlugService class
             // will append an incremental suffix to ensure its uniqueness.
             if ($model->isDirty('slug') && ! empty($model->slug)) {
                 $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
             }
+        });
+
+        static::created(function (Permalink $model) {
+            app('permalink')->load($model);
         });
     }
 

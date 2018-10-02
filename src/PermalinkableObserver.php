@@ -3,6 +3,7 @@
 namespace Devio\Permalink;
 
 use Illuminate\Http\Request;
+use Devio\Permalink\Contracts\Router;
 use Illuminate\Database\Eloquent\Model;
 
 class PermalinkableObserver

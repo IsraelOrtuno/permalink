@@ -36,21 +36,29 @@ class Router implements PermalinkRouter
     /**
      * Load the given set of routes.
      *
-     * @param $pages
+     * @param null $permalinks
      */
-    public function load()
+    public function load($permalinks = null)
     {
         if (! \Schema::hasTable('permalinks')) {
             return;
         }
 
-        $callback = function ($router) {
-            foreach ($this->getPermalinkTree() as $permalink) {
+        $permalinks = is_null($permalinks) ? $this->getPermalinkTree()
+            : (is_array($permalinks) ? $permalinks : [$permalinks]);
+
+        $callback = function ($router) use ($permalinks) {
+            foreach ($permalinks as $permalink) {
                 (new Route($this->router))->register($permalink);
             }
         };
 
         $this->router->group(['middleware' => 'web'], $callback);
+
+        // Whenever routes are loaded, we should refresh the name lookups to
+        // make sure all our newly generated route names are included into
+        // the route collection name list. Routes can be added any time.
+        app('router')->getRoutes()->refreshNameLookups();
     }
 
     /**
@@ -64,7 +72,7 @@ class Router implements PermalinkRouter
         // relationships recursively. This way we will obtain a tree structured
         // collection in which we can easily iterate from parents to children.
         return Permalink::with('children', 'permalinkable')
-                        ->whereNull('parent_id')
+//                        ->whereNull('parent_id')
                         ->get();
     }
 }

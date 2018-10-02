@@ -43,7 +43,7 @@ class Route
      */
     protected function route($permalink)
     {
-        $route = $this->router->get($permalink->slug, $permalink->action)
+        $route = app('router')->get($permalink->slug, $permalink->action)
                               ->name($this->getRouteName($permalink));
 
         if ($permalink->permalinkable) {
