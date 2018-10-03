@@ -23,6 +23,7 @@ This package is currently being developed and tested. Would love feedback ❤️
 - [Creating/updating permalinks manually](#creatingupdating-permalinks-manually)
 - [Overriding the default action](#overriding-the-default-action)
 - [Support for morphMap & actionMap](#support-for-morphmap--actionmap)
+- [Automatic SEO generation](#automatic-seo-generation)
 
 ## Installation
 
@@ -289,3 +290,36 @@ You can register these maps in the boot method of your `AppServiceProvider`. The
 | id | ... | permalinkable_type | ... | action              
 | -- | --- | ------------------ | --- | --------------------
 | 1  |     | user               |     | user.show
+
+## Automatic SEO generation
+
+For SEO tags generation [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) is being used. This package offers a powerful set of tools to manage your SEO meta tags.
+
+Permalink package provides content for [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) form a specific `seo` column in the permalinks table. This column is supposed to store all the SEO related data for a given permalink in a JSON format:
+
+```json
+{
+  "meta": {
+    "title": "My page title",                   // The <title>
+    "description": "The page description",      // The page meta description
+    "robots": "noindex,nofollow"                // Robots control
+  },
+  "opengraph":{
+    "title": "My page title",                   // The og:title tag
+    "description": "The page description",      // The og:description tag
+    "image": "path/to/og-image.jpg"             // The og:image tag
+  },
+  "twitter":{
+    "title": "My page title",                   // The twitter:title tag
+    "description": "The page description",      // The twitter:description tag
+    "image": "path/to/og-image.jpg"             // The twitter:image tag
+  }
+}
+```
+
+Looks easy, right?
+
+
+```php
+{{ seo_helper()->render() }}
+```
