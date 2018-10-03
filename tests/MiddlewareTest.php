@@ -57,6 +57,10 @@ class MiddlewareTest extends TestCase
         $route->shouldReceive('permalink')->once()->andReturn(new Permalink($permalink));
         $request->shouldReceive('route')->once()->andReturn($route);
 
+        $this->app->singleton('permalink.base', function () use ($builder) {
+            return $builder;
+        });
+
         $this->app->singleton('permalink.meta', function () use ($builder) {
             return $builder;
         });

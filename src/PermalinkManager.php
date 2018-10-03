@@ -68,9 +68,14 @@ class PermalinkManager implements Manager
     protected function prepareBuildersArray($seo)
     {
         $keys = ['meta', 'opengraph', 'twitter'];
+        $base = array_except($seo, $keys);
         $builders = array_only($seo, $keys);
 
-        return array_prepend($builders, array_except($seo, $keys), 'base');
+        if (count($base)) {
+            return array_prepend($builders, array_except($seo, $keys), 'base');
+        }
+
+        return $builders;
     }
 
     /**
