@@ -13,8 +13,6 @@ class RouteLoadingTest extends TestCase
     {
         $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
 
-        $this->reloadRoutes();
-
         $this->assertStringEndsWith('foo', $user->route);
     }
 
@@ -22,8 +20,6 @@ class RouteLoadingTest extends TestCase
     public function permalink_with_models_will_get_a_default_route_name()
     {
         factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
-
-        $this->reloadRoutes();
 
         $this->assertStringEndsWith('foo', route('permalink.1'));
     }
@@ -33,8 +29,6 @@ class RouteLoadingTest extends TestCase
     {
         Permalink::create(['slug' => 'foo', 'action' => DummyController::class . '@index']);
 
-        $this->reloadRoutes();
-
         $this->assertStringEndsWith('foo', route('dummy.index'));
     }
 
@@ -43,8 +37,6 @@ class RouteLoadingTest extends TestCase
     {
         Permalink::actionMap(['foo.index' => DummyController::class . '@index']);
         Permalink::create(['slug' => 'foo', 'action' => 'foo.index']);
-
-        $this->reloadRoutes();
 
         $this->assertStringEndsWith('foo', route('foo.index'));
     }
@@ -65,7 +57,6 @@ class RouteLoadingTest extends TestCase
     public function permalink_model_is_bound_to_the_route_instance()
     {
         $root = Permalink::create(['slug' => 'foo', 'action' => DummyController::class . '@foo']);
-        $this->reloadRoutes();
 
         $route = $this->app['router']->getRoutes()->getIterator()->current();
         $this->assertNotNull($route->permalink);

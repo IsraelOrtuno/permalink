@@ -3,6 +3,7 @@
 namespace Devio\Permalink\Tests;
 
 use Devio\Permalink\Permalink;
+use Devio\Permalink\Tests\Dummy\DummyController;
 use Devio\Permalink\Tests\Dummy\DummyUser;
 use Devio\Permalink\Tests\Dummy\DummyUserWithMutators;
 use Devio\Permalink\Tests\Dummy\DummyUserWithoutPermalinkManager;
@@ -52,6 +53,14 @@ class PermalinkCreationTest extends TestCase
         $user = factory(DummyUser::class)->create(['name' => 'Israel Ortuño']);
 
         $this->assertTrue($user->relationLoaded('permalink'));
+    }
+
+    /** @test */
+    public function permalink_route_is_automatically_loaded_to_the_route_collection()
+    {
+        Permalink::create(['slug' => 'foo', 'action' => DummyController::class . '@index']);
+
+        $this->assertEquals('http://localhost/foo', route('dummy.index'));
     }
 
     /** @test */
@@ -110,7 +119,7 @@ class PermalinkCreationTest extends TestCase
     /** @test */
     public function provided_permalink_slug_will_always_be_unique()
     {
-        Permalink::create(['slug' => 'foo', 'action' => 'bar']);
+        Permalink::create(['slug' => 'foo', 'action' => DummyController::class . '@index']);
         $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
 
         $this->assertEquals('foo-1', $user->permalink->slug);
@@ -120,7 +129,7 @@ class PermalinkCreationTest extends TestCase
     /** @test */
     public function permalink_is_automatically_nested_if_default_parent_is_set()
     {
-        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => DummyUser::class, 'action' => 'bar']);
+        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => DummyUser::class, 'action' => DummyController::class . '@index']);
         $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
 
         $this->assertEquals($parent->id, $user->permalink->parent_id);
@@ -130,7 +139,7 @@ class PermalinkCreationTest extends TestCase
     public function permalink_is_nested_with_morphed_model_name()
     {
         Relation::morphMap(['user' => DummyUser::class]);
-        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => 'user', 'action' => 'bar']);
+        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => 'user', 'action' => DummyController::class . '@index']);
         $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
 
         $this->assertEquals($parent->id, $user->permalink->parent_id);
@@ -140,7 +149,7 @@ class PermalinkCreationTest extends TestCase
     public function permalink_is_nested_with_morphed_model_name_with_full_class_name()
     {
         Relation::morphMap(['user' => DummyUser::class]);
-        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => DummyUser::class, 'action' => 'bar']);
+        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => DummyUser::class, 'action' => DummyController::class . '@index']);
         $user = factory(DummyUser::class)->create(['permalink' => ['slug' => 'foo']]);
 
         $this->assertEquals($parent->id, $user->permalink->parent_id);
@@ -178,5 +187,13 @@ class PermalinkCreationTest extends TestCase
         ]);
 
         $this->assertEquals('custom', $user->permalink->seo['meta']['title']);
+    }
+
+    /** @test */
+    public function permalink_creation_throws_exception_if_action_does_not_exist()
+    {
+        $this->expectException(\UnexpectedValueException::class);
+
+        Permalink::create(['slug' => 'foo', 'action' => 'bar']);
     }
 }
