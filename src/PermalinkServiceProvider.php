@@ -44,6 +44,7 @@ class PermalinkServiceProvider extends ServiceProvider
     public function register()
     {
         $builders = [
+            'base'      => \Devio\Permalink\Builders\BaseBuilder::class,
             'meta'      => \Devio\Permalink\Builders\MetaBuilder::class,
             'opengraph' => \Devio\Permalink\Builders\OpenGraphBuilder::class,
             'twitter'   => \Devio\Permalink\Builders\TwitterBuilder::class,
@@ -55,7 +56,7 @@ class PermalinkServiceProvider extends ServiceProvider
             });
         }
 
-        $this->app->singleton(Manager::class, function() {
+        $this->app->singleton(Manager::class, function () {
             return new PermalinkManager($this->app['request'], $this->app);
         });
 
