@@ -41,11 +41,16 @@ abstract class Builder implements SeoBuilder
         }
 
         foreach ($data as $key => $content) {
+            // We will make sure we always provide an array as parameter to the
+            // builder methods. This way we could pass multiple parameters to
+            // functions like setTitle and addWebmaster. Flexibility on top!
+            $content = array_wrap($content);
+
             // Then we will check if there is a method with that name in this
             // class. If so, we'll use it as it may contain any extra logic
             // like compiling the content or doing some transformations.
             if ($method = $this->methodExists($this, $key)) {
-                call_user_func_array([$this, $method], compact('content'));
+                call_user_func_array([$this, $method], $content);
             }
 
             // If the key matches a method in the SEO helper we will just pass
@@ -53,14 +58,14 @@ abstract class Builder implements SeoBuilder
             // it allows to manage the package directly from database.
             elseif (method_exists($this->helper, $builder)
                 && $method = $this->methodExists($target = $this->helper->$builder(), $key)) {
-                call_user_func_array([$target, $method], compact('content'));
+                call_user_func_array([$target, $method], $content);
             }
 
             // If there is a matching method into the base SEO helper, we will
             // pass the data right to it. This is specially useful to avoid
             // specifying a title for every builder (meta, og & twitter).
             elseif ($method = $this->methodExists($this->helper, $key)) {
-                call_user_func_array([$this->helper, $method], compact('content'));
+                call_user_func_array([$this->helper, $method], $content);
             }
         }
     }
