@@ -355,7 +355,7 @@ This will call [setTitle](https://github.com/ARCANEDEV/SEO-Helper/blob/master/sr
 - [OpenGraph](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoOpenGraph.php)
 - [Twitter](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoTwitter.php)
 
-In order to match any of the helper methods, every JSON option will be transformed to `studly_case` prefixed by `set` and `add`. How cool is that?
+In order to match any of the helper methods, every JSON option will be transformed to `studly_case` prefixed by `set` and `add`, so `title` will be converted to `setTitle` and `google_analytics` to `setGoogleAnalytics`. How cool is that?
 
 ### Builders
 
