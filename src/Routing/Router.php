@@ -72,7 +72,7 @@ class Router implements PermalinkRouter
         // relationships recursively. This way we will obtain a tree structured
         // collection in which we can easily iterate from parents to children.
         return Permalink::with('children', 'permalinkable')
-//                        ->whereNull('parent_id')
+                        ->whereNull('parent_id')
                         ->get();
     }
 }
