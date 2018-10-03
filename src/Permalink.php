@@ -207,7 +207,7 @@ class Permalink extends Model
      */
     public function getRawActionAttribute()
     {
-        return $this->attributes['action'];
+        return $this->attributes['action'] ?? null;
     }
 
     /**
