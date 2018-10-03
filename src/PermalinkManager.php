@@ -46,11 +46,11 @@ class PermalinkManager implements Manager
      */
     public function runBuilders()
     {
-        if (is_null($permalink = $this->findPermalink())) {
+        if (is_null($seo = $this->getCurrentPermalinkSeo())) {
             return;
         }
 
-        $builders = $this->prepareBuildersArray($permalink);
+        $builders = $this->prepareBuildersArray($seo);
 
         foreach ($builders as $builder => $data) {
             if ($this->getContainer()->has($binding = 'permalink.' . $builder) && ! is_null($data)) {
@@ -62,15 +62,15 @@ class PermalinkManager implements Manager
     /**
      * Prepare the builders array from the permalink SEO data.
      *
-     * @param $permalink
+     * @param $seo
      * @return array
      */
-    protected function prepareBuildersArray($permalink)
+    protected function prepareBuildersArray($seo)
     {
         $keys = ['meta', 'opengraph', 'twitter'];
-        $builders = array_only($permalink->seo, $keys);
+        $builders = array_only($seo, $keys);
 
-        return array_prepend($builders, array_except($permalink->seo, $keys), 'base');
+        return array_prepend($builders, array_except($seo, $keys), 'base');
     }
 
     /**
@@ -78,12 +78,12 @@ class PermalinkManager implements Manager
      *
      * @return mixed
      */
-    protected function findPermalink()
+    protected function getCurrentPermalinkSeo()
     {
         $route = $this->request->route();
 
         if (($permalink = $route->permalink()) instanceof Permalink) {
-            return $permalink;
+            return $permalink->seo;
         }
 
         return $this->staticPermalinks[$route->getName()] ?? null;
