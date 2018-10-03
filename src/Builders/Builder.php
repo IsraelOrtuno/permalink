@@ -55,6 +55,13 @@ abstract class Builder implements SeoBuilder
                 && $method = $this->methodExists($target = $this->helper->$builder(), $key)) {
                 call_user_func_array([$target, $method], compact('content'));
             }
+
+            // If there is a matching method into the base SEO helper, we will
+            // pass the data right to it. This is specially useful to avoid
+            // specifying a title for every builder (meta, og & twitter).
+            elseif ($method = $this->methodExists($this->helper, $key)) {
+                call_user_func_array([$this->helper, $method], compact('content'));
+            }
         }
     }
 
@@ -68,7 +75,7 @@ abstract class Builder implements SeoBuilder
     protected function methodExists($object, $name)
     {
         $name = studly_case($name);
-        $methods = collect(["set{$name}", "add{$name}"]);
+        $methods = ["set{$name}", "add{$name}"];
 
         foreach ($methods as $method) {
             if (method_exists($object, $method)) {
