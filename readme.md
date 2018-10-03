@@ -298,7 +298,7 @@ For SEO tags generation [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-H
 
 Permalink package provides content for [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) form a specific `seo` column in the permalinks table. This column is supposed to store all the SEO related data for a given permalink in a JSON format:
 
-```json
+```
 {
   "meta": {
     "title": "My page title",                   // The <title>
@@ -334,7 +334,7 @@ In order to have all this content rendered in your HTML you should add the follo
 </head>
 ```
 
-Plase visit [](https://github.com/ARCANEDEV/SEO-Helper/blob/master/_docs/3-Usage.md#4-laravel-usage) to know more about what and how to render.
+Plase visit [SEO-Helper – Laravel Usage](https://github.com/ARCANEDEV/SEO-Helper/blob/master/_docs/3-Usage.md#4-laravel-usage) to know more about what and how to render.
 
 Under the hood, this JSON structure is calling to the different SEO helpers (meta, opengraph and twitter). Let's understand:
 
@@ -355,7 +355,7 @@ This will call [setTitle](https://github.com/ARCANEDEV/SEO-Helper/blob/master/sr
 - [OpenGraph](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoOpenGraph.php)
 - [Twitter](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoTwitter.php)
 
-In order to match any of the helper methods, every JSON option will be prefixed by `set` and `add`. How cool is that?
+In order to match any of the helper methods, every JSON option will be transformed to `studly_case` prefixed by `set` and `add`. How cool is that?
 
 ### Builders
 
@@ -363,7 +363,7 @@ To provide even more flexibility, the method calls are piped through 3 classes (
 
 If there is a method in this builders matching any of the JSON options, the package will execute that method instead of the default behaviour, which would be calling the method (if exists) from the *SEO-Helper* package.
 
-Review the [MetaBuilder]https://github.com/IsraelOrtuno/permalink/blob/master/src/Builders/MetaBuilder.php as example. This builder contains a `setCanonical` method which is basically used as an alias for `setUrl` (just to be more explicit).
+Review the [MetaBuilder](https://github.com/IsraelOrtuno/permalink/blob/master/src/Builders/MetaBuilder.php) as example. This builder contains a `setCanonical` method which is basically used as an alias for `setUrl` (just to be more explicit).
 
 #### Extending Builders
 
@@ -388,7 +388,7 @@ If you wish to prevent the rendering of any of the three Builders (meta, OpenGra
 
 ```json
 {
-  "meta": { ... },
+  "meta": { },
   "opengraph": false,
   "twitter": false
 }
