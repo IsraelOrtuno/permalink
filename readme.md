@@ -379,7 +379,7 @@ Once you have created your own Builder, just replace the default one in the Cont
 
 ```php
 // Singleton or not, whatever you require
-$this->app->singleton("permalink.$alias", function ($app) use ($builder) {
+$this->app->singleton("permalink.meta", function ($app) use ($builder) { // meta, opengraph, twitter or base
   return new MyCustomBuilder;
   
   // Or if you are inheriting the default builder class
