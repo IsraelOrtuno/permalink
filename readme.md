@@ -295,6 +295,7 @@ You can register these maps in the boot method of your `AppServiceProvider`. The
 
 For SEO tags generation [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) is being used. This package offers a powerful set of tools to manage your SEO meta tags.
 
+
 Permalink package provides content for [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) form a specific `seo` column in the permalinks table. This column is supposed to store all the SEO related data for a given permalink in a JSON format:
 
 ```json
@@ -317,9 +318,80 @@ Permalink package provides content for [ARCANDEV/SEO-Helper](https://github.com/
 }
 ```
 
-Looks easy, right?
+In order to have all this content rendered in your HTML you should add the following you your `<meta>`:
 
+```blade
+<head>
+    {!! seo_helper()->render() !!}
+</head>
+```
+
+##### OR
+
+```blade
+<head>
+    {{ seo_helper()->renderHtml() }}
+</head>
+```
+
+Plase visit [](https://github.com/ARCANEDEV/SEO-Helper/blob/master/_docs/3-Usage.md#4-laravel-usage) to know more about what and how to render.
+
+Under the hood, this JSON structure is calling to the different SEO helpers (meta, opengraph and twitter). Let's understand:
+
+```json
+{ 
+  "meta": {
+    "title": "Default title",
+  },
+  "opengraph": {
+    "image": "path/to/og-image.jpg"
+  }
+}
+```
+
+This will call [setTitle](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoMeta.php#L127) from the `SeoMeta` helper and [setImage](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoOpenGraph.php#L78) from the `SeoOpenGraph` helper. Same would happen with Twitter. Take some time to review these three contracts in order to know all the methods available:
+
+- [Metas](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoMeta.php)
+- [OpenGraph](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoOpenGraph.php)
+- [Twitter](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoTwitter.php)
+
+In order to match any of the helper methods, every JSON option will be prefixed by `set` and `add`. How cool is that?
+
+### Builders
+
+To provide even more flexibility, the method calls are piped through 3 classes (one for each helper) called [Builders](https://github.com/IsraelOrtuno/permalink/tree/master/src/Builders). These builders are responsible for calling the right method from the [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) package.
+
+If there is a method in this builders matching any of the JSON options, the package will execute that method instead of the default behaviour, which would be calling the method (if exists) from the *SEO-Helper* package.
+
+Review the [MetaBuilder]https://github.com/IsraelOrtuno/permalink/blob/master/src/Builders/MetaBuilder.php as example. This builder contains a `setCanonical` method which is basically used as an alias for `setUrl` (just to be more explicit).
+
+#### Extending Builders
+
+In order to modify the behaviour of any of these builders, you can create your own Builder which should extend the `Devio\Permalink\Contracts\SeoBuilder` interface or inherit the `Devio\Permalink\Builders\Builder` class.
+
+Once you have created your own Builder, just replace the default one in the Container. Add the following to the `register` method of any Service Provider in your application:
 
 ```php
-{{ seo_helper()->render() }}
+// Singleton or not, whatever you require
+$this->app->singleton("permalink.$alias", function ($app) use ($builder) {
+  return new MyCustomBuilder;
+  
+  // Or if you are inheriting the default builder class
+  
+  return (new MyCustomBuilder($app->make(SeoHelper::class)));
+});
 ```
+
+### Disabling SEO generation
+
+If you wish to prevent the rendering of any of the three Builders (meta, OpenGraph or Twitter), just set its JSON option to false:
+
+```json
+{
+  "meta": { ... },
+  "opengraph": false,
+  "twitter": false
+}
+```
+
+This will disable the execution of the OpenGraph and Twitter builders.
