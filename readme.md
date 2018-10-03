@@ -9,7 +9,6 @@ This package allows to create dynamic routes right from database, just like Word
 This package is currently being developed and tested. Would love feedback ❤️.
 
 ## Roadmap
-- [ ] Add docs about how to handle automatic SEO tags.
 - [ ] [Resources for visual SEO management](https://github.com/IsraelOrtuno/permalink-form) (in progress)
 
 ## Documentation
@@ -295,24 +294,23 @@ You can register these maps in the boot method of your `AppServiceProvider`. The
 
 For SEO tags generation [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) is being used. This package offers a powerful set of tools to manage your SEO meta tags.
 
-
 Permalink package provides content for [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) form a specific `seo` column in the permalinks table. This column is supposed to store all the SEO related data for a given permalink in a JSON format:
 
 ```
 {
   "meta": {
-    "title": "My page title",                   // The <title>
-    "description": "The page description",      // The page meta description
+    "title": "Specific title",                  // The <title>
+    "description": "The meta description",      // The page meta description
     "robots": "noindex,nofollow"                // Robots control
   },
   "opengraph":{
-    "title": "My page title",                   // The og:title tag
-    "description": "The page description",      // The og:description tag
+    "title": "Specific OG title",               // The og:title tag
+    "description": "The og description",        // The og:description tag
     "image": "path/to/og-image.jpg"             // The og:image tag
   },
   "twitter":{
-    "title": "My page title",                   // The twitter:title tag
-    "description": "The page description",      // The twitter:description tag
+    "title": "Specific Twitter title",          // The twitter:title tag
+    "description": "The twitter description",   // The twitter:description tag
     "image": "path/to/og-image.jpg"             // The twitter:image tag
   }
 }
@@ -340,6 +338,10 @@ Under the hood, this JSON structure is calling to the different SEO helpers (met
 
 ```json
 { 
+  "title": "Generic title",
+  "image": "path/to/image.jpg",
+  "description": "Generic description",
+  
   "meta": {
     "title": "Default title",
   },
@@ -349,6 +351,8 @@ Under the hood, this JSON structure is calling to the different SEO helpers (met
 }
 ```
 
+This structure will allow you to set a base value for the `title` in all the builders plus changing exclusively the title for the _Meta_ builder. Same with the image, Twitter and OpenGraph will inherit the parent image but OpenGraph will replace its for the one on its builder.
+
 This will call [setTitle](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoMeta.php#L127) from the `SeoMeta` helper and [setImage](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoOpenGraph.php#L78) from the `SeoOpenGraph` helper. Same would happen with Twitter. Take some time to review these three contracts in order to know all the methods available:
 
 - [Metas](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoMeta.php)
@@ -356,6 +360,8 @@ This will call [setTitle](https://github.com/ARCANEDEV/SEO-Helper/blob/master/sr
 - [Twitter](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoTwitter.php)
 
 In order to match any of the helper methods, every JSON option will be transformed to `studly_case` prefixed by `set` and `add`, so `title` will be converted to `setTitle` and `google_analytics` to `setGoogleAnalytics`. How cool is that?
+
+All methods are called via `call_user_func_array`, so if an option contains an array, every key will be pased as parameter to the helper method. See `setTitle` or `addWebmaster` which allows multiple parameters.
 
 ### Builders
 
