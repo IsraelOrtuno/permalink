@@ -31,7 +31,7 @@ trait HasPermalinks
      *
      * @param $value
      */
-    public function setPermalinkAttributes($value)
+    public function setPermalinkAttribute($value)
     {
         // This method is supposed to be used to store the permalink data from
         // the request. This data can later be retrieved by the saving event
@@ -179,7 +179,7 @@ trait HasPermalinks
      *
      * @return null
      */
-    public function getSlugAttribute()
+    public function getPermalinkSlugAttribute()
     {
         return $this->hasPermalink() ? $this->permalink->slug : null;
     }
@@ -187,7 +187,7 @@ trait HasPermalinks
     /**
      * @return mixed
      */
-    public function getFullSlugAttribute()
+    public function getPermalinkFullSlugAttribute()
     {
         return $this->hasPermalink() ? trim(parse_url($this->route)['path'], '/') : null;
     }

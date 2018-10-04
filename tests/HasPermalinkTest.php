@@ -13,7 +13,7 @@ class HasPermalinkTest extends TestCase
     {
         $user = factory(DummyUser::class)->create(['name' => 'Israel Ortuño']);
 
-        $this->assertEquals('israel-ortuno', $user->slug);
+        $this->assertEquals('israel-ortuno', $user->permalinkSlug);
     }
 
     /** @test */
@@ -21,7 +21,7 @@ class HasPermalinkTest extends TestCase
     {
         $user = factory(DummyUserWithoutPermalinkManager::class)->create(['name' => 'Israel Ortuño']);
 
-        $this->assertNull($user->slug);
+        $this->assertNull($user->permalinkSlug);
     }
 
     /** @test */
@@ -32,6 +32,6 @@ class HasPermalinkTest extends TestCase
 
         $this->reloadRoutes();
 
-        $this->assertEquals('foo/foo', $user->fullSlug);
+        $this->assertEquals('foo/foo', $user->permalinkFullSlug);
     }
 }
