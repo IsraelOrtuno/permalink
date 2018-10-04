@@ -31,7 +31,7 @@ trait HasPermalinks
      *
      * @param $value
      */
-    public function setPermalinkAttribute($value)
+    public function setPermalinkAttributes($value)
     {
         // This method is supposed to be used to store the permalink data from
         // the request. This data can later be retrieved by the saving event
