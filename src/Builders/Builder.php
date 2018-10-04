@@ -40,6 +40,8 @@ abstract class Builder implements SeoBuilder
             return;
         }
 
+        $data = array_filter($data, 'strlen');
+
         foreach ($data as $key => $content) {
             // We will make sure we always provide an array as parameter to the
             // builder methods. This way we could pass multiple parameters to

@@ -179,7 +179,7 @@ trait HasPermalinks
      *
      * @return null
      */
-    public function getSlugAttribute()
+    public function getPermalinkSlugAttribute()
     {
         return $this->hasPermalink() ? $this->permalink->slug : null;
     }
@@ -187,7 +187,7 @@ trait HasPermalinks
     /**
      * @return mixed
      */
-    public function getFullSlugAttribute()
+    public function getPermalinkFullSlugAttribute()
     {
         return $this->hasPermalink() ? trim(parse_url($this->route)['path'], '/') : null;
     }

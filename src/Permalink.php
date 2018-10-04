@@ -242,6 +242,20 @@ class Permalink extends Model
     }
 
     /**
+     * Set all seo values without NULLs.
+     *
+     * @param $value
+     */
+    public function setSeoAttribute($value)
+    {
+        $this->attributes['seo'] = json_encode(array_undot(
+            array_filter(array_dot($value), function ($item) {
+                return ! is_null($item);
+            })
+        ));
+    }
+
+    /**
      * Get the action associated with a custom alias.
      *
      * @param  string $alias
