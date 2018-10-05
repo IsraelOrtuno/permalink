@@ -40,7 +40,9 @@ abstract class Builder implements SeoBuilder
             return;
         }
 
-        $data = array_filter($data, 'strlen');
+        $data = array_filter($data, function ($item) {
+            return ! is_null($item);
+        });
 
         foreach ($data as $key => $content) {
             // We will make sure we always provide an array as parameter to the
