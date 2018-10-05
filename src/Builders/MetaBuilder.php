@@ -9,10 +9,10 @@ class MetaBuilder extends Builder
      *
      * @param $content
      */
-    protected function setRobots($content)
+    protected function setRobots(...$robots)
     {
         $this->helper->meta()->getMiscEntity()->add(
-            'robots', implode(',', (array) $content)
+            'robots', implode(',', (array) $robots)
         );
     }
 
