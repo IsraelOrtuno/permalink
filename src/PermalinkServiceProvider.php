@@ -51,8 +51,10 @@ class PermalinkServiceProvider extends ServiceProvider
         ];
 
         foreach ($builders as $alias => $builder) {
-            $this->app->singleton("permalink.$alias", function ($app) use ($builder) {
-                return (new $builder($app->make(SeoHelper::class)));
+            $this->app->singleton("permalink.$alias", function ($app, $parameters) use ($builder) {
+                $helper = $app->make(SeoHelper::class);
+
+                return (new $builder($helper, $parameters[0], $parameters[1]));
             });
         }
 

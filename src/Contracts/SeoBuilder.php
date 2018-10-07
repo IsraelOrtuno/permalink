@@ -10,7 +10,7 @@ interface SeoBuilder
      * @param $builder
      * @param array $data
      */
-    public function build($builder, $data = []): void;
+    public function build(): void;
 
     /**
      * Defines how to disable the translator.
