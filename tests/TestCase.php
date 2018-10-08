@@ -2,6 +2,8 @@
 
 namespace Devio\Permalink\Tests;
 
+use Arcanedev\SeoHelper\SeoHelperServiceProvider;
+use Devio\Permalink\Middleware\BuildSeo;
 use Devio\Permalink\PermalinkServiceProvider;
 
 class TestCase extends \Orchestra\Testbench\TestCase
@@ -29,6 +31,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
+            SeoHelperServiceProvider::class,
             PermalinkServiceProvider::class,
             \Cviebrock\EloquentSluggable\ServiceProvider::class
         ];

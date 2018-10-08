@@ -46,15 +46,15 @@ class PermalinkManager implements Manager
      */
     public function runBuilders()
     {
-        if (is_null($seo = $this->getCurrentPermalinkSeo())) {
+        if (is_null($permalink = $this->getCurrentPermalink())) {
             return;
         }
 
-        $builders = $this->prepareBuildersArray($seo);
+        $builders = $this->getBuildersCollection($permalink);
 
         foreach ($builders as $builder => $data) {
-            if ($this->getContainer()->has($binding = 'permalink.' . $builder) && ! is_null($data)) {
-                $this->getContainer()->make($binding)->build($builder, $data);
+            if ($this->getContainer()->has($binding = 'permalink.' . $builder)) {
+                $this->getContainer()->make($binding, [$permalink, $data])->build();
             }
         }
     }
@@ -65,30 +65,22 @@ class PermalinkManager implements Manager
      * @param $seo
      * @return array
      */
-    protected function prepareBuildersArray($seo)
+    protected function getBuildersCollection($permalink)
     {
-        $keys = ['meta', 'opengraph', 'twitter'];
-        $base = array_except($seo, $keys);
-        $builders = array_only($seo, $keys);
+        $seo = $permalink->seo;
+        $builders = ['base', 'meta', 'opengraph', 'twitter'];
 
-        if (count($base)) {
-            return array_prepend($builders, array_except($seo, $keys), 'base');
-        }
-
-        return $builders;
+        return collect($builders)->mapWithKeys(function ($builder) use ($seo) {
+            return [$builder => array_get($seo, $builder)];
+        })->put('base', array_except($seo, ['base', 'meta', 'opengraph', 'twitter']));
     }
 
-    /**
-     * Find the permalink object.
-     *
-     * @return mixed
-     */
-    protected function getCurrentPermalinkSeo()
+    protected function getCurrentPermalink()
     {
         $route = $this->request->route();
 
         if (($permalink = $route->permalink()) instanceof Permalink) {
-            return $permalink->seo;
+            return $permalink;
         }
 
         return $this->staticPermalinks[$route->getName()] ?? null;
