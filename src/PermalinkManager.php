@@ -72,7 +72,7 @@ class PermalinkManager implements Manager
 
         return collect($builders)->mapWithKeys(function ($builder) use ($seo) {
             return [$builder => array_get($seo, $builder)];
-        })->put('base', array_get($seo, 'base'));
+        })->put('base', array_except($seo, ['base', 'meta', 'opengraph', 'twitter']));
     }
 
     protected function getCurrentPermalink()

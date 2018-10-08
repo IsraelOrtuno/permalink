@@ -54,7 +54,9 @@ class PermalinkServiceProvider extends ServiceProvider
             $this->app->singleton("permalink.$alias", function ($app, $parameters) use ($builder) {
                 $helper = $app->make(SeoHelper::class);
 
-                return (new $builder($helper, $parameters[0], $parameters[1]));
+                return (new $builder($helper))
+                    ->permalink($parameters[0])
+                    ->data($parameters[1]);
             });
         }
 

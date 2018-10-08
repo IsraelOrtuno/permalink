@@ -36,8 +36,9 @@ class MiddlewareTest extends TestCase
     {
         list($request, $route, $builder) = $this->prepareMocks(['seo' => ['meta' => 'foo', 'opengraph' => 'bar']]);
 
-        $builder->shouldReceive('build')->with('meta', 'foo')->once();
-        $builder->shouldReceive('build')->with('opengraph', 'bar')->once();
+        $builder->shouldReceive('data')->with('foo')->once();
+
+        $builder->shouldReceive('build')->times(3);
 
         $this->handleMiddleware($request);
     }

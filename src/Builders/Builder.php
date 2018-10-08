@@ -34,14 +34,11 @@ abstract class Builder implements SeoBuilder
      *
      * @param SeoHelper $helper
      */
-    public function __construct(SeoHelper $helper, Permalink $permalink, $data = [])
+    public function __construct(SeoHelper $helper, Permalink $permalink = null, $data = [])
     {
         $this->helper = $helper;
-        $this->permalink = $permalink;
 
-        $this->data = $data = array_filter(array_wrap($data), function ($item) {
-            return ! is_null($item);
-        });
+        $this->permalink($permalink)->data($data);
     }
 
     /**
@@ -87,6 +84,8 @@ abstract class Builder implements SeoBuilder
         // functions like setTitle and addWebmaster. Flexibility on top!
         $content = array_wrap($content);
 
+        $builder = $this->getBuilderName();
+
         // Then we will check if there is a method with that name in this
         // class. If so, we'll use it as it may contain any extra logic
         // like compiling the content or doing some transformations.
@@ -110,6 +109,13 @@ abstract class Builder implements SeoBuilder
         }
     }
 
+    protected function getBuilderName()
+    {
+        $class = (new \ReflectionClass)->getShortName(static::class);
+
+        dd($class);
+    }
+
     /**
      * Check if the method exists into the given object.
      *
@@ -129,6 +135,33 @@ abstract class Builder implements SeoBuilder
         }
 
         return false;
+    }
+
+    /**
+     * Set the builder Permalink.
+     *
+     * @param Permalink $permalink
+     * @return $this
+     */
+    public function permalink(Permalink $permalink = null)
+    {
+        $this->permalink = $permalink;
+
+        return $this;
+    }
+
+    /**
+     * Set the builder data.
+     *
+     * @param array $data
+     */
+    public function data($data = [])
+    {
+        $this->data = $data = array_filter(array_wrap($data), function ($item) {
+            return ! is_null($item);
+        });
+
+        return $this;
     }
 
     /**
