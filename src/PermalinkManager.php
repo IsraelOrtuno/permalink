@@ -87,7 +87,7 @@ class PermalinkManager implements Manager
             return $permalink;
         }
 
-        return $this->staticPermalinks[$route->getName()] ?? null;
+        return (new Permalink)->fill(['seo' => $this->staticPermalinks[$route->getName()] ?? null]);
     }
 
     /**

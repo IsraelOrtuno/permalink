@@ -248,11 +248,16 @@ class Permalink extends Model
      */
     public function setSeoAttribute($value)
     {
-        $this->attributes['seo'] = json_encode(array_undot(
-            array_filter(array_dot($value), function ($item) {
-                return ! is_null($item);
-            })
-        ));
+        if (! is_null($value)) {
+            $value = json_encode(array_undot(
+                array_filter(array_dot($value), function ($item) {
+                    return ! is_null($item);
+                })
+            ));
+        }
+
+
+        $this->attributes['seo'] = $value;
     }
 
     /**
