@@ -52,8 +52,6 @@ class PermalinkManager implements Manager
 
         $builders = $this->getBuildersCollection($permalink);
 
-        dd($builders);
-
         foreach ($builders as $builder => $data) {
             if ($this->getContainer()->has($binding = 'permalink.' . $builder)) {
                 $this->getContainer()->make($binding, [$permalink, $data])->build();
