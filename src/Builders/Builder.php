@@ -93,6 +93,13 @@ abstract class Builder implements SeoBuilder
             call_user_func_array([$this, $method], $content);
         }
 
+        // If there is a matching method into the base SEO helper, we will
+        // pass the data right to it. This is specially useful to avoid
+        // specifying a title for every builder (meta, og & twitter).
+        elseif ($method = $this->methodExists($this->helper, $name)) {
+            call_user_func_array([$this->helper, $method], $content);
+        }
+
         // If the key matches a method in the SEO helper we will just pass
         // the content as parameter. This gives a lot of flexibility as
         // it allows to manage the package directly from database.
@@ -100,20 +107,13 @@ abstract class Builder implements SeoBuilder
             && $method = $this->methodExists($target = $this->helper->$builder(), $name)) {
             call_user_func_array([$target, $method], $content);
         }
-
-        // If there is a matching method into the base SEO helper, we will
-        // pass the data right to it. This is specially useful to avoid
-        // specifying a title for every builder (meta, og & twitter).
-        elseif ($method = $this->methodExists($this->helper, $name)) {
-            call_user_func_array([$this->helper, $method], $content);
-        }
     }
 
     protected function getBuilderName()
     {
-        $class = (new \ReflectionClass)->getShortName(static::class);
+        $class = (new \ReflectionClass(static::class))->getShortName();
 
-        dd($class);
+        return lcfirst(str_replace('Builder', '', $class));
     }
 
     /**

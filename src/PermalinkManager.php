@@ -52,6 +52,8 @@ class PermalinkManager implements Manager
 
         $builders = $this->getBuildersCollection($permalink);
 
+        dd($builders);
+
         foreach ($builders as $builder => $data) {
             if ($this->getContainer()->has($binding = 'permalink.' . $builder)) {
                 $this->getContainer()->make($binding, [$permalink, $data])->build();
@@ -67,12 +69,16 @@ class PermalinkManager implements Manager
      */
     protected function getBuildersCollection($permalink)
     {
-        $seo = $permalink->seo;
+        $seo = array_wrap($permalink->seo);
         $builders = ['base', 'meta', 'opengraph', 'twitter'];
+
+        if (count($base = array_except($seo, $builders))) {
+            $seo['base'] = $base;
+        }
 
         return collect($builders)->mapWithKeys(function ($builder) use ($seo) {
             return [$builder => array_get($seo, $builder)];
-        })->put('base', array_except($seo, ['base', 'meta', 'opengraph', 'twitter']));
+        });
     }
 
     protected function getCurrentPermalink()
