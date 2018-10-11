@@ -137,9 +137,9 @@ trait HasPermalinks
         $fields = ['title' => null, 'description' => null];
 
         return [
-            'seo' => [
-                'meta' => $fields, 'twitter' => $fields, 'opengraph' => $fields
-            ]
+            'seo' => array_merge($fields, [
+                'twitter' => $fields, 'opengraph' => $fields
+            ])
         ];
     }
 

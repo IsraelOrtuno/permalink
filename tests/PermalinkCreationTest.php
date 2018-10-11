@@ -173,20 +173,20 @@ class PermalinkCreationTest extends TestCase
     {
         $user = factory(DummyUserWithMutators::class)->create();
 
-        $this->assertEquals('foo', $user->permalink->seo['meta']['title']);
-        $this->assertEquals('bar', $user->permalink->seo['meta']['description']);
+        $this->assertEquals('foo', $user->permalink->seo['title']);
+        $this->assertEquals('bar', $user->permalink->seo['description']);
     }
 
     /** @test */
-    public function fallback_function_will_be_skiped_if_value_is_given()
+    public function fallback_function_will_be_skipped_if_value_is_given()
     {
         $user = factory(DummyUserWithMutators::class)->create([
             'permalink' => [
-                'seo.meta' => ['title' => 'custom']
+                'seo' => ['title' => 'custom']
             ]
         ]);
 
-        $this->assertEquals('custom', $user->permalink->seo['meta']['title']);
+        $this->assertEquals('custom', $user->permalink->seo['title']);
     }
 
     /** @test */
