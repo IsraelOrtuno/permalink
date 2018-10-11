@@ -53,7 +53,7 @@ class Router implements PermalinkRouter
             }
         };
 
-        $this->router->group(['middleware' => 'web'], $callback);
+        $this->router->group(config('permalink.group'), $callback);
 
         // Whenever routes are loaded, we should refresh the name lookups to
         // make sure all our newly generated route names are included into

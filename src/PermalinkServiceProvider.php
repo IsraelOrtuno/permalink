@@ -16,6 +16,10 @@ class PermalinkServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/permalink.php', 'permalink');
+
+        $this->publishes([__DIR__ . '/../config/permalink.php' => config_path('permalink.php')], 'permalink-config');
+
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
 
         $this->definePermalinkMacro();
