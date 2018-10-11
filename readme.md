@@ -4,10 +4,6 @@
 
 This package allows to create dynamic routes right from database, just like WordPress and other CMS do.
 
-## Work In Progress
-
-This package is currently being developed and tested. Would love feedback ❤️.
-
 ## Roadmap
 - [ ] [Resources for visual SEO management](https://github.com/IsraelOrtuno/permalink-form) (in progress)
 
