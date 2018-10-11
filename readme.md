@@ -363,6 +363,39 @@ In order to match any of the helper methods, every JSON option will be transform
 
 All methods are called via `call_user_func_array`, so if an option contains an array, every key will be pased as parameter to the helper method. See `setTitle` or `addWebmaster` which allows multiple parameters.
 
+### Populate SEO with default content
+
+If you wish that your newly created permalinks get some default value rather than having to specify it, you may define some default fallback methods in your "Permalinkable" entity.
+
+```php
+class User extends Model {
+  use HasPermalinks;
+  
+  // ...
+  public function getSeoTitleAttribute() 
+  {
+    return $this->name;
+  }
+  
+  public function getSeoOpenGraphTitleAttribute()
+  {
+    return $this->name . ' for OpenGraph';
+  }
+  // ...
+}
+```
+
+This fallbacks will be used if they indeed exist and the value for that field has not been provided when creating the permalink. Note that these methods should be called as an Eloquent accessor. Use the "seo" prefix and then the path to the default value in a _StudlyCase_, for example:
+
+```
+seo.title                   => getSeoTitleAttribute()
+seo.description             => getSeoDescriptionAttribute()
+seo.twitter.title           => getSeoTwitterTitleAttribute()
+seo.twitter.description     => getSeoTwitterDescriptionAttribute()
+seo.opengraph.title         => getSeoTwitterOpenGraphAttribute()
+seo.opengraph.description   => getSeoOpenGraphDescriptionAttribute()
+```
+
 ### Builders
 
 To provide even more flexibility, the method calls are piped through 3 classes (one for each helper) called [Builders](https://github.com/IsraelOrtuno/permalink/tree/master/src/Builders). These builders are responsible for calling the right method from the [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) package.
