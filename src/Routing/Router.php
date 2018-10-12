@@ -44,8 +44,7 @@ class Router implements PermalinkRouter
             return;
         }
 
-        $permalinks = is_null($permalinks) ? $this->getPermalinkTree()
-            : (is_array($permalinks) ? $permalinks : [$permalinks]);
+        $permalinks = is_null($permalinks) ? $this->getPermalinkTree() : array_wrap($permalinks);
 
         $callback = function ($router) use ($permalinks) {
             foreach ($permalinks as $permalink) {
