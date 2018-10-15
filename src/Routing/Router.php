@@ -13,7 +13,7 @@ class Router extends LaravelRouter
      */
     public function loadPermalinks($permalinks = null)
     {
-        $permalinks = (new RouteCollection($permalinks))->tree();
+        $permalinks = (new RouteCollection(array_wrap($permalinks)))->tree();
 
         $this->group(config('permalink.group'), function() use ($permalinks) {
             $this->addPermalinks($permalinks);

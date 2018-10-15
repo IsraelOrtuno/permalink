@@ -5,6 +5,7 @@ namespace Devio\Permalink\Tests;
 use Arcanedev\SeoHelper\SeoHelperServiceProvider;
 use Devio\Permalink\Middleware\BuildSeo;
 use Devio\Permalink\PermalinkServiceProvider;
+use Devio\Permalink\Routing\Router;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -12,7 +13,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
-        $this->withMiddleware(BuildSeo::class);
+//        $this->withMiddleware(BuildSeo::class);
         $this->artisan('migrate', ['--database' => 'testing']);
         $this->loadLaravelMigrations('testing');
         $this->withFactories(__DIR__ . '/factories');
@@ -28,6 +29,11 @@ class TestCase extends \Orchestra\Testbench\TestCase
         ]);
     }
 
+    protected function resolveApplicationHttpKernel($app)
+    {
+        $app->singleton('Illuminate\Contracts\Http\Kernel', Kernel::class);
+    }
+
     protected function getPackageProviders($app)
     {
         return [
@@ -39,6 +45,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     protected function reloadRoutes()
     {
-        $this->app['permalink']->load();
+//        $this->app['router']->loadPermalinks();
     }
 }

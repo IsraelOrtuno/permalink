@@ -50,10 +50,6 @@ class Permalink extends Model
                 $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
             }
         });
-
-        static::created(function (Permalink $model) {
-            app('permalink')->load($model);
-        });
     }
 
     /**
@@ -85,6 +81,14 @@ class Permalink extends Model
     {
         return $this->hasMany(static::class, 'parent_id')
                     ->with('children', 'permalinkable');
+    }
+
+    /**
+     * Load the permalink route into the router.
+     */
+    public function loadRoute()
+    {
+        app('router')->loadPermalinks($this);
     }
 
     /**
