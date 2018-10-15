@@ -171,6 +171,13 @@ class Permalink extends Model
         return $slugs;
     }
 
+    public function getMethodAttribute()
+    {
+        // Only GET routes for now, we will support others!
+
+        return ['GET', 'HEAD'];
+    }
+
     /**
      * Replace the action by an alias if any.
      *

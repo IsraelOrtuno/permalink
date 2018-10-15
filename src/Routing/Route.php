@@ -2,116 +2,89 @@
 
 namespace Devio\Permalink\Routing;
 
-use Illuminate\Routing\Router;
+use Devio\Permalink\Permalink;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-class Route
+class Route extends \Illuminate\Routing\Route
 {
     /**
-     * The router instance.
+     * The permalink instance.
      *
-     * @var Router
+     * @var Permalink
      */
-    protected $router;
+    protected $permalink;
 
     /**
-     * Node constructor.
+     * CustomRoute constructor.
      *
-     * @param Router $router
+     * @param Permalink $permalink
      */
-    public function __construct(Router $router)
+    public function __construct($methods, $uri, $action, $permalink)
     {
-        $this->router = $router;
+        parent::__construct($methods, $uri, $action);
+
+        $this->permalink = $permalink;
+
+        $this->name($this->getPermalinkRouteName());
+
+        $this->setDefaults();
     }
 
     /**
-     * Register a permalink into the router.
-     *
-     * @param $permalink
+     * Set the permalinkable entity as default route parameter.
      */
-    public function register($permalink)
+    protected function setDefaults(): void
     {
-        count($permalink->children) ?
-            $this->group($permalink) : $this->route($permalink);
-    }
-
-    /**
-     * Add a simple route to the router.
-     *
-     * @param $permalink
-     * @return void
-     */
-    protected function route($permalink)
-    {
-        $route = $this->router->get($permalink->slug, $permalink->action)
-                              ->name($this->getRouteName($permalink));
-
-        if ($permalink->permalinkable) {
-            $route->defaults(
-                Relation::getMorphedModel($permalink->permalinkable_type) ?? $permalink->permalinkable_type, $permalink->permalinkable
-            );
+        if (! $entity = $this->permalink->permalinkable) {
+            return;
         }
 
-        // We will bind our permalink model to the model itself. This way access
-        // the permalink directly from the current Route instance. It'll even
-        // keep bound when the application's route list has been cached.
-        $route->permalink($permalink);
+        $this->defaults(
+            Relation::getMorphedModel($entity->permalinkable_type) ?? $entity->permalinkable_type, $entity->permalinkable
+        );
     }
 
     /**
-     * Create a route group into the router and register its children.
+     * Get the permalink instance.
      *
-     * @param $parent
+     * @return Permalink
      */
-    protected function group($parent)
+    public function getPermalink(): Permalink
     {
-        if ($parent->action || $parent->pemalinkable) {
-            $this->route($parent);
-        }
-
-        // If the parent has an action or a permalinkable model we will create
-        // that route as "root" just before creating any children into the
-        // route group, then the children can be nested within a group.
-        $callback = function () use ($parent) {
-            foreach ($parent->children as $permalink) {
-                $this->register($permalink);
-            }
-        };
-
-        $this->router->group(['prefix' => $parent->slug], $callback);
+        return $this->permalink;
     }
 
     /**
-     * Get the route name.
+     * Set the permalink instance.
      *
      * @param $permalink
-     * @return null|string
+     * @return $this
      */
-    protected function getRouteName($permalink)
+    public function permalink(Permalink $permalink): self
     {
-        if ($permalinkable = $permalink->permalinkable) {
-            return $permalinkable->permalinkRouteName() . '.' . $permalink->getKey();
+        $this->permalink = $permalink->setRelations([]);
+
+        return $this;
+    }
+
+    /**
+     * Check if the current route has a permalink instance attached.
+     *
+     * @return bool
+     */
+    public function hasPermalink(): bool
+    {
+        return (bool) $this->permalink;
+    }
+
+    public function getPermalinkRouteName(): string
+    {
+        if ($permalinkable = $this->permalink->permalinkable) {
+            return $permalinkable->permalinkRouteName() . '.' . $this->permalink->getKey();
         }
 
-        $action = $permalink->rawAction;
+        $action = $this->permalink->rawAction;
 
         return str_contains($action, '@') ? $this->getRouteNameFromAction($action) : $action;
-    }
-
-    /**
-     * Extract the route name from the fully qualified action.
-     *
-     * @param $action
-     * @return string
-     * @throws \ReflectionException
-     */
-    protected function getRouteNameFromAction($action)
-    {
-        list ($class, $method) = explode('@', $action);
-        $name = (new \ReflectionClass($class))->getShortName();
-
-        $name = str_replace('Controller', '', $name);
-
-        return strtolower($name . '.' . $method);
     }
 }

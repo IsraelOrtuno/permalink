@@ -3,6 +3,7 @@
 namespace Devio\Permalink;
 
 use Illuminate\Http\Request;
+use Devio\Permalink\Routing\Route;
 use Devio\Permalink\Contracts\Manager;
 use Illuminate\Contracts\Container\Container;
 
@@ -81,9 +82,11 @@ class PermalinkManager implements Manager
 
     protected function getCurrentPermalink()
     {
-        $route = $this->request->route();
+        if (! ($route = $this->request->route()) instanceof Route) {
+            return null;
+        }
 
-        if (($permalink = $route->permalink()) instanceof Permalink) {
+        if (($permalink = $route->getPermalink()) instanceof Permalink) {
             return $permalink;
         }
 

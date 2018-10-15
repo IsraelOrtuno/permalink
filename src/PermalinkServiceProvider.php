@@ -2,12 +2,9 @@
 
 namespace Devio\Permalink;
 
-use Illuminate\Routing\Route;
 use Devio\Permalink\Routing\Router;
-use Devio\Permalink\Contracts\Manager;
 use Illuminate\Support\ServiceProvider;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
-use Devio\Permalink\Contracts\Router as PermalinkRouter;
 
 class PermalinkServiceProvider extends ServiceProvider
 {
@@ -22,23 +19,17 @@ class PermalinkServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
 
-        $this->definePermalinkMacro();
+        $this->defineRouterMacro();
     }
 
     /**
      * Create the permalink macro.
      */
-    protected function definePermalinkMacro()
+    protected function defineRouterMacro()
     {
-        // Adding a permalink macro to the Route object will let us store a
-        // permalink model instance right directly into the route, we can
-        // then access to this instance from the current Route object.
-        Route::macro('permalink', function ($permalink = null) {
-            if (is_null($permalink)) {
-                return $this->permalink;
-            }
-
-            $this->permalink = $permalink->setRelations([]);
+        \Illuminate\Routing\Router::macro('replaceMiddleware', function ($middleware = [], $middlewareGroups = []) {
+            $this->middleware = $middleware;
+            $this->middlewareGroups = $middlewareGroups;
         });
     }
 
@@ -48,10 +39,10 @@ class PermalinkServiceProvider extends ServiceProvider
     public function register()
     {
         $builders = [
-            'base'      => \Devio\Permalink\Builders\BaseBuilder::class,
-            'meta'      => \Devio\Permalink\Builders\MetaBuilder::class,
-            'opengraph' => \Devio\Permalink\Builders\OpenGraphBuilder::class,
-            'twitter'   => \Devio\Permalink\Builders\TwitterBuilder::class,
+            'base'      => Builders\BaseBuilder::class,
+            'meta'      => Builders\MetaBuilder::class,
+            'opengraph' => Builders\OpenGraphBuilder::class,
+            'twitter'   => Builders\TwitterBuilder::class,
         ];
 
         foreach ($builders as $alias => $builder) {
@@ -64,14 +55,13 @@ class PermalinkServiceProvider extends ServiceProvider
             });
         }
 
-        $this->app->singleton(Manager::class, function () {
+        $this->app->singleton('router', Router::class);
+
+        $this->app->singleton(Contracts\Manager::class, function () {
             return new PermalinkManager($this->app['request'], $this->app);
         });
 
-        $this->app->singleton(PermalinkRouter::class, function () {
-            return new Router($this->app['router']);
-        });
-
-        $this->app->alias(PermalinkRouter::class, 'permalink');
+        $this->commands(Console\BindRouterAtBootstrap::class);
+        $this->commands(Console\ReplaceRouterInKernel::class);
     }
 }
