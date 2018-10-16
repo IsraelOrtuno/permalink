@@ -40,7 +40,7 @@ class Route extends \Illuminate\Routing\Route
         }
 
         $this->defaults(
-            Relation::getMorphedModel($entity->permalinkable_type) ?? $entity->permalinkable_type, $entity->permalinkable
+            Relation::getMorphedModel($this->permalink->permalinkable_type) ?? $this->permalink->permalinkable_type, $entity
         );
     }
 
