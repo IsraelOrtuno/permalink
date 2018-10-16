@@ -45,6 +45,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     protected function reloadRoutes()
     {
-//        $this->app['router']->loadPermalinks();
+        $this->app['router']->loadPermalinks();
     }
 }

@@ -87,4 +87,21 @@ class Route extends \Illuminate\Routing\Route
 
         return str_contains($action, '@') ? $this->getRouteNameFromAction($action) : $action;
     }
+
+    /**
+     * Extract the route name from the fully qualified action.
+     *
+     * @param $action
+     * @return string
+     * @throws \ReflectionException
+     */
+    protected function getRouteNameFromAction($action)
+    {
+        list ($class, $method) = explode('@', $action);
+        $name = (new \ReflectionClass($class))->getShortName();
+
+        $name = str_replace('Controller', '', $name);
+
+        return strtolower($name . '.' . $method);
+    }
 }

@@ -13,17 +13,41 @@ class Router extends LaravelRouter
      */
     public function loadPermalinks($permalinks = null)
     {
-        $permalinks = (new RouteCollection(array_wrap($permalinks)))->tree();
+        if (is_null($permalinks)) {
+            $this->clearPermalinkRoutes();
+        }
 
-        $this->group(config('permalink.group'), function() use ($permalinks) {
+        $permalinks = (new RouteCollection(
+            array_filter(array_wrap($permalinks))
+        ))->tree();
+
+        $this->group(config('permalink.group'), function () use ($permalinks) {
             $this->addPermalinks($permalinks);
         });
 
         // Whenever routes are loaded, we should refresh the name lookups to
         // make sure all our newly generated route names are included into
         // the route collection name list. Routes can be added any time.
+        $this->refreshRoutes();
+    }
+
+    protected function refreshRoutes()
+    {
         $this->getRoutes()->refreshNameLookups();
         $this->getRoutes()->refreshActionLookups();
+    }
+
+    public function clearPermalinkRoutes()
+    {
+        $routeCollection = new \Illuminate\Routing\RouteCollection;
+
+        collect($this->getRoutes())->filter(function ($route) {
+            return ! $route instanceof Route;
+        })->each(function ($route) use ($routeCollection) {
+            $routeCollection->add($route);
+        });
+
+        $this->setRoutes($routeCollection);
     }
 
     /**

@@ -3,11 +3,11 @@
 namespace Devio\Permalink\Tests;
 
 use Devio\Permalink\Permalink;
-use Devio\Permalink\Tests\Dummy\DummyController;
 use Devio\Permalink\Tests\Dummy\DummyUser;
+use Devio\Permalink\Tests\Dummy\DummyController;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Devio\Permalink\Tests\Dummy\DummyUserWithMutators;
 use Devio\Permalink\Tests\Dummy\DummyUserWithoutPermalinkManager;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class PermalinkCreationTest extends TestCase
 {
@@ -53,14 +53,6 @@ class PermalinkCreationTest extends TestCase
         $user = factory(DummyUser::class)->create(['name' => 'Israel Ortuño']);
 
         $this->assertTrue($user->relationLoaded('permalink'));
-    }
-
-    /** @test */
-    public function permalink_route_is_automatically_loaded_to_the_route_collection()
-    {
-        Permalink::create(['slug' => 'foo', 'action' => DummyController::class . '@index']);
-
-        $this->assertEquals('http://localhost/foo', route('dummy.index'));
     }
 
     /** @test */
@@ -187,13 +179,5 @@ class PermalinkCreationTest extends TestCase
         ]);
 
         $this->assertEquals('custom', $user->permalink->seo['title']);
-    }
-
-    /** @test */
-    public function permalink_creation_throws_exception_if_action_does_not_exist()
-    {
-        $this->expectException(\UnexpectedValueException::class);
-
-        Permalink::create(['slug' => 'foo', 'action' => 'bar']);
     }
 }

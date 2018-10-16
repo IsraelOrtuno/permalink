@@ -193,6 +193,16 @@ trait HasPermalinks
     }
 
     /**
+     * Determine if the permalink should reload routes.
+     *
+     * @return bool
+     */
+    public function getPermalinkLoadRoutesOnCreateAttribute()
+    {
+        return false;
+    }
+
+    /**
      * Get the entity route name prefix.
      *
      * @return string

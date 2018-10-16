@@ -36,6 +36,13 @@ class Permalink extends Model
     public static $actionMap = [];
 
     /**
+     * Determine if routes should be reloaded when creating a new permalink.
+     *
+     * @var bool
+     */
+    public static $loadRoutesOnCreate = false;
+
+    /**
      * Booting the model.
      */
     public static function boot()
@@ -48,6 +55,12 @@ class Permalink extends Model
             // will append an incremental suffix to ensure its uniqueness.
             if ($model->isDirty('slug') && ! empty($model->slug)) {
                 $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
+            }
+        });
+
+        static::created(function (Permalink $model) {
+            if (($model->permalinkable && $model->permalinkable->permalinkLoadRoutesOnCreate) || static::$loadRoutesOnCreate) {
+                app('router')->loadPermalinks();
             }
         });
     }
@@ -81,14 +94,6 @@ class Permalink extends Model
     {
         return $this->hasMany(static::class, 'parent_id')
                     ->with('children', 'permalinkable');
-    }
-
-    /**
-     * Load the permalink route into the router.
-     */
-    public function loadRoute()
-    {
-        app('router')->loadPermalinks($this);
     }
 
     /**
@@ -266,7 +271,6 @@ class Permalink extends Model
                 })
             ));
         }
-
 
         $this->attributes['seo'] = $value;
     }

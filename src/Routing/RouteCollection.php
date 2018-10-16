@@ -3,14 +3,14 @@
 namespace Devio\Permalink\Routing;
 
 use Devio\Permalink\Permalink;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class RouteCollection extends Collection
 {
     /**
      * Get the route collection tree.
      *
-     * @return array|\Illuminate\Database\Eloquent\Collection
+     * @return array|Collection
      */
     public function tree()
     {
@@ -18,13 +18,15 @@ class RouteCollection extends Collection
             return $this->getDefaultTree();
         }
 
+        $this->load('children', 'permalinkable');
+
         return $this->all();
     }
 
     /**
      * Get the default Permalink tree.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     protected function getDefaultTree()
     {
