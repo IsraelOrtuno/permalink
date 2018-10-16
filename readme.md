@@ -1,4 +1,4 @@
-# Advanced Laravel Permalinks And SEO Management
+# Advanced Laravel Permalinks and SEO Management from Database
 
 [![Build Status](https://travis-ci.com/IsraelOrtuno/permalink.svg?branch=master)](https://travis-ci.com/IsraelOrtuno/permalink)
 
