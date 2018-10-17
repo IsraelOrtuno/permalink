@@ -82,11 +82,9 @@ class PermalinkManager implements Manager
 
     protected function getCurrentPermalink()
     {
-        if (! ($route = $this->request->route()) instanceof Route) {
-            return null;
-        }
+        $route = $this->request->route();
 
-        if (($permalink = $route->getPermalink()) instanceof Permalink) {
+        if ($route instanceof Route && ($permalink = $route->getPermalink()) instanceof Permalink) {
             return $permalink;
         }
 
