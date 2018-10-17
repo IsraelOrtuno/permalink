@@ -80,6 +80,11 @@ class PermalinkManager implements Manager
         });
     }
 
+    /**
+     * Get the current route permalink if any.
+     *
+     * @return Permalink
+     */
     protected function getCurrentPermalink()
     {
         $route = $this->request->route();
@@ -88,7 +93,11 @@ class PermalinkManager implements Manager
             return $permalink;
         }
 
-        return (new Permalink)->fill(['seo' => $this->staticPermalinks[$route->getName()] ?? null]);
+        if ($seo = $this->staticPermalinks[$route->getName()] ?? false) {
+            return (new Permalink)->fill(compact('seo'));
+        }
+
+        return null;
     }
 
     /**
