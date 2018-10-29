@@ -171,7 +171,7 @@ trait HasPermalinks
     public function getRouteAttribute()
     {
         return ($this->exists && $this->hasPermalink()) ?
-            route($this->permalinkRouteName() . '.' . $this->permalink->getKey()) : '#';
+            route($this->permalinkRouteName() . '.' . $this->permalink->getKey()) : null;
     }
 
     /**
