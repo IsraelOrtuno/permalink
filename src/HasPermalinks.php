@@ -98,7 +98,7 @@ trait HasPermalinks
      */
     protected function setPermalinkParentIfAny($attributes = [])
     {
-        if ($parent = Permalink::parentFor($this)->first()) {
+        if ($parent = Permalink::parentFor($this)) {
             $attributes['parent_id'] = $parent->getKey();
         }
 

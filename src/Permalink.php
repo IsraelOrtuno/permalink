@@ -43,6 +43,13 @@ class Permalink extends Model
     public static $loadRoutesOnCreate = false;
 
     /**
+     * Parents cache.
+     *
+     * @var array
+     */
+    public static $parents = [];
+
+    /**
      * Booting the model.
      */
     public static function boot()
@@ -146,7 +153,7 @@ class Permalink extends Model
 
         $model = $model->getMorphClass();
 
-        return static::where('parent_for', $model);
+        return static::$parents[$model] = static::$parents[$model] ?? static::where('parent_for', $model)->first();
     }
 
     /**
