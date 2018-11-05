@@ -153,7 +153,7 @@ class Permalink extends Model
 
         $model = $model->getMorphClass();
 
-        return static::$parents[$model] = static::$parents[$model] ?? static::where('parent_for', $model)->first();
+        return static::with('parent')->where('parent_for', $model)->first();
     }
 
     /**
@@ -182,7 +182,7 @@ class Permalink extends Model
             return $permalink->slug;
         };
 
-        $callable($model->permalink ?: static::parentFor($model)->with('parent')->first());
+        $callable($model->permalink ?: static::parentFor($model));
 
         return $slugs;
     }
