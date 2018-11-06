@@ -211,16 +211,63 @@ class Permalink extends Model
      */
     public function getActionAttribute()
     {
-        if (isset($this->attributes['action']) &&
-            $action = static::getMappedAction($this->attributes['action']) ?? $this->attributes['action']) {
-            return $action;
+        if ($action = $this->attributes['action'] ?? false) {
+            return static::getMappedaction($action) ?? $action;
         }
 
-        if ($relation = $this->getRelationValue('permalinkable')) {
-            return $relation->permalinkAction();
+        $entity = $this->getRelationValue('permalinkable');
+
+        // If the action is mapped or a fallback action has been set to the
+        // permalinkable entity, we will assume it exists. Otherwise it's
+        // not possible to provide an action to be bound to the router.
+        if ($entity && method_exists($entity, 'permalinkAction')) {
+            return $entity->permalinkAction();
         }
 
+        // TODO: Maybe provide a fallback method to provide an action when none is found...
         return null;
+    }
+
+    /**
+     * Get the permalink name.
+     *
+     * @return null|string
+     * @throws \ReflectionException
+     */
+    public function getNameAttribute()
+    {
+        $entity = $this->getRelationValue('permalinkable');
+
+        // If the entity has a fallback method to build a custom name for the
+        // permalink, it'll be used. If the action is a string@action, then
+        // it'll generate a "class.action.key" string like "user.index.1".
+        if ($entity && method_exists($entity, 'permalinkName')) {
+            return $entity->permalinkName();
+        } elseif ($entity && $action = $this->getActionRootName()) {
+            return "{$action}.{$entity->getKey()}";
+        }
+
+        // TODO: Maybe in future we can add a method fallbar in order to
+        // customize the generated name if none other was resolved.
+        return 'permalink.' . $this->getKey();
+    }
+
+    /**
+     * Get the action root base name.
+     *
+     * @return null|string
+     * @throws \ReflectionException
+     */
+    public function getActionRootName()
+    {
+        if (! str_contains($action = $this->action, '@')) {
+            return null;
+        }
+
+        [$class, $method] = explode('@', $action);
+        $name = str_replace('Controller', '', (new \ReflectionClass($class))->getShortName());
+
+        return strtolower($name . '.' . $method);
     }
 
     /**

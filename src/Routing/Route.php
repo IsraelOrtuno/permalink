@@ -25,7 +25,9 @@ class Route extends \Illuminate\Routing\Route
 
         $this->permalink = $permalink;
 
-        $this->name($this->getPermalinkRouteName());
+        if ($name = $this->permalink->name) {
+            $this->name($name);
+        }
 
         $this->setDefaults();
     }
@@ -77,16 +79,17 @@ class Route extends \Illuminate\Routing\Route
         return (bool) $this->permalink;
     }
 
-    public function getPermalinkRouteName(): string
-    {
-        if ($permalinkable = $this->permalink->permalinkable) {
-            return $permalinkable->permalinkRouteName() . '.' . $this->permalink->getKey();
-        }
-
-        $action = $this->permalink->rawAction;
-
-        return str_contains($action, '@') ? $this->getRouteNameFromAction($action) : $action;
-    }
+//    public function getPermalinkRouteName(): string
+//    {
+//        if ($permalinkable = $this->permalink->permalinkable) {
+//            return $permalinkable->permalinkRouteName() . '.' . $this->permalink->getKey();
+//        }
+//
+//        $action = $this->permalink->rawAction;
+//
+//        return null;
+//        return str_contains($action, '@') ? $this->getRouteNameFromAction($action) : $action;
+//    }
 
     /**
      * Extract the route name from the fully qualified action.
