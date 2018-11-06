@@ -66,7 +66,7 @@ class Permalink extends Model
         });
 
         static::created(function (Permalink $model) {
-            if (($model->permalinkable && $model->permalinkable->permalinkLoadRoutesOnCreate) || static::$loadRoutesOnCreate) {
+            if (($model->entity && $model->entity->permalinkLoadRoutesOnCreate) || static::$loadRoutesOnCreate) {
                 app('router')->loadPermalinks();
             }
         });
@@ -77,7 +77,7 @@ class Permalink extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function permalinkable()
+    public function entity()
     {
         return $this->morphTo();
     }
@@ -100,7 +100,7 @@ class Permalink extends Model
     public function children()
     {
         return $this->hasMany(static::class, 'parent_id')
-                    ->with('children', 'permalinkable');
+                    ->with('children', 'entity');
     }
 
     /**
@@ -110,11 +110,11 @@ class Permalink extends Model
      */
     public function sluggable(): array
     {
-        if (! $permalinkable = $this->permalinkable) {
+        if (! $entity = $this->getRelationValue('entity')) {
             return [];
         }
 
-        $source = (array) $permalinkable->slugSource();
+        $source = (array) $entity->slugSource();
 
         // We will look for slug source at the permalinkable entity. That method
         // should return an array with a 'source' key in it. This way the user
@@ -215,7 +215,7 @@ class Permalink extends Model
             return static::getMappedaction($action) ?? $action;
         }
 
-        $entity = $this->getRelationValue('permalinkable');
+        $entity = $this->getRelationValue('entity');
 
         // If the action is mapped or a fallback action has been set to the
         // permalinkable entity, we will assume it exists. Otherwise it's
@@ -236,18 +236,18 @@ class Permalink extends Model
      */
     public function getNameAttribute()
     {
-        $entity = $this->getRelationValue('permalinkable');
+        $entity = $this->getRelationValue('entity');
 
         // If the entity has a fallback method to build a custom name for the
         // permalink, it'll be used. If the action is a string@action, then
         // it'll generate a "class.action.key" string like "user.index.1".
-        if ($entity && method_exists($entity, 'permalinkName')) {
-            return $entity->permalinkName();
-        } elseif ($entity && $action = $this->getActionRootName()) {
-            return "{$action}.{$entity->getKey()}";
+        if ($entity && $name = $entity->permalinkRouteName()) {
+            return $name;
+        } elseif ($action = $this->getActionRootName()) {
+            return implode('.', [$action, $entity->getKey() ?? '']);
         }
 
-        // TODO: Maybe in future we can add a method fallbar in order to
+        // TODO: Maybe in future we can add a method fallback in order to
         // customize the generated name if none other was resolved.
         return 'permalink.' . $this->getKey();
     }

@@ -18,7 +18,7 @@ class RouteCollection extends Collection
             return $this->getDefaultTree();
         }
 
-        $this->load('children', 'permalinkable');
+        $this->load('children', 'entity');
 
         return $this->all();
     }
@@ -33,7 +33,7 @@ class RouteCollection extends Collection
         // We will query all the root permalinks and then load all their children
         // relationships recursively. This way we will obtain a tree structured
         // collection in which we can easily iterate from parents to children.
-        return Permalink::with('children', 'permalinkable')
+        return Permalink::with('children', 'entity')
                         ->whereNull('parent_id')
                         ->get();
     }

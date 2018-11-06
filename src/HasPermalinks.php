@@ -23,7 +23,7 @@ trait HasPermalinks
      */
     public static function bootHasPermalinks()
     {
-        static::observe(PermalinkableObserver::class);
+        static::observe(EntityObserver::class);
     }
 
     /**
@@ -56,7 +56,7 @@ trait HasPermalinks
      */
     public function permalink()
     {
-        return $this->morphOne(Permalink::class, 'permalinkable');
+        return $this->morphOne(Permalink::class, 'entity');
     }
 
     /**
@@ -171,7 +171,7 @@ trait HasPermalinks
     public function getRouteAttribute()
     {
         return ($this->exists && $this->hasPermalink()) ?
-            route($this->permalinkRouteName() . '.' . $this->permalink->getKey()) : null;
+            route($this->permalinkRouteName()) : null;
     }
 
     /**
@@ -203,13 +203,16 @@ trait HasPermalinks
     }
 
     /**
-     * Get the entity route name prefix.
+     * Get the entity route name (must be unique).
      *
      * @return string
      */
     public function permalinkRouteName()
     {
-        return 'permalink';
+        // You can be creative here. Make sure the route name is unique or it may create route conflicts
+        //    return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
+
+        return null;
     }
 
     /**

@@ -5,7 +5,7 @@ namespace Devio\Permalink;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
-class PermalinkableObserver
+class EntityObserver
 {
     /**
      * Saved model event handler.

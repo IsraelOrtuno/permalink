@@ -58,11 +58,7 @@ class Router extends LaravelRouter
      */
     protected function createRouteForPermalink($permalink)
     {
-        $action = $this->convertToControllerAction($permalink->action);
-
-        $route = (new Route($permalink->method, $this->prefix($permalink->slug), $action, $permalink))
-            ->setRouter($this)
-            ->setContainer($this->container);
+        $route = $this->newPermalinkRoute($permalink);
 
         // If we have groups that need to be merged, we will merge them now after this
         // route has already been created and is ready to go. After we're done with
@@ -74,6 +70,21 @@ class Router extends LaravelRouter
         $this->addWhereClausesToRoute($route);
 
         return $route;
+    }
+
+    /**
+     * Create a new Route for the given permalink.
+     *
+     * @param $permalink
+     * @return Route
+     */
+    protected function newPermalinkRoute($permalink)
+    {
+        $path = $this->prefix($permalink->slug);
+        $action = $this->convertToControllerAction($permalink->action);
+
+        return (new Route($permalink->method, $path, $action, $permalink))
+            ->setRouter($this)->setContainer($this->container);
     }
 
     /**

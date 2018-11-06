@@ -20,15 +20,15 @@ class CreatePermalinksTable extends Migration
             $table->unsignedInteger('parent_id')->nullable();
             $table->text('parent_for')->nullable();
 
-            $table->string("permalinkable_type")->nullable();
-            $table->unsignedBigInteger("permalinkable_id")->nullable();
+            $table->string("entity_type")->nullable();
+            $table->unsignedBigInteger("entity_id")->nullable();
 
             $table->string('action')->nullable();
             $table->text('seo')->nullable();
 
             $table->timestamps();
 
-            $table->index(["permalinkable_type", "permalinkable_id"]);
+            $table->index(["entity_type", "entity_id"]);
             $table->unique(['slug', 'parent_id']);
         });
     }
