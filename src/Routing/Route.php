@@ -24,23 +24,9 @@ class Route extends \Illuminate\Routing\Route
 
         $this->permalink = $permalink;
 
-        if ($name = $this->permalink->name) {
+        if ($name = $permalink->name) {
             $this->name($name);
         }
-
-        $this->setDefaults();
-    }
-
-    /**
-     * Set the permalink entity as default route parameter.
-     */
-    protected function setDefaults(): void
-    {
-        if (! $entity = $this->permalink->entity) {
-            return;
-        }
-
-        $this->defaults(get_class($entity), $entity);
     }
 
     /**
@@ -48,22 +34,24 @@ class Route extends \Illuminate\Routing\Route
      *
      * @return Permalink
      */
-    public function getPermalink(): Permalink
+    public function permalink(): Permalink
     {
+        if (is_numeric($this->permalink)) {
+            $this->permalink = Permalink::find($this->permalink);
+        }
+
         return $this->permalink;
     }
 
     /**
-     * Set the permalink instance.
-     *
-     * @param $permalink
-     * @return $this
+     * Just an alias to get the permalink.
+     * TODO: DELETE when replaced
+     * @deprecated
+     * @return Permalink
      */
-    public function permalink(Permalink $permalink): self
+    public function getPermalink()
     {
-        $this->permalink = $permalink->setRelations([]);
-
-        return $this;
+        return $this->permalink();
     }
 
     /**
@@ -74,5 +62,18 @@ class Route extends \Illuminate\Routing\Route
     public function hasPermalink(): bool
     {
         return (bool) $this->permalink;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepareForSerialization()
+    {
+        parent::prepareForSerialization();
+
+        // We will replace the permalink instance for its key when serializing
+        // so we won't store the entire Permalink object which would result
+        // into a large compiled routes file and lack of memory issues.
+        $this->permalink = $this->permalink()->getKey();
     }
 }

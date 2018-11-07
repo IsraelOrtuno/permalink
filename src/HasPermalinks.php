@@ -11,12 +11,12 @@ trait HasPermalinks
      */
     protected $permalinkAttributes = null;
 
-    /**
-     * The permalink parent id.
-     *
-     * @var null
-     */
-    protected $permalinkParent = null;
+//    /**
+//     * The permalink parent id.
+//     *
+//     * @var null
+//     */
+//    protected $permalinkParent = null;
 
     /**
      * Booting the trait.
@@ -144,26 +144,6 @@ trait HasPermalinks
     }
 
     /**
-     * Set the permalink parent.
-     *
-     * @param $value
-     */
-    public function setPermalinkParentAttribute($value)
-    {
-        $this->permalinkParent = $value;
-    }
-
-    /**
-     * Get the permalink parent.
-     *
-     * @return null
-     */
-    public function getPermalinkParentAttribute()
-    {
-        return $this->permalinkParent;
-    }
-
-    /**
      * Resolve the full permalink route.
      *
      * @return string
@@ -179,7 +159,7 @@ trait HasPermalinks
      *
      * @return null
      */
-    public function getPermalinkSlugAttribute()
+    public function getRouteSlugAttribute()
     {
         return $this->hasPermalink() ? $this->permalink->slug : null;
     }
@@ -187,17 +167,27 @@ trait HasPermalinks
     /**
      * @return mixed
      */
-    public function getPermalinkFullSlugAttribute()
+    public function getRouteFullSlugAttribute()
     {
         return $this->hasPermalink() ? trim(parse_url($this->route)['path'], '/') : null;
     }
 
     /**
-     * Determine if the permalink should reload routes.
+     * Check if the page has a permalink relation.
      *
      * @return bool
      */
-    public function getPermalinkLoadRoutesOnCreateAttribute()
+    public function hasPermalink()
+    {
+        return (bool) ! is_null($this->getRelationValue('permalink'));
+    }
+
+    /**
+     * Determine the newly created entity should load all routes.
+     *
+     * @return bool
+     */
+    public function loadRoutesOnCreate()
     {
         return false;
     }
@@ -215,13 +205,25 @@ trait HasPermalinks
         return null;
     }
 
-    /**
-     * Check if the page has a permalink relation.
-     *
-     * @return bool
-     */
-    public function hasPermalink()
-    {
-        return (bool) ! is_null($this->permalink);
-    }
+
+// TODO: CAN BE DELETED
+//    /**
+//     * Set the permalink parent.
+//     *
+//     * @param $value
+//     */
+//    public function setPermalinkParentAttribute($value)
+//    {
+//        $this->permalinkParent = $value;
+//    }
+//
+//    /**
+//     * Get the permalink parent.
+//     *
+//     * @return null
+//     */
+//    public function getPermalinkParentAttribute()
+//    {
+//        return $this->permalinkParent;
+//    }
 }

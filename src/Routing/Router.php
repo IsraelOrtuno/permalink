@@ -106,8 +106,10 @@ class Router extends LaravelRouter
      */
     public function addPermalink($permalink)
     {
-        if ($permalink->action || $permalink->pemalinkable) {
-            $this->routes->add($this->createRouteForPermalink($permalink));
+        if ($permalink->action) {
+            $route = $this->createRouteForPermalink($permalink);
+
+            $this->routes->add($route);
         }
 
         if (count($permalink->children)) {

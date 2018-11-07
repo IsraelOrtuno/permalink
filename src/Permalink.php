@@ -66,7 +66,7 @@ class Permalink extends Model
         });
 
         static::created(function (Permalink $model) {
-            if (($model->entity && $model->entity->permalinkLoadRoutesOnCreate) || static::$loadRoutesOnCreate) {
+            if (($model->entity && $model->entity->loadRoutesOnCreate()) || static::$loadRoutesOnCreate) {
                 app('router')->loadPermalinks();
             }
         });
@@ -244,7 +244,7 @@ class Permalink extends Model
         if ($entity && $name = $entity->permalinkRouteName()) {
             return $name;
         } elseif ($action = $this->getActionRootName()) {
-            return implode('.', [$action, $entity->getKey() ?? '']);
+            return implode('.', [$action, $entity ? $entity->getKey() : '']);
         }
 
         // TODO: Maybe in future we can add a method fallback in order to
