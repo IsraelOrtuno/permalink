@@ -5,19 +5,20 @@ namespace Devio\Permalink;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class Permalink extends Model
 {
-    use Sluggable;
+    use Sluggable, SoftDeletes;
 
     /**
      * Fillable attributes.
      *
      * @var array
      */
-    public $fillable = ['parent_id', 'parent_for', 'slug', 'action', 'seo'];
+    public $fillable = ['parent_id', 'parent_for', 'entity_type', 'entity_id', 'slug', 'action', 'seo'];
 
     /**
      * Casting attributes.
@@ -54,14 +55,18 @@ class Permalink extends Model
      */
     public static function boot()
     {
-        parent::boot();
-
         static::saving(function (Permalink $model) {
             // If the user has provided an slug manually, we have to make sure
             // that that slug is unique. If it is not, the SlugService class
             // will append an incremental suffix to ensure its uniqueness.
             if ($model->isDirty('slug') && ! empty($model->slug)) {
                 $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
+            }
+
+            if (config('permalink.automatic_nesting') && ! $model->parent_id) {
+                if ($model->entity && $parent = static::parentFor($model->entity)) {
+                    $model->parent_id = $parent->getKey();
+                }
             }
         });
 
@@ -70,6 +75,8 @@ class Permalink extends Model
                 app('router')->loadPermalinks();
             }
         });
+
+        parent::boot();
     }
 
     /**
@@ -224,7 +231,7 @@ class Permalink extends Model
             return $entity->permalinkAction();
         }
 
-        // TODO: Maybe provide a fallback method to provide an action when none is found...
+// TODO: Maybe provide a fallback method to provide an action when none is found...
         return null;
     }
 
@@ -234,7 +241,8 @@ class Permalink extends Model
      * @return null|string
      * @throws \ReflectionException
      */
-    public function getNameAttribute()
+    public
+    function getNameAttribute()
     {
         $entity = $this->getRelationValue('entity');
 
@@ -258,7 +266,8 @@ class Permalink extends Model
      * @return null|string
      * @throws \ReflectionException
      */
-    public function getActionRootName()
+    public
+    function getActionRootName()
     {
         if (! str_contains($action = $this->action, '@')) {
             return null;
@@ -275,7 +284,8 @@ class Permalink extends Model
      *
      * @return mixed
      */
-    public function getRawActionAttribute()
+    public
+    function getRawActionAttribute()
     {
         return $this->attributes['action'] ?? null;
     }
@@ -285,7 +295,8 @@ class Permalink extends Model
      *
      * @param $value
      */
-    public function setParentForAttribute($value)
+    public
+    function setParentForAttribute($value)
     {
         if (! Relation::getMorphedModel($value)) {
             $value = array_search($value, Relation::morphMap()) ?: $value;
@@ -301,7 +312,8 @@ class Permalink extends Model
      * @param  bool $merge
      * @return array
      */
-    public static function actionMap(array $map = null, $merge = true)
+    public
+    static function actionMap(array $map = null, $merge = true)
     {
         if (! is_null($map)) {
             static::$actionMap = $merge && static::$actionMap
@@ -316,7 +328,8 @@ class Permalink extends Model
      *
      * @param $value
      */
-    public function setSeoAttribute($value)
+    public
+    function setSeoAttribute($value)
     {
         if (! is_null($value)) {
             $value = json_encode(array_undot(
@@ -335,7 +348,8 @@ class Permalink extends Model
      * @param  string $alias
      * @return string|null
      */
-    public static function getMappedAction($alias)
+    public
+    static function getMappedAction($alias)
     {
         return static::$actionMap[$alias] ?? null;
     }

@@ -2,21 +2,27 @@
 
 namespace Devio\Permalink\Tests;
 
-use Arcanedev\SeoHelper\SeoHelperServiceProvider;
-use Devio\Permalink\Middleware\BuildSeo;
+use Devio\Permalink\Permalink;
 use Devio\Permalink\PermalinkServiceProvider;
-use Devio\Permalink\Routing\Router;
+use Arcanedev\SeoHelper\SeoHelperServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    use DatabaseMigrations;
+
     public function setUp()
     {
         parent::setUp();
 
-//        $this->withMiddleware(BuildSeo::class);
-        $this->artisan('migrate', ['--database' => 'testing']);
+        // Reset maps
+        Relation::morphMap([], false);
+        Permalink::actionMap([], false);
+
         $this->loadLaravelMigrations('testing');
-        $this->withFactories(__DIR__ . '/factories');
+        $this->loadMigrationsFrom(__DIR__ . '/Support/migrations');
+        $this->withFactories(__DIR__ . '/Support/factories');
     }
 
     protected function getEnvironmentSetUp($app)

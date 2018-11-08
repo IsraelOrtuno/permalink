@@ -17,5 +17,7 @@ return [
         'middleware' => [
             'web'
         ]
-    ]
+    ],
+
+    'automatic_nesting' => true
 ];

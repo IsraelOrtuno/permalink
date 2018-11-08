@@ -14,13 +14,23 @@ class EntityObserver
      */
     public function saved(Model $model)
     {
-        if (! $this->managePermalinks($model)) {
+        if (! $model->handlePermalink) {
             return;
         }
 
         $attributes = $this->gatherAttributes($model->getPermalinkAttributes());
 
-        $model->storePermalink($attributes);
+        $model->updatePermalink($attributes);
+    }
+
+    /**
+     * Restored model event handler.
+     *
+     * @param $model
+     */
+    public function restored($model)
+    {
+        $model->permalink->restore();
     }
 
     /**
@@ -30,21 +40,16 @@ class EntityObserver
      */
     public function deleted(Model $model)
     {
-        // The permalink should be deleted if the main entity gets destroyed as
-        // it won't be able to find the related resource. Not deleting would
-        // cause problems when pre-loading the permalink route collection.
-        $model->permalink->delete();
-    }
+        $method = 'forceDelete';
 
-    /**
-     * Check if the model should auto manage the permalinks.
-     *
-     * @param Model $model
-     * @return bool
-     */
-    protected function managePermalinks(Model $model)
-    {
-        return $model->managePermalinks ?? true;
+        // The Permalink record should be removed if the main entity has been
+        // deleted. Here we will check if we should perform a hard or soft
+        // deletion depending on what is being used ont he main entity.
+        if (method_exists($model, 'trashed') && ! $model->isForceDeleting()) {
+            $method = 'delete';
+        }
+
+        $model->permalink->{$method}();
     }
 
     /**

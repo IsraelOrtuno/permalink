@@ -26,10 +26,13 @@ class CreatePermalinksTable extends Migration
             $table->string('action')->nullable();
             $table->text('seo')->nullable();
 
+            $table->softDeletes();
+
             $table->timestamps();
 
             $table->index(["entity_type", "entity_id"]);
             $table->unique(['slug', 'parent_id']);
+            $table->unique(['parent_for']);
         });
     }
 

@@ -2,7 +2,7 @@
 
 namespace Devio\Permalink;
 
-trait HasPermalinks
+trait HasPermalink
 {
     /**
      * Permalink attributes.
@@ -11,17 +11,10 @@ trait HasPermalinks
      */
     protected $permalinkAttributes = null;
 
-//    /**
-//     * The permalink parent id.
-//     *
-//     * @var null
-//     */
-//    protected $permalinkParent = null;
-
     /**
      * Booting the trait.
      */
-    public static function bootHasPermalinks()
+    public static function bootHasPermalink()
     {
         static::observe(EntityObserver::class);
     }
@@ -56,53 +49,51 @@ trait HasPermalinks
      */
     public function permalink()
     {
-        return $this->morphOne(Permalink::class, 'entity');
+        return $this->morphOne(Permalink::class, 'entity')
+                    ->withTrashed();
     }
 
     /**
-     * Store a permalink for this the current entity.
+     * Create the permalink for the current entity.
      *
-     * @param array $attributes
+     * @param $attributes
      * @return $this
      */
-    public function storePermalink($attributes = [])
+    public function createPermalink($attributes)
     {
-        // Once we have the attributes we need to set, we will perform a new
-        // query in order to find if there is any parent class set for the
-        // current permalinkable entity. If so, we'll add it as parent.
-        if (! isset($attributes['parent_id'])) {
-            $attributes = $this->setPermalinkParentIfAny($attributes);
+        if ($this->permalink) {
+            return $this->updatePermalink($attributes);
         }
 
-        // Then we are ready to perform the creation or update action based on
-        // the model existence. If the model was recently created, we'll add
-        // a new permalink, otherwise, we'll update the existing permalink.
-        if ($this->wasRecentlyCreated || ! $this->permalink) {
-            $permalink = $this->permalink()->create(
-                $this->preparePermalinkSeoAttributes($attributes)
-            );
+        $permalink = $this->permalink()->newRelatedInstanceFor($this);
 
-            $this->setRelation('permalink', $permalink);
-        } elseif ($this->permalink) {
-            $this->permalink->update($attributes);
-        }
+        $permalink->fill($this->preparePermalinkSeoAttributes($attributes))
+                  ->save();
 
-        return $this;
+        $permalink->setRelation('entity', $this);
+
+//        $permalink = $this->permalink()->create(
+//            $this->preparePermalinkSeoAttributes($attributes)
+//        );
+
+        return $this->setRelation('permalink', $permalink);
     }
 
     /**
-     * Set the permalink parent if any.
+     * Update the permalink for the current entity.
      *
-     * @param array $attributes
-     * @return array
+     * @param $attributes
+     * @return $this
      */
-    protected function setPermalinkParentIfAny($attributes = [])
+    public function updatePermalink($attributes)
     {
-        if ($parent = Permalink::parentFor($this)) {
-            $attributes['parent_id'] = $parent->getKey();
+        if (! $this->permalink) {
+            return $this->createPermalink($attributes);
         }
 
-        return $attributes;
+        $this->permalink->update($attributes);
+
+        return $this;
     }
 
     /**
@@ -165,9 +156,11 @@ trait HasPermalinks
     }
 
     /**
+     * Get the permalink nested path.
+     *
      * @return mixed
      */
-    public function getRouteFullSlugAttribute()
+    public function getRoutePathAttribute()
     {
         return $this->hasPermalink() ? trim(parse_url($this->route)['path'], '/') : null;
     }
@@ -200,30 +193,8 @@ trait HasPermalinks
     public function permalinkRouteName()
     {
         // You can be creative here. Make sure the route name is unique or it may create route conflicts
-        //    return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
+            return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
 
-        return null;
+//        return null;
     }
-
-
-// TODO: CAN BE DELETED
-//    /**
-//     * Set the permalink parent.
-//     *
-//     * @param $value
-//     */
-//    public function setPermalinkParentAttribute($value)
-//    {
-//        $this->permalinkParent = $value;
-//    }
-//
-//    /**
-//     * Get the permalink parent.
-//     *
-//     * @return null
-//     */
-//    public function getPermalinkParentAttribute()
-//    {
-//        return $this->permalinkParent;
-//    }
 }
