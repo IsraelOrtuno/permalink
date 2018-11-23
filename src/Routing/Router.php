@@ -13,7 +13,7 @@ class Router extends LaravelRouter
      */
     public function findRoute($request)
     {
-        // First we'll try to find any hardcoded route for the current request.
+        // First we'll try to find any code defined route for the current request.
         // If no route was found, we can then attempt to find if the URL path
         // matches a existing permalink. If not just rise up the exception.
         try {
@@ -23,7 +23,6 @@ class Router extends LaravelRouter
         }
     }
 
-    
     public function findPermalink($request)
     {
         $route = $this->matchAgainstPermalinks($request);

@@ -104,10 +104,10 @@ class Permalink extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function children()
+    public function children($withs = true)
     {
         return $this->hasMany(static::class, 'parent_id')
-                    ->with('children', 'entity');
+                    ->with($withs ? ['children', 'entity'] : []);
     }
 
     /**

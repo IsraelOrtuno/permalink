@@ -2,199 +2,184 @@
 
 namespace Devio\Permalink;
 
-trait HasPermalink
-{
-    /**
-     * Permalink attributes.
-     *
-     * @var null
-     */
-    protected $permalinkAttributes = null;
+trait HasPermalink {
+	/**
+	 * Permalink attributes.
+	 *
+	 * @var null
+	 */
+	protected $permalinkAttributes = null;
 
-    /**
-     * Booting the trait.
-     */
-    public static function bootHasPermalink()
-    {
-        static::observe(EntityObserver::class);
-    }
+	/**
+	 * Booting the trait.
+	 */
+	public static function bootHasPermalink() {
+		static::observe(EntityObserver::class);
+	}
 
-    /**
-     * Set the permalink attributes.
-     *
-     * @param $value
-     */
-    public function setPermalinkAttribute($value)
-    {
-        // This method is supposed to be used to store the permalink data from
-        // the request. This data can later be retrieved by the saving event
-        // and stored into the permalinks table. This is a kind of bridge.
-        $this->permalinkAttributes = $value;
-    }
+	/**
+	 * Set the permalink attributes.
+	 *
+	 * @param $value
+	 */
+	public function setPermalinkAttribute($value) {
+		// This method is supposed to be used to store the permalink data from
+		// the request. This data can later be retrieved by the saving event
+		// and stored into the permalinks table. This is a kind of bridge.
+		$this->permalinkAttributes = $value;
+	}
 
-    /**
-     * Get the permalink attributes if any.
-     *
-     * @return null
-     */
-    public function getPermalinkAttributes()
-    {
-        return $this->permalinkAttributes;
-    }
+	/**
+	 * Get the permalink attributes if any.
+	 *
+	 * @return null
+	 */
+	public function getPermalinkAttributes() {
+		return $this->permalinkAttributes;
+	}
 
-    /**
-     * Relation to the permalinks table.
-     *
-     * @return mixed
-     */
-    public function permalink()
-    {
-        return $this->morphOne(Permalink::class, 'entity')
-                    ->withTrashed();
-    }
+	/**
+	 * Relation to the permalinks table.
+	 *
+	 * @return mixed
+	 */
+	public function permalink() {
+		return $this->morphOne(Permalink::class, 'entity')
+			->withTrashed();
+	}
 
-    /**
-     * Create the permalink for the current entity.
-     *
-     * @param $attributes
-     * @return $this
-     */
-    public function createPermalink($attributes)
-    {
-        if ($this->permalink) {
-            return $this->updatePermalink($attributes);
-        }
+	/**
+	 * Create the permalink for the current entity.
+	 *
+	 * @param $attributes
+	 * @return $this
+	 */
+	public function createPermalink($attributes) {
+		if ($this->permalink) {
+			return $this->updatePermalink($attributes);
+		}
 
-        $permalink = $this->permalink()->newRelatedInstanceFor($this);
+		$permalink = $this->permalink()->newRelatedInstanceFor($this);
 
-        $permalink->fill($this->preparePermalinkSeoAttributes($attributes))
-                  ->save();
+		$permalink->fill($this->preparePermalinkSeoAttributes($attributes))
+			->save();
 
-        $permalink->setRelation('entity', $this);
+		$permalink->setRelation('entity', $this);
 
 //        $permalink = $this->permalink()->create(
-//            $this->preparePermalinkSeoAttributes($attributes)
-//        );
+		//            $this->preparePermalinkSeoAttributes($attributes)
+		//        );
 
-        return $this->setRelation('permalink', $permalink);
-    }
+		return $this->setRelation('permalink', $permalink);
+	}
 
-    /**
-     * Update the permalink for the current entity.
-     *
-     * @param $attributes
-     * @return $this
-     */
-    public function updatePermalink($attributes)
-    {
-        if (! $this->permalink) {
-            return $this->createPermalink($attributes);
-        }
+	/**
+	 * Update the permalink for the current entity.
+	 *
+	 * @param $attributes
+	 * @return $this
+	 */
+	public function updatePermalink($attributes) {
+		if (!$this->permalink) {
+			return $this->createPermalink($attributes);
+		}
 
-        $this->permalink->update($attributes);
+		$this->permalink->update($attributes);
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Prepare the seo attributes looking for default values in fallback methods.
-     *
-     * @param array $attributes
-     * @return array
-     */
-    protected function preparePermalinkSeoAttributes($attributes = [])
-    {
-        $attributes = array_undot($attributes);
-        $values = array_dot($this->getEmptyPermalinkSeoArray());
+	/**
+	 * Prepare the seo attributes looking for default values in fallback methods.
+	 *
+	 * @param array $attributes
+	 * @return array
+	 */
+	protected function preparePermalinkSeoAttributes($attributes = []) {
+		$attributes = array_undot($attributes);
+		$values = array_dot($this->getEmptyPermalinkSeoArray());
 
-        foreach ($values as $key => $value) {
-            $attribute = studly_case(str_replace('.', ' ', $key));
+		foreach ($values as $key => $value) {
+			$attribute = studly_case(str_replace('.', ' ', $key));
 
-            if (! array_get($attributes, $key) && $value = $this->getAttribute($attribute)) {
-                array_set($attributes, $key, $value);
-            }
-        }
+			if (!array_get($attributes, $key) && $value = $this->getAttribute($attribute)) {
+				array_set($attributes, $key, $value);
+			}
+		}
 
-        return $attributes;
-    }
+		return $attributes;
+	}
 
-    /**
-     * Get a value empty seo column structure.
-     *
-     * @return array
-     */
-    protected function getEmptyPermalinkSeoArray()
-    {
-        $fields = ['title' => null, 'description' => null];
+	/**
+	 * Get a value empty seo column structure.
+	 *
+	 * @return array
+	 */
+	protected function getEmptyPermalinkSeoArray() {
+		$fields = ['title' => null, 'description' => null];
 
-        return [
-            'seo' => array_merge($fields, [
-                'twitter' => $fields, 'opengraph' => $fields
-            ])
-        ];
-    }
+		return [
+			'seo' => array_merge($fields, [
+				'twitter' => $fields, 'opengraph' => $fields,
+			]),
+		];
+	}
 
-    /**
-     * Resolve the full permalink route.
-     *
-     * @return string
-     */
-    public function getRouteAttribute()
-    {
-        return ($this->exists && $this->hasPermalink()) ?
-            route($this->permalinkRouteName()) : null;
-    }
+	/**
+	 * Resolve the full permalink route.
+	 *
+	 * @return string
+	 */
+	public function getRouteAttribute() {
+		return ($this->exists && $this->hasPermalink()) ?
+		route($this->permalinkRouteName()) : null;
+	}
 
-    /**
-     * Get the entity slug.
-     *
-     * @return null
-     */
-    public function getRouteSlugAttribute()
-    {
-        return $this->hasPermalink() ? $this->permalink->slug : null;
-    }
+	/**
+	 * Get the entity slug.
+	 *
+	 * @return null
+	 */
+	public function getRouteSlugAttribute() {
+		return $this->hasPermalink() ? $this->permalink->slug : null;
+	}
 
-    /**
-     * Get the permalink nested path.
-     *
-     * @return mixed
-     */
-    public function getRoutePathAttribute()
-    {
-        return $this->hasPermalink() ? trim(parse_url($this->route)['path'], '/') : null;
-    }
+	/**
+	 * Get the permalink nested path.
+	 *
+	 * @return mixed
+	 */
+	public function getRoutePathAttribute() {
+		return $this->hasPermalink() ? trim(parse_url($this->route)['path'], '/') : null;
+	}
 
-    /**
-     * Check if the page has a permalink relation.
-     *
-     * @return bool
-     */
-    public function hasPermalink()
-    {
-        return (bool) ! is_null($this->getRelationValue('permalink'));
-    }
+	/**
+	 * Check if the page has a permalink relation.
+	 *
+	 * @return bool
+	 */
+	public function hasPermalink() {
+		return (bool) !is_null($this->getRelationValue('permalink'));
+	}
 
-    /**
-     * Determine the newly created entity should load all routes.
-     *
-     * @return bool
-     */
-    public function loadRoutesOnCreate()
-    {
-        return false;
-    }
+	/**
+	 * Determine the newly created entity should load all routes.
+	 *
+	 * @return bool
+	 */
+	public function loadRoutesOnCreate() {
+		return false;
+	}
 
-    /**
-     * Get the entity route name (must be unique).
-     *
-     * @return string
-     */
-    public function permalinkRouteName()
-    {
-        // You can be creative here. Make sure the route name is unique or it may create route conflicts
-            return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
+	/**
+	 * Get the entity route name (must be unique).
+	 *
+	 * @return string
+	 */
+	public function permalinkRouteName() {
+		// You can be creative here. Make sure the route name is unique or it may create route conflicts
+		return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
 
 //        return null;
-    }
+	}
 }

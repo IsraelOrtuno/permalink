@@ -3,6 +3,7 @@
 namespace Devio\Permalink\Routing;
 
 use Devio\Permalink\Permalink;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class Query
@@ -22,17 +23,37 @@ class Query
     public function match()
     {
         $route = $this->matchAgainstSegments();
+
+        dd($route);
     }
 
+    // USE CASES
+    // - Route may be /  <---- CONSIDER THAT
+    // - First segments (before reversing) may be part of a global group <---- 💁‍♀️ DEAL WITH IT
+    // - 
     protected function matchAgainstSegments()
     {
-        $query = $this->query();
-        $segments = array_reverse($this->request->segments());
+        $segments = $this->segments();
 
-        $query->where('permalinks.slug', array_pop($segments));
-        $index = 1;
+        try {
+            $current = $permalink = $this->getRoot($segments[0] ?? '');
 
-        while ($segment = array_pop($segments)) {
+            while ($current && $segment = next($segments)) {
+                $nested = $this->getNested($current, $segment);
+
+                $current->setRelation('children', collect([$nested]));
+
+                $current = $nested;
+            }
+        } catch (ModelNotFoundException $e) {
+            return false;
+        }
+
+        return $permalink;
+
+        /*$index = 1;
+
+        while ($segment = next($segments)) {
             [$previous, $current] = $this->getAliases($index);
 
             $query->join(
@@ -46,20 +67,48 @@ class Query
             $index++;
         }
 
-        return $query->get();
+        return $query->get();*/
+    }
+
+    /**
+     * @param $slug
+     * @return mixed
+     */
+    protected function getRoot($slug)
+    {
+        return $this->query()->where('slug', $slug)
+                    ->where('parent_id', null)
+                    ->firstOrFail();
+    }
+
+    /**
+     * @param $permalink
+     * @param $slug
+     * @return \Illuminate\Support\Collection
+     */
+    protected function getNested($permalink, $slug)
+    {
+        return $permalink->children(false)
+                         ->where('slug', $slug)
+                         ->firstOrFail();
+    }
+
+    protected function segments()
+    {
+        return $this->request->segments();
     }
 
     protected function getAliases($index)
     {
         return [
-            $index == 1 ? static::ALIAS : (static::ALIAS . ($index - 1)), 
+            $index == 1 ? static::ALIAS : static::ALIAS . ($index - 1),
             static::ALIAS . $index
         ];
     }
 
     protected function query()
     {
-        return DB::table((new Permalink)->getTable());
-//        return (new Permalink)->newQuery();
+        // return DB::table((new Permalink)->getTable());
+        return (new Permalink);
     }
 }
