@@ -3,6 +3,7 @@
 namespace Devio\Permalink\Tests;
 
 use Devio\Permalink\Permalink;
+use Devio\Permalink\Tests\Support\Kernel;
 use Devio\Permalink\PermalinkServiceProvider;
 use Arcanedev\SeoHelper\SeoHelperServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;

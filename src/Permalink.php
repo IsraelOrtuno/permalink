@@ -241,8 +241,7 @@ class Permalink extends Model
      * @return null|string
      * @throws \ReflectionException
      */
-    public
-    function getNameAttribute()
+    public function getNameAttribute()
     {
         $entity = $this->getRelationValue('entity');
 
@@ -266,8 +265,7 @@ class Permalink extends Model
      * @return null|string
      * @throws \ReflectionException
      */
-    public
-    function getActionRootName()
+    public function getActionRootName()
     {
         if (! str_contains($action = $this->action, '@')) {
             return null;
@@ -284,8 +282,7 @@ class Permalink extends Model
      *
      * @return mixed
      */
-    public
-    function getRawActionAttribute()
+    public function getRawActionAttribute()
     {
         return $this->attributes['action'] ?? null;
     }

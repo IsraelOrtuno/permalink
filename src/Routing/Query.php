@@ -2,14 +2,18 @@
 
 namespace Devio\Permalink\Routing;
 
+use Illuminate\Http\Request;
 use Devio\Permalink\Permalink;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\DB;
 
 class Query
 {
-    const ALIAS = 'permalinks';
-
+    /**
+     * The current request instance.
+     *
+     * @var Request
+     */
     protected $request;
 
     /**
@@ -22,9 +26,7 @@ class Query
 
     public function match()
     {
-        $route = $this->matchAgainstSegments();
-
-        dd($route);
+        return $this->matchAgainstSegments();
     }
 
     // USE CASES
@@ -41,7 +43,7 @@ class Query
             while ($current && $segment = next($segments)) {
                 $nested = $this->getNested($current, $segment);
 
-                $current->setRelation('children', collect([$nested]));
+                $current->setRelation('children', new Collection([$nested]));
 
                 $current = $nested;
             }
@@ -50,27 +52,11 @@ class Query
         }
 
         return $permalink;
-
-        /*$index = 1;
-
-        while ($segment = next($segments)) {
-            [$previous, $current] = $this->getAliases($index);
-
-            $query->join(
-                "permalinks as {$current}",
-                function ($join) use ($segment, $previous, $current) {
-                    return $join->on("{$previous}.id", '=', "{$current}.parent_id")
-                                ->where("{$current}.slug", $segment);
-                }
-            );
-
-            $index++;
-        }
-
-        return $query->get();*/
     }
 
     /**
+     * Get the root permalink for a given slug.
+     *
      * @param $slug
      * @return mixed
      */
@@ -82,6 +68,8 @@ class Query
     }
 
     /**
+     * Get the nested permalink of a given permalink based on a slug.
+     *
      * @param $permalink
      * @param $slug
      * @return \Illuminate\Support\Collection
@@ -93,22 +81,24 @@ class Query
                          ->firstOrFail();
     }
 
+    /**
+     * Get the request segments.
+     *
+     * @return mixed
+     */
     protected function segments()
     {
         return $this->request->segments();
     }
 
-    protected function getAliases($index)
-    {
-        return [
-            $index == 1 ? static::ALIAS : static::ALIAS . ($index - 1),
-            static::ALIAS . $index
-        ];
-    }
-
+    /**
+     * Get a new query
+     * y.
+     *
+     * @return Permalink
+     */
     protected function query()
     {
-        // return DB::table((new Permalink)->getTable());
         return (new Permalink);
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 class CreatingTest extends TestCase
 {
     /** @test */
-    public function it_permalink_is_created_when_resource()
+    public function it_creates_permalink_when_resource_is_created()
     {
         $user = factory(User::class)->create();
 
