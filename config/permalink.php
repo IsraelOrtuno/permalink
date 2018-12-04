@@ -19,5 +19,20 @@ return [
         ]
     ],
 
-    'automatic_nesting' => true
+    'automatic_nesting' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Automatically Refresh Routes
+    |--------------------------------------------------------------------------
+    |
+    | The route's collection has to be refreshed when a new permalink is added
+    | to the router. Consider setting this option to false and refresh them
+    | manually if using addPermalinks many times for a better performance.
+    |
+    | Use Router::refreshRoutes() method to refresh the route look-ups.
+    |
+    */
+
+    'refresh_route_lookups' => true
 ];

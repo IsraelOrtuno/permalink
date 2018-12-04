@@ -7,6 +7,26 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Router extends LaravelRouter
 {
+    public function loadPermalinks()
+    {
+        if (is_null($permalinks)) {
+            $this->clearPermalinkRoutes();
+        }
+
+        $permalinks = (new RouteCollection(
+            array_filter(array_wrap($permalinks))
+        ))->tree();
+
+        $this->group(config('permalink.group'), function () use ($permalinks) {
+            $this->addPermalinks($permalinks);
+        });
+
+        // Whenever routes are loaded, we should refresh the name lookups to
+        // make sure all our newly generated route names are included into
+        // the route collection name list. Routes can be added any time.
+        $this->refreshRoutes();
+    }
+    
     /**
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Routing\Route|void
@@ -20,7 +40,6 @@ class Router extends LaravelRouter
             return parent::findRoute($request);
         } catch (NotFoundHttpException $e) {
             $this->findPermalink($request);
-            $this->refreshRoutes();
 
             return parent::findRoute($request);
         }
@@ -30,11 +49,11 @@ class Router extends LaravelRouter
     {
         $permalink = (new Query($request))->match();
 
-        if ($permalink) {
-            return $this->addPermalinks([$permalink]);
+        if (! $permalink) {
+            throw new NotFoundHttpException;
         }
 
-        throw new NotFoundHttpException;
+        return $this->addPermalinks($permalink, true);
     }
 
     protected function createPermalinkRoute($permalink)
@@ -72,20 +91,29 @@ class Router extends LaravelRouter
      * Add a collection of permalinks to the router.
      *
      * @param array $permalinks
+     * @param bool $forceRefresh
+     * @return Router
      */
-    public function addPermalinks($permalinks = [])
+    public function addPermalinks($permalinks = [], $forceRefresh = false)
     {
-        foreach ($permalinks as $permalink) {
+        foreach (array_wrap($permalinks) as $permalink) {
             $this->addPermalink($permalink);
         }
+
+        if ($forceRefresh || config('permalink.refresh_route_lookups')) {
+            $this->refreshRoutes();
+        }
+
+        return $this;
     }
 
     /**
      * Add a single permalink to the router.
      *
      * @param $permalink
+     * @return Router
      */
-    public function addPermalink($permalink)
+    protected function addPermalink($permalink)
     {
         if ($permalink->action) {
             $route = $this->createPermalinkRoute($permalink);
@@ -96,6 +124,8 @@ class Router extends LaravelRouter
         if ($permalink->relationLoaded('children')) {
             $this->permalinkGroup($permalink);
         }
+
+        return $this;
     }
 
     /**
@@ -113,7 +143,7 @@ class Router extends LaravelRouter
     /**
      * Refesh the route name and action lookups.
      */
-    protected function refreshRoutes()
+    public function refreshRoutes()
     {
         $this->getRoutes()->refreshNameLookups();
         $this->getRoutes()->refreshActionLookups();
