@@ -13,8 +13,11 @@ trait ReplacesRouter
     {
         $this->router = $this->app['router'];
 
-        $this->router->replaceMiddleware($this->routeMiddleware, $this->middlewareGroups);
-
+        $this->router->replaceMiddleware(
+            $this->routeMiddleware + $this->router->getMiddleware(),
+            $this->middlewareGroups + $this->router->getMiddlewareGroups()
+        );
+        
         return parent::dispatchToRouter();
     }
 }
