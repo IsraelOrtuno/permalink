@@ -20,13 +20,8 @@ class Router extends LaravelRouter
         $this->group(config('permalink.group'), function () use ($permalinks) {
             $this->addPermalinks($permalinks);
         });
-
-        // Whenever routes are loaded, we should refresh the name lookups to
-        // make sure all our newly generated route names are included into
-        // the route collection name list. Routes can be added any time.
-        $this->refreshRoutes();
     }
-    
+
     /**
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Routing\Route|void
