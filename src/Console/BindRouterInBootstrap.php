@@ -4,7 +4,7 @@ namespace Devio\Permalink\Console;
 
 use Illuminate\Console\Command;
 
-class BindRouterAtBootstrap extends Command
+class BindRouterInBootstrap extends Command
 {
     public $signature = 'permalink:bind-router';
 

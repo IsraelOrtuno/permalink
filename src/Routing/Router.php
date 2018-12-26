@@ -7,20 +7,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Router extends LaravelRouter
 {
-    public function loadPermalinks()
-    {
-        if (is_null($permalinks)) {
-            $this->clearPermalinkRoutes();
-        }
-
-        $permalinks = (new RouteCollection(
-            array_filter(array_wrap($permalinks))
-        ))->tree();
-
-        $this->group(config('permalink.group'), function () use ($permalinks) {
-            $this->addPermalinks($permalinks);
-        });
-    }
+//    public function loadPermalinks()
+//    {
+//        $permalinks = (new RouteCollection())->tree();
+//
+//        $this->group(config('permalink.group'), function () use ($permalinks) {
+//            $this->addPermalinks($permalinks);
+//        });
+//    }
 
     /**
      * @param \Illuminate\Http\Request $request
@@ -42,7 +36,7 @@ class Router extends LaravelRouter
 
     public function findPermalink($request)
     {
-        $permalink = (new Query($request))->match();
+        $permalink = (new Matcher($request))->match();
 
         if (! $permalink) {
             throw new NotFoundHttpException;

@@ -61,7 +61,7 @@ class PermalinkServiceProvider extends ServiceProvider
             return new PermalinkManager($this->app['request'], $this->app);
         });
 
-        $this->commands(Console\BindRouterAtBootstrap::class);
+        $this->commands(Console\BindRouterInBootstrap::class);
         $this->commands(Console\ReplaceRouterInKernel::class);
     }
 }
