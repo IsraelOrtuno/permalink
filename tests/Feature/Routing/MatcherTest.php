@@ -13,13 +13,14 @@ class MatcherTest extends TestCase
     /** @test */
     public function it_matches_the_empty_route()
     {
-//        DB::table('permalinks')->insert([
-//            ['slug' => '']
-//        ]);
-//
-//        $query = new Matcher(Request::create('/'));
-//
-//        dd($query->match());
+        DB::table('permalinks')->insert([
+            ['slug' => '', 'action' => 'foo']
+        ]);
+
+        $permalink = (new Matcher(Request::create('/')))->match();
+
+        $this->assertEquals('', $permalink->slug);
+        $this->assertEquals('foo', $permalink->action);
     }
 
     protected function getRequest()

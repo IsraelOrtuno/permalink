@@ -3,18 +3,22 @@
 namespace Devio\Permalink\Routing;
 
 use Illuminate\Routing\Router as LaravelRouter;
+use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Router extends LaravelRouter
 {
-//    public function loadPermalinks()
-//    {
-//        $permalinks = (new RouteCollection())->tree();
-//
-//        $this->group(config('permalink.group'), function () use ($permalinks) {
-//            $this->addPermalinks($permalinks);
-//        });
-//    }
+    /**
+     * Load the entire permalink collection.
+     */
+    public function loadPermalinks()
+    {
+        $permalinks = (new RouteCollection())->tree();
+
+        $this->group(config('permalink.group'), function () use ($permalinks) {
+            $this->addPermalinks($permalinks);
+        });
+    }
 
     /**
      * @param \Illuminate\Http\Request $request
@@ -85,7 +89,11 @@ class Router extends LaravelRouter
      */
     public function addPermalinks($permalinks = [], $forceRefresh = false)
     {
-        foreach (array_wrap($permalinks) as $permalink) {
+        if (! $permalinks instanceof Collection) {
+            $permalinks = array_wrap($permalinks);
+        }
+
+        foreach ($permalinks as $permalink) {
             $this->addPermalink($permalink);
         }
 
