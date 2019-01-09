@@ -3,9 +3,9 @@
 namespace Devio\Permalink\Tests\Feature;
 
 use Devio\Permalink\Permalink;
-use Devio\Permalink\Tests\Support\Controllers\TestController;
 use Devio\Permalink\Tests\TestCase;
 use Devio\Permalink\Tests\Support\Models\User;
+use Devio\Permalink\Tests\Support\Controllers\TestController;
 
 class ActionTest extends TestCase
 {
@@ -28,7 +28,7 @@ class ActionTest extends TestCase
     }
 
     /** @test */
-    public function it_can_read_raw_actions()
+    public function it_reads_raw_actions()
     {
         Permalink::actionMap(['user.index' => TestController::class . '@index']);
         $permalink = Permalink::create(['slug' => 'foo', 'action' => 'user.index']);

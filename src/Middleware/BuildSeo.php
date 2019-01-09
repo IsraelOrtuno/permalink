@@ -2,7 +2,7 @@
 
 namespace Devio\Permalink\Middleware;
 
-use Devio\Permalink\Contracts\Manager;
+use Devio\Permalink\Contracts\RequestHandler;
 
 class BuildSeo
 {
@@ -15,7 +15,7 @@ class BuildSeo
      */
     public function handle($request, \Closure $next)
     {
-        app(Manager::class)->request($request)->runBuilders();
+        app(RequestHandler::class)->request($request)->runBuilders();
 
         return $next($request);
     }

@@ -14,7 +14,7 @@ class EntityObserver
      */
     public function saved(Model $model)
     {
-        if (! $model->handlePermalink) {
+        if (! $model->handlesPermalink()) {
             return;
         }
 

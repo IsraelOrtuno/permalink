@@ -1,10 +1,14 @@
 <?php
 
-if (!function_exists('permalink')) {
+use Devio\Permalink\Services\RouteService;
+
+if (! function_exists('permalink')) {
     /**
      * Helper for accessing a permalink route.
      */
-    function permalink() {
-
+    function permalink($permalink)
+    {
+        return (new RouteService())
+            ->permalink($permalink);
     }
 }

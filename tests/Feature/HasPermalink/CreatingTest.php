@@ -36,7 +36,7 @@ class CreatingTest extends TestCase
     }
 
     /** @test */
-    public function it_can_set_permalink_attribtues()
+    public function it_can_set_permalink_attributes()
     {
         $user = factory(User::class)->create(['permalink' => ['slug' => 'foo', 'parent_id' => 1, 'parent_for' => 'user']]);
 

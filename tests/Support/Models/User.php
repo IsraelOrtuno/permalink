@@ -2,14 +2,14 @@
 
 namespace Devio\Permalink\Tests\Support\Models;
 
-use Devio\Permalink\HasPermalink;
+use Devio\Permalink\HasPermalinks;
 use Illuminate\Database\Eloquent\Model;
 use Devio\Permalink\Contracts\Permalinkable;
 use Devio\Permalink\Tests\Support\Controllers\TestController;
 
 class User extends Model implements Permalinkable
 {
-    use HasPermalink;
+    use HasPermalinks;
 
     public $handlePermalink = true;
 

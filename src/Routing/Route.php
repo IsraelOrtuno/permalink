@@ -44,17 +44,6 @@ class Route extends \Illuminate\Routing\Route
     }
 
     /**
-     * Just an alias to get the permalink.
-     * TODO: DELETE when replaced
-     * @deprecated
-     * @return Permalink
-     */
-    public function getPermalink()
-    {
-        return $this->permalink();
-    }
-
-    /**
      * Check if the current route has a permalink instance attached.
      *
      * @return bool

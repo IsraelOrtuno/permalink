@@ -5,9 +5,9 @@ namespace Devio\Permalink;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Devio\Permalink\Services\ActionService;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class Permalink extends Model
 {
@@ -55,26 +55,15 @@ class Permalink extends Model
      */
     public static function boot()
     {
-        static::saving(function (Permalink $model) {
-            // If the user has provided an slug manually, we have to make sure
-            // that that slug is unique. If it is not, the SlugService class
-            // will append an incremental suffix to ensure its uniqueness.
-            if ($model->isDirty('slug') && ! empty($model->slug)) {
-                $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
-            }
+        static::creating(PermalinkObserver::class . '@creating');
+        static::saving(PermalinkObserver::class . '@saving');
+        static::updated(PermalinkObserver::class . '@updated');
 
-            if (config('permalink.automatic_nesting') && ! $model->parent_id) {
-                if ($model->entity && $parent = static::parentFor($model->entity)) {
-                    $model->parent_id = $parent->getKey();
-                }
-            }
-        });
-
-        static::created(function (Permalink $model) {
-            if (($model->entity && $model->entity->loadRoutesOnCreate()) || static::$loadRoutesOnCreate) {
-                app('router')->loadPermalinks();
-            }
-        });
+//        static::created(function (Permalink $model) {
+//            if (($model->entity && $model->entity->loadRoutesOnCreate()) || static::$loadRoutesOnCreate) {
+//                app('router')->loadPermalinks();
+//            }
+//        });
 
         parent::boot();
     }
@@ -96,7 +85,7 @@ class Permalink extends Model
      */
     public function parent()
     {
-        return $this->belongsTo(static::class)->with('parent');
+        return $this->belongsTo(static::class);
     }
 
     /**
@@ -104,10 +93,9 @@ class Permalink extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function children($withs = true)
+    public function children()
     {
-        return $this->hasMany(static::class, 'parent_id')
-                    ->with($withs ? ['children', 'entity'] : []);
+        return $this->hasMany(static::class, 'parent_id');
     }
 
     /**
@@ -146,58 +134,18 @@ class Permalink extends Model
         return $query->where('parent_id', $model->parent_id);
     }
 
-    /**
-     * Find the parent for the given model.
-     *
-     * @param $model
-     * @return mixed
-     */
-    public static function parentFor($model)
+    public function isNested()
     {
-        if (! is_object($model)) {
-            $model = new $model;
-        }
-
-        $model = $model->getMorphClass();
-
-        return static::with('parent')->where('parent_for', $model)->first();
+        return (bool) ! is_null($this->parent_id);
     }
 
     /**
-     * Get the parent route path.
+     * Get the default verbs.
      *
-     * @param $model
      * @return array
      */
-    public static function parentPath($model)
-    {
-        if (! is_object($model)) {
-            $model = new $model;
-        }
-
-        $slugs = [];
-
-        $callable = function ($permalink) use (&$callable, &$slugs) {
-            if (is_null($permalink)) {
-                return;
-            }
-
-            if ($permalink->parent) {
-                array_push($slugs, $callable($permalink->parent));
-            }
-
-            return $permalink->slug;
-        };
-
-        $callable($model->permalink ?: static::parentFor($model));
-
-        return $slugs;
-    }
-
     public function getMethodAttribute()
     {
-        // Only GET routes for now, we will support others!
-
         return ['GET', 'HEAD'];
     }
 
@@ -218,21 +166,7 @@ class Permalink extends Model
      */
     public function getActionAttribute()
     {
-        if ($action = $this->attributes['action'] ?? false) {
-            return static::getMappedaction($action) ?? $action;
-        }
-
-        $entity = $this->getRelationValue('entity');
-
-        // If the action is mapped or a fallback action has been set to the
-        // permalinkable entity, we will assume it exists. Otherwise it's
-        // not possible to provide an action to be bound to the router.
-        if ($entity && method_exists($entity, 'permalinkAction')) {
-            return $entity->permalinkAction();
-        }
-
-// TODO: Maybe provide a fallback method to provide an action when none is found...
-        return null;
+        return (new ActionService)->action($this);
     }
 
     /**
@@ -292,8 +226,7 @@ class Permalink extends Model
      *
      * @param $value
      */
-    public
-    function setParentForAttribute($value)
+    public function setParentForAttribute($value)
     {
         if (! Relation::getMorphedModel($value)) {
             $value = array_search($value, Relation::morphMap()) ?: $value;
@@ -309,8 +242,7 @@ class Permalink extends Model
      * @param  bool $merge
      * @return array
      */
-    public
-    static function actionMap(array $map = null, $merge = true)
+    public static function actionMap(array $map = null, $merge = true)
     {
         if (! is_null($map)) {
             static::$actionMap = $merge && static::$actionMap
@@ -325,8 +257,7 @@ class Permalink extends Model
      *
      * @param $value
      */
-    public
-    function setSeoAttribute($value)
+    public function setSeoAttribute($value)
     {
         if (! is_null($value)) {
             $value = json_encode(array_undot(
@@ -345,8 +276,7 @@ class Permalink extends Model
      * @param  string $alias
      * @return string|null
      */
-    public
-    static function getMappedAction($alias)
+    public static function getMappedAction($alias)
     {
         return static::$actionMap[$alias] ?? null;
     }

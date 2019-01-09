@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Routing\Router as LaravelRouter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class Router extends LaravelRouter
+class OldRouter extends LaravelRouter
 {
     /**
      * Load the entire permalink collection.
@@ -76,7 +76,7 @@ class Router extends LaravelRouter
      */
     protected function newPermalinkRoute($permalink)
     {
-        $path = $this->prefix($permalink->final_path);
+        $path = $this->prefix($permalink->slug);
         $action = $this->convertToControllerAction($permalink->action);
 
         return (new Route($permalink->method, $path, $action, $permalink))
@@ -121,9 +121,9 @@ class Router extends LaravelRouter
             $this->routes->add($route);
         }
 
-//        if ($permalink->relationLoaded('children')) {
-//            $this->permalinkGroup($permalink);
-//        }
+        if ($permalink->relationLoaded('children')) {
+            $this->permalinkGroup($permalink);
+        }
 
         return $this;
     }
@@ -133,12 +133,12 @@ class Router extends LaravelRouter
      *
      * @param $permalink
      */
-//    public function permalinkGroup($permalink)
-//    {
-//        $this->group(['prefix' => $permalink->slug], function () use ($permalink) {
-//            $this->addPermalinks($permalink->children);
-//        });
-//    }
+    public function permalinkGroup($permalink)
+    {
+        $this->group(['prefix' => $permalink->slug], function () use ($permalink) {
+            $this->addPermalinks($permalink->children);
+        });
+    }
 
     /**
      * Refesh the route name and action lookups.
