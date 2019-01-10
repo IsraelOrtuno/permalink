@@ -8,7 +8,7 @@ if (! function_exists('permalink')) {
      */
     function permalink($permalink)
     {
-        return (new RouteService())
-            ->permalink($permalink);
+        return app(\Devio\Permalink\PermalinkManager::class)
+                    ->route($permalink);
     }
 }

@@ -26,7 +26,7 @@ class User extends Model implements Permalinkable
      *
      * @return array
      */
-    public function slugSource(): array
+    public function permalinkSlug(): array
     {
         return [
             'source' => 'entity.name'

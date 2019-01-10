@@ -11,6 +11,11 @@ trait HasPermalinks
      */
     protected $permalinkAttributes = null;
 
+    /**
+     * Automatic permalink management.
+     *
+     * @var bool
+     */
     protected $permalinkHandling = true;
 
     /**
@@ -62,14 +67,7 @@ trait HasPermalinks
      */
     public function createPermalink($attributes)
     {
-        $permalink = $this->permalink()
-                          ->newRelatedInstanceFor($this)
-                          ->setRelation('entity', $this)
-                          ->fill($this->preparePermalinkSeoAttributes($attributes));
-
-        $permalink->save();
-
-        return $this->setRelation('permalink', $permalink);
+        return app(PermalinkManager::class)->create($this, $attributes);
     }
 
     /**
@@ -80,51 +78,7 @@ trait HasPermalinks
      */
     public function updatePermalink($attributes)
     {
-//        if (! $this->permalink) {
-//            return $this->createPermalink($attributes);
-//        }
-
-        $this->permalink->update($attributes);
-
-        return $this;
-    }
-
-    /**
-     * Prepare the seo attributes looking for default values in fallback methods.
-     *
-     * @param array $attributes
-     * @return array
-     */
-    protected function preparePermalinkSeoAttributes($attributes = [])
-    {
-        $attributes = array_undot($attributes);
-        $values = array_dot($this->getEmptyPermalinkSeoArray());
-
-        foreach ($values as $key => $value) {
-            $attribute = studly_case(str_replace('.', ' ', $key));
-
-            if (! array_get($attributes, $key) && $value = $this->getAttribute($attribute)) {
-                array_set($attributes, $key, $value);
-            }
-        }
-
-        return $attributes;
-    }
-
-    /**
-     * Get a value empty seo column structure.
-     *
-     * @return array
-     */
-    protected function getEmptyPermalinkSeoArray()
-    {
-        $fields = ['title' => null, 'description' => null];
-
-        return [
-            'seo' => array_merge($fields, [
-                'twitter' => $fields, 'opengraph' => $fields,
-            ]),
-        ];
+        return app(PermalinkManager::class)->update($this, $attributes);
     }
 
     /**
