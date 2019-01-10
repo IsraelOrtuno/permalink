@@ -8,23 +8,35 @@ use Illuminate\Database\Eloquent\Model;
 class EntityObserver
 {
     /**
-     * Saved model event handler.
+     * Created model event handler.
      *
      * @param Model $model
      */
-    public function saved(Model $model)
+    public function created(Model $model)
     {
         if (! $model->permalinkHandling()) {
             return;
         }
 
-        $attributes = $this->gatherAttributes($model->getPermalinkAttributes());
+        $model->createPermalink(
+            $this->gatherAttributes($model->getPermalinkAttributes())
+        );
+    }
 
-        if ($model->wasRecentlyCreated || ! $model->permalink) {
-            $model->createPermalink($attributes);
-        } else {
-            $model->updatePermalink($attributes);
+    /**
+     * Updated model event handler.
+     *
+     * @param Model $model
+     */
+    public function updated(Model $model)
+    {
+        if (! $model->permalinkHandling()) {
+            return;
         }
+
+        $model->updatePermalink(
+            $this->gatherAttributes($model->getPermalinkAttributes())
+        );
     }
 
     /**
@@ -34,6 +46,10 @@ class EntityObserver
      */
     public function restored($model)
     {
+        if (! $model->permalinkHandling() || ! $model->hasPermalink()) {
+            return;
+        }
+
         $model->permalink->restore();
     }
 
@@ -44,6 +60,10 @@ class EntityObserver
      */
     public function deleted(Model $model)
     {
+        if (! $model->hasPermalink()) {
+            return;
+        }
+
         $method = 'forceDelete';
 
         // The Permalink record should be removed if the main entity has been

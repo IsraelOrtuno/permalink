@@ -20,6 +20,11 @@ class PermalinkObserver
         $this->slugService = $slugService;
     }
 
+    /**
+     * Creating event.
+     *
+     * @param $model
+     */
     public function creating($model)
     {
         $this->nestToParent($model);
@@ -33,6 +38,11 @@ class PermalinkObserver
         (new NestingService)->single($model);
     }
 
+    /**
+     * Updating event.
+     *
+     * @param $model
+     */
     public function updating($model)
     {
         if ($model->getOriginal('slug') !== $model->slug) {
@@ -40,17 +50,6 @@ class PermalinkObserver
             (new NestingService)->single($model);
         }
     }
-
-//    public function updated($model)
-//    {
-//        if (! config('permalink.nesting.regenerate_children_path_on_update')) {
-//            return;
-//        }
-//
-//        if ($model->isDirty('slug') && $model->children->count()) {
-//            (new NestingService)->recursive($model);
-//        }
-//    }
 
     /**
      * Creates an unique slug for the permalink.

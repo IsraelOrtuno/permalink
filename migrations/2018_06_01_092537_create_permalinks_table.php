@@ -28,7 +28,6 @@ class CreatePermalinksTable extends Migration
             $table->json('options')->nullable();
 
             $table->string('final_path')->nullable();
-            $table->json('final_options')->nullable();
 
             $table->json('seo')->nullable();
 
@@ -38,7 +37,7 @@ class CreatePermalinksTable extends Migration
 
             $table->index(['entity_type', 'entity_id']);
             $table->unique(['slug', 'parent_id'], 'UNIQUE_SLUG_AND_PARENT');
-//            $table->unique(['final_path'], 'UNIQUE_FULL_PATH');
+            $table->unique(['final_path'], 'UNIQUE_FULL_PATH');
             $table->unique(['parent_for'], 'UNIQUE_PARENT_FOR');
         });
     }
