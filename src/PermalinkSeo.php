@@ -5,10 +5,11 @@ namespace Devio\Permalink;
 use Illuminate\Http\Request;
 use Devio\Permalink\Routing\Route;
 use Illuminate\Contracts\Container\Container;
-use Devio\Permalink\Contracts\RequestHandler as RequestHandlerContract;
 
-class RequestHandler implements RequestHandlerContract
+class PermalinkSeo
 {
+    const builders = ['base', 'meta', 'twitter', 'opengraph'];
+
     /**
      * Current request.
      *
@@ -69,13 +70,12 @@ class RequestHandler implements RequestHandlerContract
     protected function getBuildersCollection($permalink)
     {
         $seo = array_wrap($permalink->seo);
-        $builders = ['base', 'meta', 'opengraph', 'twitter'];
 
-        if (count($base = array_except($seo, $builders))) {
+        if (count($base = array_except($seo, static::builders))) {
             $seo['base'] = $base;
         }
 
-        return collect($builders)->mapWithKeys(function ($builder) use ($seo) {
+        return collect(static::builders)->mapWithKeys(function ($builder) use ($seo) {
             return [$builder => array_get($seo, $builder)];
         });
     }
@@ -100,34 +100,32 @@ class RequestHandler implements RequestHandlerContract
         return null;
     }
 
-    // TODO: CAN ALL THIS BE REMOVED? Checkout $this->staticPermalinks reference
+    /**
+     * Set the permalink static collection.
+     *
+     * @param $permalinks
+     * @return $this
+     */
+    public function permalinks($permalinks)
+    {
+        $this->staticPermalinks = $permalinks;
 
-//    /**
-//     * Set the permalink static collection.
-//     *
-//     * @param $permalinks
-//     * @return $this
-//     */
-//    public function permalinks($permalinks)
-//    {
-//        $this->staticPermalinks = $permalinks;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Add a new permalink to the static collection.
-//     *
-//     * @param $route
-//     * @param array $permalink
-//     * @return $this
-//     */
-//    public function addPermalink($route, $permalink = [])
-//    {
-//        $this->permalinks[$route] = $permalink;
-//
-//        return $this;
-//    }
+        return $this;
+    }
+
+    /**
+     * Add a new permalink to the static collection.
+     *
+     * @param $route
+     * @param array $permalink
+     * @return $this
+     */
+    public function addPermalink($route, $permalink = [])
+    {
+        $this->permalinks[$route] = $permalink;
+
+        return $this;
+    }
 
     /**
      * Set the request instance.
