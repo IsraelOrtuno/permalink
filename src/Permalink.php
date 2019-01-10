@@ -106,7 +106,7 @@ class Permalink extends Model
             return [];
         }
 
-        $source = (array) $entity->slugSource();
+        $source = (array) $entity->permalinkSlug();
 
         // We will look for slug source at the permalinkable entity. That method
         // should return an array with a 'source' key in it. This way the user

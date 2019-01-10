@@ -32,8 +32,6 @@ class ReadingTest extends TestCase
         Permalink::create(['slug' => 'foo', 'parent_for' => User::class]);
         $user = factory(User::class)->create(['name' => 'foo']);
 
-        $this->app['router']->loadPermalinks();
-
         $this->assertEquals('foo/foo', $user->routePath);
     }
 }
