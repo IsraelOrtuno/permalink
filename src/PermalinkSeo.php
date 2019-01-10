@@ -5,9 +5,8 @@ namespace Devio\Permalink;
 use Illuminate\Http\Request;
 use Devio\Permalink\Routing\Route;
 use Illuminate\Contracts\Container\Container;
-use Devio\Permalink\Contracts\RequestHandler as RequestHandlerContract;
 
-class PermalinkSeo implements RequestHandlerContract
+class PermalinkSeo
 {
     const builders = ['base', 'meta', 'twitter', 'opengraph'];
 
