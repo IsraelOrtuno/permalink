@@ -1,6 +1,6 @@
 <?php
 
-namespace Devio\Permalink\Tests\Feature;
+namespace Devio\Permalink\Tests\Feature\HasPermalinks;
 
 use Devio\Permalink\Tests\TestCase;
 use Devio\Permalink\Tests\Support\Models\User;
