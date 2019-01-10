@@ -33,7 +33,13 @@ class Router extends LaravelRouter
         try {
             return parent::findRoute($request);
         } catch (NotFoundHttpException $e) {
-            $this->findPermalink($request);
+            try {
+                \DB::connection()->getPdo();
+                
+                $this->findPermalink($request);
+            } catch (\Exception $e) {
+            }
+
 
             return parent::findRoute($request);
         }
