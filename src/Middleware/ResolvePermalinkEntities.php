@@ -2,9 +2,9 @@
 
 namespace Devio\Permalink\Middleware;
 
-use Devio\Permalink\Contracts\RequestHandler;
+use Devio\Permalink\Routing\Route;
 
-class BuildSeo
+class ResolvePermalinkEntities
 {
     /**
      * Handle the incoming request.
@@ -15,7 +15,9 @@ class BuildSeo
      */
     public function handle($request, \Closure $next)
     {
-        app(RequestHandler::class)->request($request)->runBuilders();
+        if (($route = $request->route()) instanceof Route) {
+            $route->parameters[] = $route->permalink()->entity;
+        }
 
         return $next($request);
     }

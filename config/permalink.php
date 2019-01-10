@@ -14,8 +14,60 @@ return [
     */
 
     'group' => [
+        'prefix'     => '',
         'middleware' => [
             'web'
         ]
-    ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nesting Options
+    |--------------------------------------------------------------------------
+    |
+    | These options control the nesting automation. By default, if a permalink
+    | has a parent_for value for a certain model, it'll be automatically set
+    | as child of that record. Disable to manually control this behaviour.
+    |
+    | Also you can decide if the package should take care of the nested slug
+    | consistency. If you update a parent slug, the package will make sure
+    | all its nested (recursive) permalinks gets their paths updated to
+    | match that slug. If you want to control ths behaviour, disable.
+    | Check the NestingService class to understand how it works.
+    */
+
+    'nesting'    => [
+//        'nest_to_parent_on_create'           => true,
+        'regenerate_children_path_on_update' => true
+    ],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Route Name
+    |--------------------------------------------------------------------------
+    |
+    | Whenever a permalink is registered as a Laravel Route, it will receive a
+    | name. Here you can customize the name that will be suffixed by the key
+    | of the permalink (name.id). You could also set a fallback method in
+    | your models to make this names more
+    |
+    */
+
+    'route_name' => 'permalink',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Automatically Refresh Routes
+    |--------------------------------------------------------------------------
+    |
+    | The route's collection has to be refreshed when a new permalink is added
+    | to the router. Consider setting this option to false and refresh them
+    | manually if using addPermalinks many times for a better performance.
+    |
+    | Use Router::refreshRoutes() method to refresh the route look-ups.
+    |
+    */
+
+    'refresh_route_lookups' => true
 ];

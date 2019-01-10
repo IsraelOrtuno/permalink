@@ -2,7 +2,7 @@
 
 namespace Devio\Permalink\Contracts;
 
-interface Manager
+interface RequestHandler
 {
     /**
      * Run the builders.

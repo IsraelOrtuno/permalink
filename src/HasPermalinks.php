@@ -11,19 +11,14 @@ trait HasPermalinks
      */
     protected $permalinkAttributes = null;
 
-    /**
-     * The permalink parent id.
-     *
-     * @var null
-     */
-    protected $permalinkParent = null;
+    protected $permalinkHandling = true;
 
     /**
      * Booting the trait.
      */
     public static function bootHasPermalinks()
     {
-        static::observe(PermalinkableObserver::class);
+        static::observe(EntityObserver::class);
     }
 
     /**
@@ -56,53 +51,42 @@ trait HasPermalinks
      */
     public function permalink()
     {
-        return $this->morphOne(Permalink::class, 'permalinkable');
+        return $this->morphOne(Permalink::class, 'entity')->withTrashed();
     }
 
     /**
-     * Store a permalink for this the current entity.
+     * Create the permalink for the current entity.
      *
-     * @param array $attributes
+     * @param $attributes
      * @return $this
      */
-    public function storePermalink($attributes = [])
+    public function createPermalink($attributes)
     {
-        // Once we have the attributes we need to set, we will perform a new
-        // query in order to find if there is any parent class set for the
-        // current permalinkable entity. If so, we'll add it as parent.
-        if (! isset($attributes['parent_id'])) {
-            $attributes = $this->setPermalinkParentIfAny($attributes);
-        }
+        $permalink = $this->permalink()
+                          ->newRelatedInstanceFor($this)
+                          ->setRelation('entity', $this)
+                          ->fill($this->preparePermalinkSeoAttributes($attributes));
 
-        // Then we are ready to perform the creation or update action based on
-        // the model existence. If the model was recently created, we'll add
-        // a new permalink, otherwise, we'll update the existing permalink.
-        if ($this->wasRecentlyCreated || ! $this->permalink) {
-            $permalink = $this->permalink()->create(
-                $this->preparePermalinkSeoAttributes($attributes)
-            );
+        $permalink->save();
 
-            $this->setRelation('permalink', $permalink);
-        } elseif ($this->permalink) {
-            $this->permalink->update($attributes);
-        }
-
-        return $this;
+        return $this->setRelation('permalink', $permalink);
     }
 
     /**
-     * Set the permalink parent if any.
+     * Update the permalink for the current entity.
      *
-     * @param array $attributes
-     * @return array
+     * @param $attributes
+     * @return $this
      */
-    protected function setPermalinkParentIfAny($attributes = [])
+    public function updatePermalink($attributes)
     {
-        if ($parent = Permalink::parentFor($this)) {
-            $attributes['parent_id'] = $parent->getKey();
-        }
+//        if (! $this->permalink) {
+//            return $this->createPermalink($attributes);
+//        }
 
-        return $attributes;
+        $this->permalink->update($attributes);
+
+        return $this;
     }
 
     /**
@@ -138,29 +122,9 @@ trait HasPermalinks
 
         return [
             'seo' => array_merge($fields, [
-                'twitter' => $fields, 'opengraph' => $fields
-            ])
+                'twitter' => $fields, 'opengraph' => $fields,
+            ]),
         ];
-    }
-
-    /**
-     * Set the permalink parent.
-     *
-     * @param $value
-     */
-    public function setPermalinkParentAttribute($value)
-    {
-        $this->permalinkParent = $value;
-    }
-
-    /**
-     * Get the permalink parent.
-     *
-     * @return null
-     */
-    public function getPermalinkParentAttribute()
-    {
-        return $this->permalinkParent;
     }
 
     /**
@@ -171,7 +135,7 @@ trait HasPermalinks
     public function getRouteAttribute()
     {
         return ($this->exists && $this->hasPermalink()) ?
-            route($this->permalinkRouteName() . '.' . $this->permalink->getKey()) : null;
+            $this->permalink->final_path : null;
     }
 
     /**
@@ -179,37 +143,19 @@ trait HasPermalinks
      *
      * @return null
      */
-    public function getPermalinkSlugAttribute()
+    public function getRouteSlugAttribute()
     {
         return $this->hasPermalink() ? $this->permalink->slug : null;
     }
 
     /**
+     * Get the permalink nested path.
+     *
      * @return mixed
      */
-    public function getPermalinkFullSlugAttribute()
+    public function getRoutePathAttribute()
     {
         return $this->hasPermalink() ? trim(parse_url($this->route)['path'], '/') : null;
-    }
-
-    /**
-     * Determine if the permalink should reload routes.
-     *
-     * @return bool
-     */
-    public function getPermalinkLoadRoutesOnCreateAttribute()
-    {
-        return false;
-    }
-
-    /**
-     * Get the entity route name prefix.
-     *
-     * @return string
-     */
-    public function permalinkRouteName()
-    {
-        return 'permalink';
     }
 
     /**
@@ -219,6 +165,47 @@ trait HasPermalinks
      */
     public function hasPermalink()
     {
-        return (bool) ! is_null($this->permalink);
+        return (bool) ! is_null($this->getRelationValue('permalink'));
+    }
+
+    /**
+     * Determine the newly created entity should load all routes.
+     *
+     * @return bool
+     */
+    public function loadRoutesOnCreate()
+    {
+        return false;
+    }
+
+    /**
+     * Get the entity route name (must be unique).
+     *
+     * @return string
+     * @throws \ReflectionException
+     */
+    public function permalinkRouteName()
+    {
+        // You can be creative here. Make sure the route name is unique or it may create route conflicts
+        return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
+    }
+
+    public function permalinkHandling()
+    {
+        return $this->permalinkHandling;
+    }
+
+    public function enablePermalinkHandling()
+    {
+        $this->permalinkHandling = true;
+
+        return $this;
+    }
+
+    public function disablePermalinkHandling()
+    {
+        $this->permalinkHandling = false;
+
+        return $this;
     }
 }

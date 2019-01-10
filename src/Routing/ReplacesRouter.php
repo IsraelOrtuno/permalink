@@ -17,7 +17,7 @@ trait ReplacesRouter
             $this->routeMiddleware + $this->router->getMiddleware(),
             $this->middlewareGroups + $this->router->getMiddlewareGroups()
         );
-        
+
         return parent::dispatchToRouter();
     }
 }

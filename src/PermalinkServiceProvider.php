@@ -57,11 +57,11 @@ class PermalinkServiceProvider extends ServiceProvider
 
         $this->app->singleton('router', Router::class);
 
-        $this->app->singleton(Contracts\Manager::class, function () {
-            return new PermalinkManager($this->app['request'], $this->app);
+        $this->app->singleton(Contracts\RequestHandler::class, function () {
+            return new RequestHandler($this->app['request'], $this->app);
         });
 
-        $this->commands(Console\BindRouterAtBootstrap::class);
+        $this->commands(Console\BindRouterInBootstrap::class);
         $this->commands(Console\ReplaceRouterInKernel::class);
     }
 }

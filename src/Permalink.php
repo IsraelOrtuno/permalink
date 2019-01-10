@@ -4,20 +4,22 @@ namespace Devio\Permalink;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Devio\Permalink\Services\NameService;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Devio\Permalink\Services\ActionService;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class Permalink extends Model
 {
-    use Sluggable;
+    use Sluggable, SoftDeletes;
 
     /**
      * Fillable attributes.
      *
      * @var array
      */
-    public $fillable = ['parent_id', 'parent_for', 'slug', 'action', 'seo'];
+    public $fillable = ['parent_id', 'parent_for', 'entity_type', 'entity_id', 'slug', 'action', 'seo'];
 
     /**
      * Casting attributes.
@@ -55,21 +57,12 @@ class Permalink extends Model
     public static function boot()
     {
         parent::boot();
+        parent::flushEventListeners();
 
-        static::saving(function (Permalink $model) {
-            // If the user has provided an slug manually, we have to make sure
-            // that that slug is unique. If it is not, the SlugService class
-            // will append an incremental suffix to ensure its uniqueness.
-            if ($model->isDirty('slug') && ! empty($model->slug)) {
-                $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
-            }
-        });
-
-        static::created(function (Permalink $model) {
-            if (($model->permalinkable && $model->permalinkable->permalinkLoadRoutesOnCreate) || static::$loadRoutesOnCreate) {
-                app('router')->loadPermalinks();
-            }
-        });
+        // Since we want to allow the user to specify an slug rather to always
+        // generate it automatically, we've to remove the observers added by
+        // the Sluggable package, so we control the slug creation/update.
+        static::observe(PermalinkObserver::class);
     }
 
     /**
@@ -77,7 +70,7 @@ class Permalink extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function permalinkable()
+    public function entity()
     {
         return $this->morphTo();
     }
@@ -89,7 +82,7 @@ class Permalink extends Model
      */
     public function parent()
     {
-        return $this->belongsTo(static::class)->with('parent');
+        return $this->belongsTo(static::class);
     }
 
     /**
@@ -99,8 +92,7 @@ class Permalink extends Model
      */
     public function children()
     {
-        return $this->hasMany(static::class, 'parent_id')
-                    ->with('children', 'permalinkable');
+        return $this->hasMany(static::class, 'parent_id');
     }
 
     /**
@@ -110,11 +102,11 @@ class Permalink extends Model
      */
     public function sluggable(): array
     {
-        if (! $permalinkable = $this->permalinkable) {
+        if (! $entity = $this->getRelationValue('entity')) {
             return [];
         }
 
-        $source = (array) $permalinkable->slugSource();
+        $source = (array) $entity->slugSource();
 
         // We will look for slug source at the permalinkable entity. That method
         // should return an array with a 'source' key in it. This way the user
@@ -140,58 +132,33 @@ class Permalink extends Model
     }
 
     /**
-     * Find the parent for the given model.
+     * Check if the permalink is nested.
      *
-     * @param $model
-     * @return mixed
+     * @return bool
      */
-    public static function parentFor($model)
+    public function isNested()
     {
-        if (! is_object($model)) {
-            $model = new $model;
-        }
-
-        $model = $model->getMorphClass();
-
-        return static::with('parent')->where('parent_for', $model)->first();
+        return (bool) ! is_null($this->parent_id);
     }
 
     /**
-     * Get the parent route path.
+     * Get the default verbs.
      *
-     * @param $model
      * @return array
      */
-    public static function parentPath($model)
-    {
-        if (! is_object($model)) {
-            $model = new $model;
-        }
-
-        $slugs = [];
-
-        $callable = function ($permalink) use (&$callable, &$slugs) {
-            if (is_null($permalink)) {
-                return;
-            }
-
-            if ($permalink->parent) {
-                array_push($slugs, $callable($permalink->parent));
-            }
-
-            return $permalink->slug;
-        };
-
-        $callable($model->permalink ?: static::parentFor($model));
-
-        return $slugs;
-    }
-
     public function getMethodAttribute()
     {
-        // Only GET routes for now, we will support others!
-
         return ['GET', 'HEAD'];
+    }
+
+    /**
+     * Convert an alias to a full action path if any.
+     *
+     * @return null|string
+     */
+    public function getActionAttribute()
+    {
+        return (new ActionService)->action($this);
     }
 
     /**
@@ -205,22 +172,25 @@ class Permalink extends Model
     }
 
     /**
-     * Convert an alias to a full action path if any.
+     * Get the permalink name.
      *
      * @return null|string
+     * @throws \ReflectionException
      */
-    public function getActionAttribute()
+    public function getNameAttribute()
     {
-        if (isset($this->attributes['action']) &&
-            $action = static::getMappedAction($this->attributes['action']) ?? $this->attributes['action']) {
-            return $action;
-        }
+        return (new NameService)->name($this);
+    }
 
-        if ($relation = $this->getRelationValue('permalinkable')) {
-            return $relation->permalinkAction();
-        }
-
-        return null;
+    /**
+     * Get the action root base name.
+     *
+     * @return null|string
+     * @throws \ReflectionException
+     */
+    public function getActionRootName()
+    {
+        return (new ActionService)->rootName($this);
     }
 
     /**

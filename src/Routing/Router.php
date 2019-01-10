@@ -2,67 +2,59 @@
 
 namespace Devio\Permalink\Routing;
 
-use Illuminate\Routing\Router as Laravelrouter;
+use Devio\Permalink\Permalink;
+use Illuminate\Support\Collection;
+use Illuminate\Routing\Router as LaravelRouter;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Router extends LaravelRouter
 {
     /**
-     * Load the given permalinks or fetch them from database.
-     *
-     * @param null $permalinks
+     * Load the entire permalink collection.
      */
-    public function loadPermalinks($permalinks = null)
+    public function loadPermalinks()
     {
-        if (is_null($permalinks)) {
-            $this->clearPermalinkRoutes();
-        }
-
-        $permalinks = (new RouteCollection(
-            array_filter(array_wrap($permalinks))
-        ))->tree();
+        $permalinks = Permalink::with('entity')->get();
 
         $this->group(config('permalink.group'), function () use ($permalinks) {
             $this->addPermalinks($permalinks);
         });
-
-        // Whenever routes are loaded, we should refresh the name lookups to
-        // make sure all our newly generated route names are included into
-        // the route collection name list. Routes can be added any time.
-        $this->refreshRoutes();
-    }
-
-    protected function refreshRoutes()
-    {
-        $this->getRoutes()->refreshNameLookups();
-        $this->getRoutes()->refreshActionLookups();
-    }
-
-    public function clearPermalinkRoutes()
-    {
-        $routeCollection = new \Illuminate\Routing\RouteCollection;
-
-        collect($this->getRoutes())->filter(function ($route) {
-            return ! $route instanceof Route;
-        })->each(function ($route) use ($routeCollection) {
-            $routeCollection->add($route);
-        });
-
-        $this->setRoutes($routeCollection);
     }
 
     /**
-     * Create a new permalink route.
-     *
-     * @param $permalink
-     * @return Route
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Routing\Route|void
      */
-    protected function createRouteForPermalink($permalink)
+    public function findRoute($request)
     {
-        $action = $this->convertToControllerAction($permalink->action);
+        // First we'll try to find any code defined route for the current request.
+        // If no route was found, we can then attempt to find if the URL path
+        // matches a existing permalink. If not just rise up the exception.
+        try {
+            return parent::findRoute($request);
+        } catch (NotFoundHttpException $e) {
+            $this->findPermalink($request);
 
-        $route = (new Route($permalink->method, $this->prefix($permalink->slug), $action, $permalink))
-            ->setRouter($this)
-            ->setContainer($this->container);
+            return parent::findRoute($request);
+        }
+    }
+
+    public function findPermalink($request)
+    {
+        $path = trim($request->getPathInfo(), '/');
+
+        if (! $permalink = Permalink::where('final_path', $path)->first()) {
+            throw new NotFoundHttpException;
+        }
+
+        $this->group(config('permalink.group'), function () use ($permalink) {
+            $this->addPermalinks($permalink);
+        });
+    }
+
+    protected function createPermalinkRoute($permalink)
+    {
+        $route = $this->newPermalinkRoute($permalink);
 
         // If we have groups that need to be merged, we will merge them now after this
         // route has already been created and is ready to go. After we're done with
@@ -77,31 +69,63 @@ class Router extends LaravelRouter
     }
 
     /**
+     * Create a new Route for the given permalink.
+     *
+     * @param $permalink
+     * @return Route
+     */
+    protected function newPermalinkRoute($permalink)
+    {
+        $path = $this->prefix($permalink->final_path);
+        $action = $this->convertToControllerAction($permalink->action);
+
+        return (new Route($permalink->method, $path, $action, $permalink))
+            ->setRouter($this)->setContainer($this->container);
+    }
+
+    /**
      * Add a collection of permalinks to the router.
      *
      * @param array $permalinks
+     * @param bool $forceRefresh
+     * @return OldRouter
      */
-    public function addPermalinks($permalinks = [])
+    public function addPermalinks($permalinks = [], $forceRefresh = false)
     {
+        if (! $permalinks instanceof Collection) {
+            $permalinks = array_wrap($permalinks);
+        }
+
         foreach ($permalinks as $permalink) {
             $this->addPermalink($permalink);
         }
+
+        if ($forceRefresh || config('permalink.refresh_route_lookups')) {
+            $this->refreshRoutes();
+        }
+
+        return $this;
     }
 
     /**
      * Add a single permalink to the router.
      *
      * @param $permalink
+     * @return OldRouter
      */
-    public function addPermalink($permalink)
+    protected function addPermalink($permalink)
     {
-        if ($permalink->action || $permalink->pemalinkable) {
-            $this->routes->add($this->createRouteForPermalink($permalink));
+        if ($permalink->action) {
+            $route = $this->createPermalinkRoute($permalink);
+
+            $this->routes->add($route);
         }
 
-        if (count($permalink->children)) {
-            $this->permalinkGroup($permalink);
-        }
+//        if ($permalink->relationLoaded('children')) {
+//            $this->permalinkGroup($permalink);
+//        }
+
+        return $this;
     }
 
     /**
@@ -109,10 +133,19 @@ class Router extends LaravelRouter
      *
      * @param $permalink
      */
-    public function permalinkGroup($permalink)
+//    public function permalinkGroup($permalink)
+//    {
+//        $this->group(['prefix' => $permalink->slug], function () use ($permalink) {
+//            $this->addPermalinks($permalink->children);
+//        });
+//    }
+
+    /**
+     * Refesh the route name and action lookups.
+     */
+    public function refreshRoutes()
     {
-        $this->group(['prefix' => $permalink->slug], function () use ($permalink) {
-            $this->addPermalinks($permalink->children);
-        });
+        $this->getRoutes()->refreshNameLookups();
+        $this->getRoutes()->refreshActionLookups();
     }
 }
