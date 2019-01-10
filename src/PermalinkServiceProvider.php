@@ -57,7 +57,7 @@ class PermalinkServiceProvider extends ServiceProvider
 
         $this->app->singleton('router', Router::class);
 
-        $this->app->singleton(Contracts\RequestHandler::class, function () {
+        $this->app->singleton(PermalinkSeo::class, function () {
             return new PermalinkSeo($this->app['request'], $this->app);
         });
 
