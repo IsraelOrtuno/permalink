@@ -4,6 +4,7 @@ namespace Devio\Permalink;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Devio\Permalink\Services\NameService;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Devio\Permalink\Services\ActionService;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -130,6 +131,11 @@ class Permalink extends Model
         return $query->where('parent_id', $model->parent_id);
     }
 
+    /**
+     * Check if the permalink is nested.
+     *
+     * @return bool
+     */
     public function isNested()
     {
         return (bool) ! is_null($this->parent_id);
@@ -146,16 +152,6 @@ class Permalink extends Model
     }
 
     /**
-     * Replace the action by an alias if any.
-     *
-     * @param $value
-     */
-    public function setActionAttribute($value)
-    {
-        $this->attributes['action'] = array_search($value, static::actionMap()) ?: $value;
-    }
-
-    /**
      * Convert an alias to a full action path if any.
      *
      * @return null|string
@@ -166,6 +162,16 @@ class Permalink extends Model
     }
 
     /**
+     * Replace the action by an alias if any.
+     *
+     * @param $value
+     */
+    public function setActionAttribute($value)
+    {
+        $this->attributes['action'] = array_search($value, static::actionMap()) ?: $value;
+    }
+
+    /**
      * Get the permalink name.
      *
      * @return null|string
@@ -173,20 +179,7 @@ class Permalink extends Model
      */
     public function getNameAttribute()
     {
-        $entity = $this->getRelationValue('entity');
-
-        // If the entity has a fallback method to build a custom name for the
-        // permalink, it'll be used. If the action is a string@action, then
-        // it'll generate a "class.action.key" string like "user.index.1".
-        if ($entity && $name = $entity->permalinkRouteName()) {
-            return $name;
-        } elseif ($action = $this->getActionRootName()) {
-            return implode('.', [$action, $entity ? $entity->getKey() : '']);
-        }
-
-        // TODO: Maybe in future we can add a method fallback in order to
-        // customize the generated name if none other was resolved.
-        return 'permalink.' . $this->getKey();
+        return (new NameService)->name($this);
     }
 
     /**
@@ -197,14 +190,7 @@ class Permalink extends Model
      */
     public function getActionRootName()
     {
-        if (! str_contains($action = $this->action, '@')) {
-            return null;
-        }
-
-        [$class, $method] = explode('@', $action);
-        $name = str_replace('Controller', '', (new \ReflectionClass($class))->getShortName());
-
-        return strtolower($name . '.' . $method);
+        return (new ActionService)->rootName($this);
     }
 
     /**
@@ -247,11 +233,6 @@ class Permalink extends Model
 
         return static::$actionMap;
     }
-
-//    public function setSlugAttribute($value)
-//    {
-//        $this->attributes['slug'] = $value;
-//    }
 
     /**
      * Set all seo values without NULLs.

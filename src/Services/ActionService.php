@@ -3,6 +3,7 @@
 namespace Devio\Permalink\Services;
 
 use Devio\Permalink\Permalink;
+use ReflectionClass;
 
 class ActionService
 {
@@ -22,5 +23,17 @@ class ActionService
         }
 
         return null;
+    }
+
+    public function rootName($permalink)
+    {
+        if (! str_contains($action = $permalink->action, '@')) {
+            return null;
+        }
+
+        [$class, $method] = explode('@', $action);
+        $name = str_replace('Controller', '', (new ReflectionClass($class))->getShortName());
+
+        return strtolower($name . '.' . $method);
     }
 }
