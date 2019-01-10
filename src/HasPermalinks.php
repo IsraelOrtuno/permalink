@@ -11,6 +11,8 @@ trait HasPermalinks
      */
     protected $permalinkAttributes = null;
 
+    protected $permalinkHandling = true;
+
     /**
      * Booting the trait.
      */
@@ -60,20 +62,12 @@ trait HasPermalinks
      */
     public function createPermalink($attributes)
     {
-        if ($this->permalink) {
-            return $this->updatePermalink($attributes);
-        }
+        $permalink = $this->permalink()
+                          ->newRelatedInstanceFor($this)
+                          ->setRelation('entity', $this)
+                          ->fill($this->preparePermalinkSeoAttributes($attributes));
 
-        $permalink = $this->permalink()->newRelatedInstanceFor($this);
-
-        $permalink->fill($this->preparePermalinkSeoAttributes($attributes))
-                  ->save();
-
-        $permalink->setRelation('entity', $this);
-
-//        $permalink = $this->permalink()->create(
-        //            $this->preparePermalinkSeoAttributes($attributes)
-        //        );
+        $permalink->save();
 
         return $this->setRelation('permalink', $permalink);
     }
@@ -86,9 +80,9 @@ trait HasPermalinks
      */
     public function updatePermalink($attributes)
     {
-        if (! $this->permalink) {
-            return $this->createPermalink($attributes);
-        }
+//        if (! $this->permalink) {
+//            return $this->createPermalink($attributes);
+//        }
 
         $this->permalink->update($attributes);
 
@@ -196,12 +190,22 @@ trait HasPermalinks
         return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
     }
 
-    public function handlesPermalink()
+    public function permalinkHandling()
     {
-        if (property_exists($this, 'handlesPermalink')) {
-            return $this->handlesPermalink;
-        }
+        return $this->permalinkHandling;
+    }
 
-        return true;
+    public function enablePermalinkHandling()
+    {
+        $this->permalinkHandling = true;
+
+        return $this;
+    }
+
+    public function disablePermalinkHandling()
+    {
+        $this->permalinkHandling = false;
+
+        return $this;
     }
 }

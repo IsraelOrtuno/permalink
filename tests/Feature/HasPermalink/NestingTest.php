@@ -22,19 +22,6 @@ class NestingTest extends TestCase
     }
 
     /** @test */
-    public function it_disable_automatic_nesting_from_config()
-    {
-        config(['permalink.automatic_nesting' => false]);
-
-        factory(User::class)->create();
-        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => User::class]);
-        $child = Permalink::create(['slug' => 'bar', 'entity_type' => User::class, 'entity_id' => 1]);
-
-        $this->assertNotEquals($parent->getKey(), $child->parent_id);
-        $this->assertCount(0, $parent->children);
-    }
-
-    /** @test */
     public function it_will_have_unique_parent_for_records()
     {
         $this->expectException(QueryException::class);

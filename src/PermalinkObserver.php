@@ -7,18 +7,38 @@ use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class PermalinkObserver
 {
+    /**
+     * @var SlugService
+     */
+    private $slugService;
+
+    /**
+     * PermalinkObserver constructor.
+     */
+    public function __construct(SlugService $slugService)
+    {
+        $this->slugService = $slugService;
+    }
+
     public function creating($model)
     {
-        if (config('permalink.nesting.nest_to_parent_on_create') || $model->parent_id) {
-            $this->nestToParent($model);
+        $this->nestToParent($model);
+
+        if ($model->isDirty('slug')) {
+            $this->ensureSlugIsUnique($model);
+        } else {
+            $this->slugService->slug($model);
         }
 
         (new NestingService)->single($model);
     }
 
-    public function saving($model)
+    public function updating($model)
     {
-        $this->ensureSlugIsUnique($model);
+        if ($model->getOriginal('slug') !== $model->slug) {
+            $this->ensureSlugIsUnique($model);
+            (new NestingService)->single($model);
+        }
     }
 
 //    public function updated($model)
@@ -56,8 +76,9 @@ class PermalinkObserver
      */
     protected function nestToParent($model)
     {
-        if ($model->entity && $parent = NestingService::parentFor($model->entity)) {
+        if (! $model->exists && $model->entity && $parent = NestingService::parentFor($model->entity)) {
             $model->parent_id = $parent->getKey();
+            $model->setRelation('parent', $parent);
         }
     }
 }

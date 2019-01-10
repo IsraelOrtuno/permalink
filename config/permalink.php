@@ -37,7 +37,7 @@ return [
     */
 
     'nesting'    => [
-        'nest_to_parent_on_create'           => true,
+//        'nest_to_parent_on_create'           => true,
         'regenerate_children_path_on_update' => true
     ],
 

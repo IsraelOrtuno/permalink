@@ -20,7 +20,7 @@ class ReadingTest extends TestCase
     public function it_returns_null_for_not_found_permalink_slug()
     {
         $user = factory(User::class)->make(['name' => 'foo']);
-        $user->handlePermalink = false;
+        $user->disablePermalinkHandling(); //  = false;
         $user->save();
 
         $this->assertNull($user->routeSlug);

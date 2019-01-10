@@ -80,7 +80,7 @@ class NestingService
 
         $model = $model->getMorphClass();
 
-        return Permalink::with('parent')->where('parent_for', $model)->first();
+        return Permalink::where('parent_for', $model)->first();
     }
 
     /**

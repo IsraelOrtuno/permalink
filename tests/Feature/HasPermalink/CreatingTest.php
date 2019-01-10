@@ -21,7 +21,7 @@ class CreatingTest extends TestCase
     public function it_wont_create_permalink_when_disabled()
     {
         $user = factory(User::class)->make();
-        $user->handlePermalink = false;
+        $user->disablePermalinkHandling();
         $user->save();
 
         $this->assertNull($user->permalink);

@@ -55,17 +55,13 @@ class Permalink extends Model
      */
     public static function boot()
     {
-        static::creating(PermalinkObserver::class . '@creating');
-        static::saving(PermalinkObserver::class . '@saving');
-        static::updated(PermalinkObserver::class . '@updated');
-
-//        static::created(function (Permalink $model) {
-//            if (($model->entity && $model->entity->loadRoutesOnCreate()) || static::$loadRoutesOnCreate) {
-//                app('router')->loadPermalinks();
-//            }
-//        });
-
         parent::boot();
+        parent::flushEventListeners();
+
+        // Since we want to allow the user to specify an slug rather to always
+        // generate it automatically, we've to remove the observers added by
+        // the Sluggable package, so we control the slug creation/update.
+        static::observe(PermalinkObserver::class);
     }
 
     /**
@@ -251,6 +247,11 @@ class Permalink extends Model
 
         return static::$actionMap;
     }
+
+//    public function setSlugAttribute($value)
+//    {
+//        $this->attributes['slug'] = $value;
+//    }
 
     /**
      * Set all seo values without NULLs.

@@ -11,8 +11,6 @@ class User extends Model implements Permalinkable
 {
     use HasPermalinks;
 
-    public $handlePermalink = true;
-
     /**
      * Get the permalink action for the model.
      *

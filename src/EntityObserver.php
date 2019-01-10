@@ -14,13 +14,17 @@ class EntityObserver
      */
     public function saved(Model $model)
     {
-        if (! $model->handlesPermalink()) {
+        if (! $model->permalinkHandling()) {
             return;
         }
 
         $attributes = $this->gatherAttributes($model->getPermalinkAttributes());
 
-        $model->updatePermalink($attributes);
+        if ($model->wasRecentlyCreated || ! $model->permalink) {
+            $model->createPermalink($attributes);
+        } else {
+            $model->updatePermalink($attributes);
+        }
     }
 
     /**
