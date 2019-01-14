@@ -16,7 +16,8 @@ return [
     'group' => [
         'prefix'     => '',
         'middleware' => [
-            'web'
+            'web',
+            \Devio\Permalink\Middleware\ResolvePermalinkEntities::class
         ]
     ],
 
