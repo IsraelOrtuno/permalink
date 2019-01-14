@@ -2,12 +2,13 @@
 
 namespace Devio\Permalink\Services;
 
-use Devio\Permalink\Permalink;
 use ReflectionClass;
+use Devio\Permalink\Permalink;
+use Illuminate\Database\Eloquent\Model;
 
-class ActionService
+class ActionFactory implements \Devio\Permalink\Contracts\ActionFactory
 {
-    public function action($model)
+    public function action(Model $model)
     {
         if ($action = $model->getAttributes()['action'] ?? false) {
             return Permalink::getMappedaction($action) ?? $action;
@@ -25,7 +26,7 @@ class ActionService
         return null;
     }
 
-    public function rootName($permalink)
+    public function rootName(Permalink $permalink)
     {
         if (! str_contains($action = $permalink->action, '@')) {
             return null;

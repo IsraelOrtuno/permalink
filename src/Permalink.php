@@ -2,11 +2,11 @@
 
 namespace Devio\Permalink;
 
+use Devio\Permalink\Contracts\ActionFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Devio\Permalink\Services\NameService;
 use Cviebrock\EloquentSluggable\Sluggable;
-use Devio\Permalink\Services\ActionService;
+use Devio\Permalink\Contracts\NameResolver;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
@@ -158,7 +158,7 @@ class Permalink extends Model
      */
     public function getActionAttribute()
     {
-        return (new ActionService)->action($this);
+        return app(ActionFactory::class)->action($this);
     }
 
     /**
@@ -175,11 +175,10 @@ class Permalink extends Model
      * Get the permalink name.
      *
      * @return null|string
-     * @throws \ReflectionException
      */
     public function getNameAttribute()
     {
-        return (new NameService)->name($this);
+        return app(NameResolver::class)->resolve($this);
     }
 
     /**
@@ -190,7 +189,7 @@ class Permalink extends Model
      */
     public function getActionRootName()
     {
-        return (new ActionService)->rootName($this);
+        return app(ActionFactory::class)->rootName($this);
     }
 
     /**

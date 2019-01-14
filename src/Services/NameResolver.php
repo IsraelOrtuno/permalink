@@ -2,9 +2,11 @@
 
 namespace Devio\Permalink\Services;
 
-class NameService
+use Devio\Permalink\Permalink;
+
+class NameResolver implements \Devio\Permalink\Contracts\NameResolver
 {
-    public function name($permalink)
+    public function resolve(Permalink $permalink)
     {
         $entity = $permalink->getRelationValue('entity');
 
