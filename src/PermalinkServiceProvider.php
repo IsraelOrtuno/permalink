@@ -67,15 +67,17 @@ class PermalinkServiceProvider extends ServiceProvider
             return new PermalinkManager;
         });
 
-        $this->app->singleton(NameResolver::class, function() {
+        $this->app->singleton(NameResolver::class, function () {
             return new Services\NameResolver();
         });
 
-        $this->app->singleton(ActionFactory::class, function() {
+        $this->app->singleton(ActionFactory::class, function () {
             return new Services\ActionFactory;
         });
 
-        $this->commands(Console\BindRouterInBootstrap::class);
-        $this->commands(Console\ReplaceRouterInKernel::class);
+        $this->commands([
+            Console\BindRouterInBootstrap::class,
+            Console\ReplaceRouterInKernel::class
+        ]);
     }
 }
