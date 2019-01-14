@@ -89,7 +89,7 @@ trait HasPermalinks
     public function getRouteAttribute()
     {
         return ($this->exists && $this->hasPermalink()) ?
-            $this->permalink->final_path : null;
+            url($this->permalink->final_path) : null;
     }
 
     /**
