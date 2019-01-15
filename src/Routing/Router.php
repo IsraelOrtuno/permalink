@@ -4,8 +4,8 @@ namespace Devio\Permalink\Routing;
 
 use Devio\Permalink\Permalink;
 use Illuminate\Support\Collection;
-use Illuminate\Database\QueryException;
 use Illuminate\Routing\Router as LaravelRouter;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Router extends LaravelRouter
@@ -33,14 +33,11 @@ class Router extends LaravelRouter
         // matches a existing permalink. If not just rise up the exception.
         try {
             return parent::findRoute($request);
-        } catch (NotFoundHttpException $e) {
-            try {
-                $this->findPermalink($request);
-            } catch (QueryException $e) {
-            }
-
-            return parent::findRoute($request);
+        } catch (HttpException $e) {
+            $this->findPermalink($request);
         }
+
+        return parent::findRoute($request);
     }
 
     public function findPermalink($request)
