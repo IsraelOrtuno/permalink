@@ -1,6 +1,6 @@
 # Advanced Laravel Permalinks and SEO Management from Database
 
-[![Build Status](https://travis-ci.com/IsraelOrtuno/permalink.svg?branch=master)](https://travis-ci.com/IsraelOrtuno/permalink)
+[![Build Status](https://travis-ci.com/IsraelOrtuno/permalink.svg?branch=master)](https://travis-ci.com/IsraelOrtuno/permalink) [![Latest Stable Version](https://poser.pugx.org/devio/permalink/version)](https://packagist.org/packages/devio/permalink)
 
 This package allows to create dynamic routes right from database, just like WordPress and other CMS do.
 
