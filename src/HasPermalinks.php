@@ -65,7 +65,7 @@ trait HasPermalinks
      * @param $attributes
      * @return $this
      */
-    public function createPermalink($attributes)
+    public function createPermalink($attributes = [])
     {
         return app(PermalinkManager::class)->create($this, $attributes);
     }
@@ -76,7 +76,7 @@ trait HasPermalinks
      * @param $attributes
      * @return $this
      */
-    public function updatePermalink($attributes)
+    public function updatePermalink($attributes = [])
     {
         return app(PermalinkManager::class)->update($this, $attributes);
     }
