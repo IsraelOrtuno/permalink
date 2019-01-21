@@ -114,20 +114,6 @@ class PermalinkSeo
     }
 
     /**
-     * Add a new permalink to the static collection.
-     *
-     * @param $route
-     * @param array $permalink
-     * @return $this
-     */
-    public function addPermalink($route, $permalink = [])
-    {
-        $this->permalinks[$route] = $permalink;
-
-        return $this;
-    }
-
-    /**
      * Set the request instance.
      *
      * @param $request
