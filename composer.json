@@ -1,6 +1,6 @@
 {
     "name": "devio/permalink",
-    "description": "Permalink routing system for Laravel. Advanced database driven routes.",
+    "description": "Permalink routing system for Laravel. Advanced database driven routes. Handle your permalinks + SEO options directly from database.",
     "keywords": ["permalink", "laravel", "routing", "database routing", "wordpress"],
     "license": "MIT",
     "authors": [
