@@ -128,7 +128,9 @@ class Permalink extends Model
      */
     public function scopeWithUniqueSlugConstraints(Builder $query, Model $model, $attribute, $config, $slug)
     {
-        return $query->where('parent_id', $model->parent_id);
+        if ($slug != '') {
+            return $query->where('parent_id', $model->parent_id);
+        }
     }
 
     /**
