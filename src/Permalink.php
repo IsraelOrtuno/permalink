@@ -2,11 +2,11 @@
 
 namespace Devio\Permalink;
 
-use Devio\Permalink\Contracts\ActionFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Devio\Permalink\Contracts\NameResolver;
+use Devio\Permalink\Contracts\ActionFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\Relation;
 

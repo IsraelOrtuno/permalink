@@ -34,7 +34,7 @@ class PermalinkManager
     {
         $permalink = $entity->permalink()
                             ->newRelatedInstanceFor($entity)
-                            ->setRelation('entity', $entity)
+//                            ->setRelation('entity', $entity)
                             ->fill($this->prepareSeoAttributes($entity, $attributes));
 
         $permalink->save();
