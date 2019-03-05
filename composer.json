@@ -1,7 +1,13 @@
 {
     "name": "devio/permalink",
     "description": "Permalink routing system for Laravel. Advanced database driven routes. Handle your permalinks + SEO options directly from database.",
-    "keywords": ["permalink", "laravel", "routing", "database routing", "wordpress"],
+    "keywords": [
+        "permalink",
+        "laravel",
+        "routing",
+        "database routing",
+        "wordpress"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -10,9 +16,9 @@
         }
     ],
     "require": {
-        "illuminate/support": "^5.6",
-        "illuminate/database": "^5.6",
-        "illuminate/routing": "^5.6",
+        "illuminate/support": "5.6.*|5.7.*|5.8.*",
+        "illuminate/database": "5.6.*|5.7.*|5.8.*",
+        "illuminate/routing": "5.6.*|5.7.*|5.8.*",
         "cviebrock/eloquent-sluggable": "^4.5",
         "arcanedev/seo-helper": "^1.5.0",
         "divineomega/array_undot": "^2.0"

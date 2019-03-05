@@ -9,7 +9,7 @@ use Devio\Permalink\Tests\Support\Controllers\TestController;
 
 class RoutingTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         Permalink::create(['slug' => 'foo', 'action' => TestController::class . '@index']);
