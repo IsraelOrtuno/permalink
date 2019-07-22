@@ -9,17 +9,20 @@ use Devio\Permalink\Tests\Support\Controllers\TestController;
 
 class RoutingTest extends TestCase
 {
-    public function setUp(): void
+    /** @test */
+    public function it_automatically_registers_a_new_permalink_as_route()
     {
-        parent::setUp();
         Permalink::create(['slug' => 'foo', 'action' => TestController::class . '@index']);
-        Permalink::create(['slug' => 'bar', 'action' => null]);
-        Permalink::create(['slug' => 'baz', 'action' => TestController::class . '@other']);
+
+        $this->get('/foo')
+             ->assertSuccessful();
     }
 
     /** @test */
     public function it_can_access_an_existing_permalink_url()
     {
+        Permalink::create(['slug' => 'foo', 'action' => TestController::class . '@index']);
+
         $this->get('/foo')
              ->assertSuccessful();
     }
@@ -27,6 +30,8 @@ class RoutingTest extends TestCase
     /** @test */
     public function it_can_return_the_content_from_action()
     {
+        Permalink::create(['slug' => 'foo', 'action' => TestController::class . '@index']);
+
         $this->get('/foo')
              ->assertSee('ok');
     }
@@ -41,6 +46,8 @@ class RoutingTest extends TestCase
     /** @test */
     public function it_gives_500_if_action_is_not_found()
     {
+        Permalink::create(['slug' => 'baz', 'action' => TestController::class . '@other']);
+
         $this->get('/baz')
              ->assertStatus(500);
     }
