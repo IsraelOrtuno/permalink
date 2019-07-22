@@ -80,8 +80,9 @@ class Router extends LaravelRouter
         $path = $this->prefix($permalink->final_path);
         $action = $this->convertToControllerAction($permalink->action);
 
-        return (new Route($permalink->method, $path, $action, $permalink))
-            ->setRouter($this)->setContainer($this->container);
+        return tap($this->newRoute($permalink->method, $path,$action), function($route) use ($permalink) {
+            $route->setPermalink($permalink);
+        });
     }
 
     /**
@@ -122,24 +123,15 @@ class Router extends LaravelRouter
             $this->routes->add($route);
         }
 
-//        if ($permalink->relationLoaded('children')) {
-//            $this->permalinkGroup($permalink);
-//        }
-
         return $this;
     }
 
-    /**
-     * Create a new permalink route group.
-     *
-     * @param $permalink
-     */
-//    public function permalinkGroup($permalink)
-//    {
-//        $this->group(['prefix' => $permalink->slug], function () use ($permalink) {
-//            $this->addPermalinks($permalink->children);
-//        });
-//    }
+    protected function newRoute($methods, $uri, $action)
+    {
+        return (new Route($methods, $uri, $action))
+            ->setRouter($this)
+            ->setContainer($this->container);
+    }
 
     /**
      * Refesh the route name and action lookups.

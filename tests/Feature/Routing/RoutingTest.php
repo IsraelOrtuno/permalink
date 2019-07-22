@@ -15,11 +15,6 @@ class RoutingTest extends TestCase
         Permalink::create(['slug' => 'foo', 'action' => TestController::class . '@index']);
         Permalink::create(['slug' => 'bar', 'action' => null]);
         Permalink::create(['slug' => 'baz', 'action' => TestController::class . '@other']);
-
-        Permalink::create(['slug' => 'overwritten', 'action' => TestController::class . '@index']);
-        Route::get('overwritten', function () {
-            return 'overwritten';
-        });
     }
 
     /** @test */
@@ -53,7 +48,25 @@ class RoutingTest extends TestCase
     /** @test */
     public function it_can_override_permalink_routes()
     {
+        Permalink::create(['slug' => 'overwritten', 'action' => TestController::class . '@index']);
+        Route::get('overwritten', function () {
+            return 'overwritten';
+        });
+
         $this->get('/overwritten')
              ->assertSee('overwritten');
+    }
+
+    /** @test */
+    public function it_can_set_a_permalink_when_creating_a_route()
+    {
+        Route::get('manual', function() {
+            return request()->route()->permalink()->seo['title'];
+        })->setPermalink([
+            'seo' => ['title' => 'foo']
+        ]);
+
+        $this->get('/manual')
+            ->assertSee('foo');
     }
 }

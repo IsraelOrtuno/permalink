@@ -15,7 +15,9 @@ class ResolvePermalinkEntities
      */
     public function handle($request, \Closure $next)
     {
-        if (($route = $request->route()) instanceof Route) {
+        $route = $request->route();
+
+        if ($route->hasPermalink()) {
             $route->parameters[] = $route->permalink()->entity;
         }
 

@@ -8,4 +8,9 @@ class TestController
     {
         return 'ok';
     }
+
+    public function manual()
+    {
+        return request()->route()->permalink()->seo['title'];
+    }
 }
