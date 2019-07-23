@@ -32,9 +32,9 @@ class Route extends \Illuminate\Routing\Route
     /**
      * Get the permalink instance.
      *
-     * @return Permalink
+     * @return Permalink|null
      */
-    public function permalink(): Permalink
+    public function permalink()
     {
         if (is_numeric($this->permalink)) {
             $this->permalink = Permalink::find($this->permalink);
