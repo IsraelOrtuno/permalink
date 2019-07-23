@@ -36,41 +36,67 @@ php artisan migrate
 
 ## Getting started
 
-This package handles dynamic routing directly from our database. It also supports slug inheritance so we can easily create routes like this `jobs/frontend-web-developer`.
+This package handles dynamic routing directly from our database. Nested routes are also supported, so we can easily create routes like this `/jobs/frontend-web-developer`.
 
-Most of the solutions out there are totally bound to models with polymorphic relationships, however that's not flexible at all when dealing with routes without models. This package supports both, model bound routes and plain routes.
+Most of the solutions out there are totally bound to models with polymorphic relationships, however that's not flexible at all when dealing with routes without models. This package supports both, routes with bound models and regular routes.
 
 Basically, the package stores routes in a `permalinks` table which contains information about every route: 
 - Slug
-- Parent slug
+- Parent (parent route for nesting)
 - Model (if any)
-- Action
-- SEO
+- Action (controller action or model default action)
+- SEO options (title, metas...)
 
 ### Example
 
 Let's review a very basic example to understand how it works:
 
-| id | slug          | parent_id | parent_for | permalinkable_type | permalinkable_id | action              
-| -- | ------------- | --------- | ---------- | ------------------ | ---------------- | --------------------
-| 1  | users         | NULL      | App\User   | NULL               | NULL             | UserController@index
-| 2  | israel-ortuno | 1         | NULL       | App\User           | 1                | NULL
+| id | slug          | parent_id | parent_for | entity_type        | entity_id        | action               | final_path            |
+| -- | ------------- | --------- | ---------- | ------------------ | ---------------- | -------------------- | --------------------- |
+| 1  | users         | NULL      | App\User   | NULL               | NULL             | UserController@index | users
+| 2  | israel-ortuno | 1         | NULL       | App\User           | 1                | UserController@show  | users/israel-ortuno
 
 It will run the following (this example tries to be as explicit as possible, internally it uses eager loading and some other performance optimizations):
 
 ```php
 $router->get('users', 'UserController@index');
-
-$router->group(['prefix' => 'users'], function() {
-  $user->get('israel-ortuno', User::find(1)->permalinkAction())
-});
+$router->get('users/israel-ortuno', 'UserController@show');
 
 // Which will produce:
 //    /users                UserController@index
-//    /users/israelOrtuno   Whatever action configured into the permalinkAction method
+//    /users/israel-ortuno  
 ```
 
+**NOTE:** The `show` method will receive the user as parameter `App\User::find(1)` the route is bound to that model.
+
 ## Usage
+
+
+### Replace default Router
+This package has it's own router which extends the default Laravel router. To replace the default router for the one included in this package you have two options:
+
+##### 1. Replace the router in Http\Kernel.php (recommended)
+
+Bind the router in the default `app/Http/Kernel.php` file. Add the trait This will add the trait `Devio\Permalink\Routing\ReplacesRouter` to the `Kernel` class or run the following command:
+
+```shell
+php artisan permalink:replace-router
+```
+
+ This will override the Laravel Router bound by default by the one provided by this package.
+
+##### 2. Replace the router before bootstrapping the app (bootstrap/app.php)
+
+If you are also hacking Laravel's routing behaviour, you may want to bind the router at bootstrap. Update the default Router class in `bootstrap/app.php` by `Devio\Permalink\Routing\Router` or run this command:
+
+
+```shell
+php artisan permalink:bind-router
+```
+
+**IMPORTANT:** Use either `Kernel.php` or `bootstrap/app.php`. **Do not** use both as it may cause unexpected behaviour.
+
+---
 
 Call the permalink route loader from the `boot` method from any of your application service providers: `AppServiceProvider` or `RouteServiceProviderp` are good examples:
 
