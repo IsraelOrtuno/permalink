@@ -76,23 +76,21 @@ $router->get('users/israel-ortuno', 'UserController@show');
 ### Replace default Router
 This package has it's own router which extends the default Laravel router. To replace the default router for the one included in this package you have two options:
 
-##### 1. Replace the router in Http\Kernel.php (recommended)
-Bind the router in the default `app/Http/Kernel.php` file. Add the trait This will add the trait `Devio\Permalink\Routing\ReplacesRouter` to the `Kernel` class or run the following command:
-
 ```shell
-php artisan permalink:replace-router
+php artisan permalink:install
 ```
 
- This will override the Laravel Router bound by default by the one provided by this package.
-
-##### 2. Replace the router before bootstrapping the app (bootstrap/app.php) (only advanced)
-If you are hacking Laravel's routing behaviour, you may want to bind the router at bootstrap. Update the default Router class in `bootstrap/app.php` by `Devio\Permalink\Routing\Router` or run this command:
-
+The console will propmpt you with 2 options:
 ```shell
-php artisan permalink:bind-router
+  [0] Http/Kernel.php (Default & Recommended)
+  [1] bootstrap/app.php (Advanced)
 ```
 
-**IMPORTANT:** Use either `Kernel.php` or `bootstrap/app.php`. **Do not** use both as it may cause unexpected behaviour.
+Select the one that fits your needs. For most cases I recommend `Http\Kernel.php`. 
+
+Both of these methods will replace the default Laravel Router by an extended version provided by this package which contains the Permalink management logic.
+
+**IMPORTANT:** Use either `Http\Kernel.php` or `bootstrap/app.php`. **Do not** use both as it may cause unexpected behaviour.
 
 That's pretty much it for setting up the dynamic routing system, feel free to test it out:
 
