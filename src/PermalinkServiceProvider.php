@@ -76,8 +76,7 @@ class PermalinkServiceProvider extends ServiceProvider
         });
 
         $this->commands([
-            Console\BindRouterInBootstrap::class,
-            Console\ReplaceRouterInKernel::class
+            Console\InstallRouter::class,
         ]);
     }
 }
