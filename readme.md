@@ -11,6 +11,8 @@ This package allows to create dynamic routes right from database, just like Word
 - [Installation](#installation)
 - [Getting started](#getting-started)
 - [Usage](#usage)
+    - [Replace the default Router]()
+    - [Creating a permalink]()
 - [Route names](#route-names)
 - [Getting the route for a resource](#getting-the-route-for-a-resource)
 - [Routes and route groups](#routes-and-route-groups)
@@ -71,12 +73,10 @@ $router->get('users/israel-ortuno', 'UserController@show');
 
 ## Usage
 
-
 ### Replace default Router
 This package has it's own router which extends the default Laravel router. To replace the default router for the one included in this package you have two options:
 
 ##### 1. Replace the router in Http\Kernel.php (recommended)
-
 Bind the router in the default `app/Http/Kernel.php` file. Add the trait This will add the trait `Devio\Permalink\Routing\ReplacesRouter` to the `Kernel` class or run the following command:
 
 ```shell
@@ -85,10 +85,8 @@ php artisan permalink:replace-router
 
  This will override the Laravel Router bound by default by the one provided by this package.
 
-##### 2. Replace the router before bootstrapping the app (bootstrap/app.php)
-
-If you are also hacking Laravel's routing behaviour, you may want to bind the router at bootstrap. Update the default Router class in `bootstrap/app.php` by `Devio\Permalink\Routing\Router` or run this command:
-
+##### 2. Replace the router before bootstrapping the app (bootstrap/app.php) (only advanced)
+If you are hacking Laravel's routing behaviour, you may want to bind the router at bootstrap. Update the default Router class in `bootstrap/app.php` by `Devio\Permalink\Routing\Router` or run this command:
 
 ```shell
 php artisan permalink:bind-router
@@ -96,18 +94,24 @@ php artisan permalink:bind-router
 
 **IMPORTANT:** Use either `Kernel.php` or `bootstrap/app.php`. **Do not** use both as it may cause unexpected behaviour.
 
----
-
-Call the permalink route loader from the `boot` method from any of your application service providers: `AppServiceProvider` or `RouteServiceProviderp` are good examples:
+That's pretty much it for setting up the dynamic routing system, feel free to test it out:
 
 ```php
-class AppServiceProvider extends ServiceProvider {
-    public function boot()
-    {
-        $this->app->make('permalink')->load();
-    }
-}
+Permalink::create([
+    'slug' => 'home',
+    'action' => 'App\Http\Controllers\HomeController@index'
+]);
+// Then visit /home
 ```
+
+### Creating Permalinks
+### Manual creation
+### Automatic creation
+
+// Then navigate to /home
+```
+
+---
 
 The configuration in the models is pretty simple, simply use the `HasPermalinks` trait and implement the `Permalinkable` interface in the models you want to provide the permalink functionality and implement the following methods:
 
