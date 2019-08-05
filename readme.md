@@ -92,7 +92,9 @@ Both of these methods will replace the default Laravel Router by an extended ver
 
 **IMPORTANT:** Use either `Http\Kernel.php` or `bootstrap/app.php`. **Do not** use both as it may cause unexpected behaviour.
 
-That's pretty much it for setting up the dynamic routing system, feel free to test it out:
+### Create a Permalink
+
+That's pretty much it for setting up the dynamic routing system. Let's create a Permalink record and test it out!
 
 ```php
 Permalink::create([
