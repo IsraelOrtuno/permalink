@@ -2,9 +2,9 @@
 
 namespace Devio\Permalink\Builders;
 
+use Devio\Permalink\Permalink;
 use Devio\Permalink\Contracts\SeoBuilder;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
-use Devio\Permalink\Permalink;
 
 abstract class Builder implements SeoBuilder
 {
