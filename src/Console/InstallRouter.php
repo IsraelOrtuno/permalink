@@ -2,8 +2,8 @@
 
 namespace Devio\Permalink\Console;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Illuminate\Console\Command;
 
 class InstallRouter extends Command
 {
