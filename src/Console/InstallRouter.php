@@ -7,12 +7,16 @@ use Illuminate\Support\Str;
 
 class InstallRouter extends Command
 {
-    public $signature = 'permalink:install';
+    public $signature = 'permalink:install {--default}';
 
     public $description = 'Replace the default Laravel Router';
 
     public function handle()
     {
+        if ($this->option('default') == true) {
+            return $this->inKernel();
+        }
+        
         $choice = $this->choice('Where do you want to replace the router?', ['Http/Kernel.php (Recommended)', 'bootstrap/app.php (Advanced)'], 0);
 
         Str::contains($choice, 'bootstrap') ?
