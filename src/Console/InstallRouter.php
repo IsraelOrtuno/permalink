@@ -16,7 +16,7 @@ class InstallRouter extends Command
         if ($this->option('default') == true) {
             return $this->inKernel();
         }
-        
+
         $choice = $this->choice('Where do you want to replace the router?', ['Http/Kernel.php (Recommended)', 'bootstrap/app.php (Advanced)'], 0);
 
         Str::contains($choice, 'bootstrap') ?
@@ -28,7 +28,7 @@ class InstallRouter extends Command
         $app = file_get_contents(base_path('bootstrap/app.php'));
 
         if (strpos($app, '\Devio\Permalink\Routing\Router::class') !== false) {
-            $this->error('The router class has already been replaced.');
+            $this->info('The router class has already been replaced.');
             return;
         }
 
@@ -46,7 +46,7 @@ class InstallRouter extends Command
         $kernel = file_get_contents(app_path('Http/Kernel.php'));
 
         if (strpos($kernel, 'ReplacesRouter') !== false) {
-            $this->error('The Kernel is already using the ReplacesRouter trait.');
+            $this->info('The Kernel is already using the ReplacesRouter trait.');
             return;
         }
 
