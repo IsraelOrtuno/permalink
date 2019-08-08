@@ -4,39 +4,39 @@ namespace Devio\Permalink;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class EntityObserver
 {
     /**
-     * Created model event handler.
-     *
-     * @param Model $model
+     * @var SlugService
      */
-    public function created(Model $model)
-    {
-        if (! $model->permalinkHandling()) {
-            return;
-        }
-
-        $model->createPermalink(
-            $this->gatherAttributes($model->getPermalinkAttributes())
-        );
-    }
+    private $slugService;
 
     /**
-     * Updated model event handler.
-     *
-     * @param Model $model
+     * PermalinkObserver constructor.
      */
-    public function updated(Model $model)
+    public function __construct(SlugService $slugService)
     {
+        $this->slugService = $slugService;
+    }
+
+    public function saved(Model $model)
+    {
+
         if (! $model->permalinkHandling()) {
             return;
         }
 
-        $model->updatePermalink(
-            $this->gatherAttributes($model->getPermalinkAttributes())
-        );
+        $attributes = $this->gatherAttributes($model->getPermalinkAttributes());
+
+        // By checking if 'deleted_at' column has been modified, we can prevent
+        // re-creating the permalink when the model has been restored because
+        // this event is fired again and wasRecentlyCreated will be true.
+        $softDeletingAction = method_exists($model, 'getDeletedAtColumn') && $model->isDirty($model->getDeletedAtColumn());
+
+        ($model->wasRecentlyCreated && ! $softDeletingAction) ?
+            $model->createPermalink($attributes) : $model->updatePermalink($attributes);
     }
 
     /**
