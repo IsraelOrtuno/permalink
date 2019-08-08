@@ -77,4 +77,15 @@ class SlugTest extends TestCase
 
         $this->assertEquals('foo', $user->permalink->slug);
     }
+    
+    /** @test */
+    public function it_makes_slug_attribute_mandatory()
+    {
+        // Slug is mandatory as there's only one '' permalink => homepage
+        $user = factory(User::class)->create(['name' => 'foo', 'permalink' => ['slug' => null]]);
+        $user2 = factory(User::class)->create(['name' => 'bar', 'permalink' => ['slug' => '']]);
+
+        $this->assertEquals('foo', $user->permalink->slug);
+        $this->assertEquals('bar', $user2->permalink->slug);
+    }
 }

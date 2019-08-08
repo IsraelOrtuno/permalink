@@ -29,7 +29,7 @@ class PermalinkObserver
     {
         $this->nestToParent($model);
 
-        if ($model->isDirty('slug')) {
+        if ($model->isDirty('slug') && ! empty($model->slug)) {
             $this->ensureSlugIsUnique($model);
         } else {
             $this->slugService->slug($model);
