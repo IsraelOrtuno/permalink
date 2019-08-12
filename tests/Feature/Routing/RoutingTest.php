@@ -76,4 +76,12 @@ class RoutingTest extends TestCase
         $this->get('/manual')
             ->assertSee('foo');
     }
+
+    /** @test */
+    public function it_injects_the_permalink_instance_if_typehinted_as_parameter()
+    {
+        Permalink::create(['slug' => 'typehinted', 'action' => TestController::class . '@typehinted']);
+
+        $this->get('/typehinted')->assertSee('typehinted');
+    }
 }

@@ -2,7 +2,7 @@
 
 namespace Devio\Permalink\Middleware;
 
-use Devio\Permalink\Routing\Route;
+use Devio\Permalink\Permalink;
 
 class ResolvePermalinkEntities
 {
@@ -18,7 +18,15 @@ class ResolvePermalinkEntities
         $route = $request->route();
 
         if ($route->hasPermalink()) {
-            $route->parameters[] = $route->permalink()->entity;
+            foreach ($route->signatureParameters() as $parameter) {
+                $type = $parameter->getType();
+
+                if ($type && $type->getName() == Permalink::class) {
+                    $route->parameters[] = $route->permalink();
+                } else {
+                    $route->parameters[] = $route->permalink()->entity;
+                }
+            }
         }
 
         return $next($request);
