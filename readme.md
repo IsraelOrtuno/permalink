@@ -77,7 +77,7 @@ $router->get('users/israel-ortuno', 'UserController@show');
 This package has it's own router which extends the default Laravel router. To replace the default router for the one included in this package you have two options:
 
 ```shell
-php artisan permalink:install
+php artisan permalink:install {--default}
 ```
 
 The console will propmpt you with 2 options:
@@ -86,7 +86,7 @@ The console will propmpt you with 2 options:
   [1] bootstrap/app.php (Advanced)
 ```
 
-Select the one that fits your needs. For most cases I recommend `Http\Kernel.php`. 
+Select the one that fits your needs. For most cases I recommend `Http\Kernel.php`. Use the `--default` option to use the recommended method and avoid blocking prompts (could also use the default Laravel command's flag `--no-interaction`).
 
 Both of these methods will replace the default Laravel Router by an extended version provided by this package which contains the Permalink management logic.
 
