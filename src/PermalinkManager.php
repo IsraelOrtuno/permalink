@@ -36,7 +36,7 @@ class PermalinkManager
         $permalink = $entity->permalink()
                             ->newRelatedInstanceFor($entity)
 //                            ->setRelation('entity', $entity)
-                            ->fill($this->prepareSeoAttributes($entity, $attributes));
+                            ->fill($this->prepareDefaultSeoAttributes($entity, $attributes));
 
         $permalink->save();
 
@@ -59,15 +59,25 @@ class PermalinkManager
         return $entity->permalink->update($attributes);
     }
 
-    protected function prepareSeoAttributes($entity, $attributes)
+    /**
+     * Prepare the default SEO attributes.
+     *
+     * @param $entity
+     * @param $attributes
+     * @return array
+     */
+    protected function prepareDefaultSeoAttributes($entity, $attributes)
     {
         $attributes = array_undot($attributes);
-        $values = array_undot($this->emptySeoArray());
+        $values = Arr::dot($this->getSeoAttributesArray());
 
         foreach ($values as $key => $value) {
-            $attribute = studly_case(str_replace('.', ' ', $key));
+            // We will generate the permalinkSeo* methods in order to populate the
+            // premalink default SEO data when creating a new permalink record.
+            // They will be overwritten if any seo data has been provided.
+            $attribute = 'permalink' . studly_case(str_replace('.', ' ', $key));
 
-            if (! Arr::get($attributes, $key) && $value = $entity->getAttribute($attribute)) {
+            if (! Arr::has($attributes, $key) && $value = $entity->getAttribute($attribute)) {
                 Arr::set($attributes, $key, $value);
             }
         }
@@ -80,14 +90,15 @@ class PermalinkManager
      *
      * @return array
      */
-    protected function emptySeoArray()
+    protected function getSeoAttributesArray()
     {
-        $fields = ['title' => null, 'description' => null];
-
         return [
-            'seo' => array_merge($fields, [
-                'twitter' => $fields, 'opengraph' => $fields,
-            ]),
+            'seo' => [
+                'title'       => null,
+                'description' => null,
+                'twitter'     => ['title' => null, 'description' => null],
+                'opengraph'   => ['title' => null, 'description' => null],
+            ],
         ];
     }
 }
