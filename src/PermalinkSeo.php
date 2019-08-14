@@ -2,6 +2,7 @@
 
 namespace Devio\Permalink;
 
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Devio\Permalink\Routing\Route;
 use Illuminate\Contracts\Container\Container;
@@ -69,14 +70,14 @@ class PermalinkSeo
      */
     protected function getBuildersCollection($permalink)
     {
-        $seo = array_wrap($permalink->seo);
+        $seo = Arr::wrap($permalink->seo);
 
-        if (count($base = array_except($seo, static::builders))) {
+        if (count($base = Arr::except($seo, static::builders))) {
             $seo['base'] = $base;
         }
 
         return collect(static::builders)->mapWithKeys(function ($builder) use ($seo) {
-            return [$builder => array_get($seo, $builder)];
+            return [$builder => Arr::get($seo, $builder)];
         });
     }
 

@@ -2,6 +2,7 @@
 
 namespace Devio\Permalink\Builders;
 
+use Illuminate\Support\Arr;
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Contracts\SeoBuilder;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
@@ -82,7 +83,7 @@ abstract class Builder implements SeoBuilder
         // We will make sure we always provide an array as parameter to the
         // builder methods. This way we could pass multiple parameters to
         // functions like setTitle and addWebmaster. Flexibility on top!
-        $content = array_wrap($content);
+        $content = Arr::wrap($content);
 
         $builder = $this->getBuilderName();
 
@@ -157,7 +158,7 @@ abstract class Builder implements SeoBuilder
      */
     public function data($data = [])
     {
-        $this->data = $data = array_filter(array_wrap($data), function ($item) {
+        $this->data = $data = array_filter(Arr::wrap($data), function ($item) {
             return ! is_null($item);
         });
 

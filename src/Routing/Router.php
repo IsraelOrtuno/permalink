@@ -2,6 +2,7 @@
 
 namespace Devio\Permalink\Routing;
 
+use Illuminate\Support\Arr;
 use Devio\Permalink\Permalink;
 use Illuminate\Support\Collection;
 use Illuminate\Routing\Router as LaravelRouter;
@@ -95,7 +96,7 @@ class Router extends LaravelRouter
     public function addPermalinks($permalinks = [], $forceRefresh = false)
     {
         if (! $permalinks instanceof Collection) {
-            $permalinks = array_wrap($permalinks);
+            $permalinks = Arr::wrap($permalinks);
         }
 
         foreach ($permalinks as $permalink) {

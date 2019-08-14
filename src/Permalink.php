@@ -2,6 +2,7 @@
 
 namespace Devio\Permalink;
 
+use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
@@ -243,8 +244,8 @@ class Permalink extends Model
     public function setSeoAttribute($value)
     {
         if (! is_null($value)) {
-            $value = json_encode(array_undot(
-                array_filter(array_dot($value), function ($item) {
+            $value = json_encode(Arr::undot(
+                array_filter(Arr::dot($value), function ($item) {
                     return ! is_null($item);
                 })
             ));

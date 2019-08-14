@@ -2,6 +2,7 @@
 
 namespace Devio\Permalink;
 
+use Illuminate\Support\Arr;
 use Devio\Permalink\Contracts\Permalinkable;
 
 class PermalinkManager
@@ -60,14 +61,14 @@ class PermalinkManager
 
     protected function prepareSeoAttributes($entity, $attributes)
     {
-        $attributes = array_undot($attributes);
-        $values = array_dot($this->emptySeoArray());
+        $attributes = Arr::undot($attributes);
+        $values = Arr::undot($this->emptySeoArray());
 
         foreach ($values as $key => $value) {
             $attribute = studly_case(str_replace('.', ' ', $key));
 
-            if (! array_get($attributes, $key) && $value = $entity->getAttribute($attribute)) {
-                array_set($attributes, $key, $value);
+            if (! Arr::get($attributes, $key) && $value = $entity->getAttribute($attribute)) {
+                Arr::set($attributes, $key, $value);
             }
         }
 
