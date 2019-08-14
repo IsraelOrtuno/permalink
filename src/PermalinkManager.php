@@ -61,8 +61,8 @@ class PermalinkManager
 
     protected function prepareSeoAttributes($entity, $attributes)
     {
-        $attributes = Arr::undot($attributes);
-        $values = Arr::undot($this->emptySeoArray());
+        $attributes = array_undot($attributes);
+        $values = array_undot($this->emptySeoArray());
 
         foreach ($values as $key => $value) {
             $attribute = studly_case(str_replace('.', ' ', $key));

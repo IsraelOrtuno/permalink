@@ -244,7 +244,7 @@ class Permalink extends Model
     public function setSeoAttribute($value)
     {
         if (! is_null($value)) {
-            $value = json_encode(Arr::undot(
+            $value = json_encode(array_undot(
                 array_filter(Arr::dot($value), function ($item) {
                     return ! is_null($item);
                 })
