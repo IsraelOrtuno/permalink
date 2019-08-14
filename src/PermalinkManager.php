@@ -77,7 +77,7 @@ class PermalinkManager
             // They will be overwritten if any seo data has been provided.
             $attribute = 'permalink' . studly_case(str_replace('.', ' ', $key));
 
-            if (! Arr::has($attributes, $key) && $value = $entity->getAttribute($attribute)) {
+            if (! Arr::get($attributes, $key) && $value = $entity->getAttribute($attribute)) {
                 Arr::set($attributes, $key, $value);
             }
         }

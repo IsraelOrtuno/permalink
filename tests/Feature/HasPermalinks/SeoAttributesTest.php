@@ -34,29 +34,16 @@ class SeoAttributesTest extends TestCase
     }
 
     /** @test */
-    public function it_wont_save_provided_null_values()
-    {
-        $user = factory(UserWithDefaultSeoAttributes::class)->create([
-            'permalink' => [
-                'seo' => ['title' => null, 'description' => null]
-            ]
-        ]);
-
-        $this->assertFalse(isset($user->permalink->seo['title']));
-        $this->assertFalse(isset($user->permalink->seo['description']));
-    }
-
-    /** @test */
     public function it_populates_seo_attributes_only_when_creating()
     {
         $user = factory(UserWithDefaultSeoAttributes::class)->create([
             'permalink' => [
-                'seo' => ['title' => null, 'description' => null]
+                'seo' => ['title' => 'foo']
             ]
         ]);
 
-        $user->update(['name' => 'bar bar']);
+        $user->update(['name' => 'bar baz']);
 
-        $this->assertFalse(isset($user->permalink->seo['title']));
+        $this->assertEquals('foo', $user->permalink->seo['title']);
     }
 }
