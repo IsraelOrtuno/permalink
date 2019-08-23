@@ -91,13 +91,9 @@ class NestingService
      */
     public static function parentPath($model)
     {
-        if (! $model instanceof Permalink) {
-            $model = $model->permalink;
+        if ($model instanceof Permalink) {
+            $model = $model->entity;
         }
-
-//        if (! is_object($model)) {
-//            $model = new $model;
-//        }
 
         $slugs = [];
 
@@ -106,15 +102,15 @@ class NestingService
                 return;
             }
 
-            if ($permalink->parent) {
-                array_push($slugs, $callable($permalink->parent));
-            }
+            array_push($slugs, $permalink->slug);
 
-            return $permalink->slug;
+            if ($permalink->parent) {
+                $callable($permalink->parent);
+            }
         };
 
-        $callable($model ?: static::parentFor($model));
+        $callable(static::parentFor($model));
 
-        return $slugs;
+        return array_reverse($slugs);
     }
 }
