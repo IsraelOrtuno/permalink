@@ -155,6 +155,16 @@ class Permalink extends Model
     }
 
     /**
+     * Alias to get the entity type.
+     *
+     * @return mixed
+     */
+    public function getTypeAttribute()
+    {
+        return $this->entity_type;
+    }
+
+    /**
      * Convert an alias to a full action path if any.
      *
      * @return null|string
