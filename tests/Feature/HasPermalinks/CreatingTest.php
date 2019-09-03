@@ -3,9 +3,9 @@
 namespace Devio\Permalink\Tests\Feature\HasPermalinks;
 
 use Devio\Permalink\Tests\TestCase;
-use Devio\Permalink\Tests\Dummy\DummyUser;
 use Devio\Permalink\Tests\Support\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Devio\Permalink\Tests\Support\Models\UserWithDisabledPermalinkHandling;
 
 class CreatingTest extends TestCase
 {
@@ -15,6 +15,15 @@ class CreatingTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->assertNotNull($user->permalink);
+    }
+
+    /** @test */
+    public function it_wont_create_permalink_when_disabled_by_default()
+    {
+        $user = factory(UserWithDisabledPermalinkHandling::class)->create();
+        $user->save();
+
+        $this->assertNull($user->permalink);
     }
 
     /** @test */
