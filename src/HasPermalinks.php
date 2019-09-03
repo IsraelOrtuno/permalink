@@ -82,6 +82,16 @@ trait HasPermalinks
     }
 
     /**
+     * Alias to get the existihg permalink ID.
+     *
+     * @return |null
+     */
+    public function getPermalinkKeyAttribute()
+    {
+        return $this->hasPermalink() ? $this->permalink->getKey() : null;
+    }
+
+    /**
      * Resolve the full permalink route.
      *
      * @return string
