@@ -34,4 +34,12 @@ class ReadingTest extends TestCase
 
         $this->assertEquals('foo/foo', $user->routePath);
     }
+
+    /** @test */
+    public function it_gets_the_related_permalink_key()
+    {
+        $user = factory(User::class)->create(['name' => 'foo']);
+
+        $this->assertEquals(1, $user->permalinkKey);
+    }
 }
