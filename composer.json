@@ -6,6 +6,7 @@
         "laravel",
         "routing",
         "database routing",
+        "dynamic routes",
         "wordpress"
     ],
     "license": "MIT",
