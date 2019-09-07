@@ -17,16 +17,16 @@
         }
     ],
     "require": {
-        "illuminate/support": "5.6.*|5.7.*|5.8.*",
-        "illuminate/database": "5.6.*|5.7.*|5.8.*",
-        "illuminate/routing": "5.6.*|5.7.*|5.8.*",
-        "cviebrock/eloquent-sluggable": "^4.5",
-        "arcanedev/seo-helper": "^1.5.0",
+        "illuminate/support": "5.6.0 - 6.0",
+        "illuminate/database": "5.6.0 - 6.0",
+        "illuminate/routing": "5.6.0 - 6.0",
+        "cviebrock/eloquent-sluggable": "4.5 - 6.0",
+        "arcanedev/seo-helper": "1.5.0 - 2.0",
         "divineomega/array_undot": "^4.0"
     },
     "require-dev": {
-        "orchestra/testbench": "~3.0",
-        "phpunit/phpunit": "~7.0",
+        "orchestra/testbench": "~4.0",
+        "phpunit/phpunit": "~8.0",
         "mockery/mockery": "^1.1"
     },
     "autoload": {
