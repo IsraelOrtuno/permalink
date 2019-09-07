@@ -3,6 +3,7 @@
 namespace Devio\Permalink;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Devio\Permalink\Contracts\Permalinkable;
 
 class PermalinkManager
@@ -75,7 +76,7 @@ class PermalinkManager
             // We will generate the permalinkSeo* methods in order to populate the
             // premalink default SEO data when creating a new permalink record.
             // They will be overwritten if any seo data has been provided.
-            $attribute = 'permalink' . studly_case(str_replace('.', ' ', $key));
+            $attribute = 'permalink' . Str::studly(str_replace('.', ' ', $key));
 
             if (! Arr::get($attributes, $key) && $value = $entity->getAttribute($attribute)) {
                 Arr::set($attributes, $key, $value);

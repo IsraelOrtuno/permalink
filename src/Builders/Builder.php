@@ -3,6 +3,7 @@
 namespace Devio\Permalink\Builders;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Contracts\SeoBuilder;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
@@ -126,7 +127,7 @@ abstract class Builder implements SeoBuilder
      */
     protected function methodExists($object, $name)
     {
-        $name = studly_case($name);
+        $name = Str::studly($name);
         $methods = ["set{$name}", "add{$name}"];
 
         foreach ($methods as $method) {

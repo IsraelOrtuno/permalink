@@ -3,6 +3,7 @@
 namespace Devio\Permalink\Services;
 
 use ReflectionClass;
+use Illuminate\Support\Str;
 use Devio\Permalink\Permalink;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,7 +29,7 @@ class ActionFactory implements \Devio\Permalink\Contracts\ActionFactory
 
     public function rootName(Permalink $permalink)
     {
-        if (! str_contains($action = $permalink->action, '@')) {
+        if (! Str::contains($action = $permalink->action, '@')) {
             return null;
         }
 
