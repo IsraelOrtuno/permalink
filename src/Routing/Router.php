@@ -81,7 +81,7 @@ class Router extends LaravelRouter
         $path = $this->prefix($permalink->final_path);
         $action = $this->convertToControllerAction($permalink->action);
 
-        return tap($this->newRoute($permalink->method, $path,$action), function($route) use ($permalink) {
+        return tap($this->newRoute($permalink->method, $path, $action), function ($route) use ($permalink) {
             $route->setPermalink($permalink);
         });
     }
@@ -104,7 +104,8 @@ class Router extends LaravelRouter
         }
 
         if ($forceRefresh || config('permalink.refresh_route_lookups')) {
-            $this->refreshRoutes();
+            dd('¡test');
+            $this->refreshRouteLookups();
         }
 
         return $this;
@@ -137,9 +138,31 @@ class Router extends LaravelRouter
     /**
      * Refesh the route name and action lookups.
      */
-    public function refreshRoutes()
+    public function refreshRouteLookups()
     {
         $this->getRoutes()->refreshNameLookups();
         $this->getRoutes()->refreshActionLookups();
+    }
+
+    /**
+     * Enlable the route look-usp refreshing.
+     *
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    public function enableRefreshingRouteLookupsOnCreate()
+    {
+        $this->container->make('config')
+                        ->set('permalink.refresh_route_lookups', true);
+    }
+
+    /**
+     * Disable the route look-ups refreshing.
+     *
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    public function disableRefreshingRouteLookupsOnCreate()
+    {
+        $this->container->make('config')
+                        ->set('permalink.refresh_route_lookups', false);
     }
 }
