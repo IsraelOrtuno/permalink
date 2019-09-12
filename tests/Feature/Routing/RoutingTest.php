@@ -67,14 +67,14 @@ class RoutingTest extends TestCase
     /** @test */
     public function it_can_set_a_permalink_when_creating_a_route()
     {
-        Route::get('manual', function() {
+        Route::get('manual', function () {
             return request()->route()->permalink()->seo['title'];
         })->setPermalink([
             'seo' => ['title' => 'foo']
         ]);
 
         $this->get('/manual')
-            ->assertSee('foo');
+             ->assertSee('foo');
     }
 
     /** @test */
