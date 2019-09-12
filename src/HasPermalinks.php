@@ -133,16 +133,6 @@ trait HasPermalinks
     }
 
     /**
-     * Determine the newly created entity should load all routes.
-     *
-     * @return bool
-     */
-    public function loadRoutesOnCreate()
-    {
-        return false;
-    }
-
-    /**
      * Get the entity route name (must be unique).
      *
      * @return string
@@ -154,11 +144,21 @@ trait HasPermalinks
         return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
     }
 
+    /**
+     * Determine if automatic permalink handling should be done.
+     *
+     * @return bool
+     */
     public function permalinkHandling()
     {
         return $this->permalinkHandling;
     }
 
+    /**
+     * Enable automatic permalink handling.
+     *
+     * @return $this
+     */
     public function enablePermalinkHandling()
     {
         $this->permalinkHandling = true;
@@ -166,6 +166,11 @@ trait HasPermalinks
         return $this;
     }
 
+    /**
+     * Disable automatic permalink handling.
+     *
+     * @return $this
+     */
     public function disablePermalinkHandling()
     {
         $this->permalinkHandling = false;
