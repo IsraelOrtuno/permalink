@@ -39,13 +39,6 @@ class Permalink extends Model
     public static $actionMap = [];
 
     /**
-     * Determine if routes should be reloaded when creating a new permalink.
-     *
-     * @var bool
-     */
-    public static $loadRoutesOnCreate = false;
-
-    /**
      * Parents cache.
      *
      * @var array
