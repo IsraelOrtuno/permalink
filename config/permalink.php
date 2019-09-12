@@ -38,7 +38,6 @@ return [
     */
 
     'nesting'    => [
-//        'nest_to_parent_on_create'           => true,
         'regenerate_children_path_on_update' => true
     ],
 
@@ -63,10 +62,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | The route's collection has to be refreshed when a new permalink is added
-    | to the router. Consider setting this option to false and refresh them
-    | manually if using addPermalinks many times for a better performance.
+    | to the router. If you are adding multiple permalinks in a row, you may
+    | consider to disable this feature to prevent performance issues.
     |
-    | Use Router::refreshRoutes() method to refresh the route look-ups.
+    | Use Devio\Permalink\Routing\Router::refreshRoutes() to refresh the route look-ups.
     |
     */
 
