@@ -249,7 +249,8 @@ class Permalink extends Model
         if (! is_null($value)) {
             $value = json_encode(Arr::undot(
                 array_filter(Arr::dot($value), function ($item) {
-                    return ! is_null($item);
+                    return $item ?? false;
+//                    return ! is_null($item);
                 })
             ));
         }
