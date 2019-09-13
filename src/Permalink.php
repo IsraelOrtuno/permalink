@@ -225,8 +225,8 @@ class Permalink extends Model
     /**
      * Set or get the alias map for aliased actions
      *
-     * @param  array|null $map
-     * @param  bool $merge
+     * @param array|null $map
+     * @param bool $merge
      * @return array
      */
     public static function actionMap(array $map = null, $merge = true)
@@ -246,14 +246,11 @@ class Permalink extends Model
      */
     public function setSeoAttribute($value)
     {
-        if (! is_null($value)) {
-            $value = json_encode(Arr::undot(
-                array_filter(Arr::dot($value), function ($item) {
-                    return $item ?? false;
-//                    return ! is_null($item);
-                })
-            ));
-        }
+        $value = json_encode(Arr::undot(
+            array_filter(Arr::dot(Arr::wrap($value)), function ($item) {
+                return $item ?? false;
+            })
+        ));
 
         $this->attributes['seo'] = $value;
     }
@@ -261,7 +258,7 @@ class Permalink extends Model
     /**
      * Get the action associated with a custom alias.
      *
-     * @param  string $alias
+     * @param string $alias
      * @return string|null
      */
     public static function getMappedAction($alias)
