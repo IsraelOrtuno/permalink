@@ -3,6 +3,7 @@
 namespace Devio\Permalink;
 
 use Devio\Permalink\Routing\Router;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Devio\Permalink\Contracts\NameResolver;
 use Devio\Permalink\Contracts\ActionFactory;
@@ -21,17 +22,26 @@ class PermalinkServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
 
-        $this->defineRouterMacro();
+        $this->defineMacros();
     }
 
     /**
      * Create the permalink macro.
      */
-    protected function defineRouterMacro()
+    protected function defineMacros()
     {
         \Illuminate\Routing\Router::macro('replaceMiddleware', function ($middleware = [], $middlewareGroups = []) {
             $this->middleware = $middleware;
             $this->middlewareGroups = $middlewareGroups;
+        });
+
+        Arr::macro('undot', function (array $dotArray) {
+            $array = [];
+            foreach ($dotArray as $key => $value) {
+                Arr::set($array, $key, $value);
+            }
+
+            return $array;
         });
     }
 

@@ -69,7 +69,7 @@ class PermalinkManager
      */
     protected function prepareDefaultSeoAttributes($entity, $attributes)
     {
-        $attributes = array_undot($attributes);
+        $attributes = Arr::undot($attributes);
         $values = Arr::dot($this->getSeoAttributesArray());
 
         foreach ($values as $key => $value) {
