@@ -110,18 +110,4 @@ Permalink::create([
 
 ---
 
-### Refreshing Route Look-ups
-
-Internally, Laravel router will generate a kind of cache of every route in your application, included any existing permalink. If you are adding permalinks at runtime and want to access this route (ie: `$company->route`), this "look-ups" have to be updated. Out of the box, this package will automatically update the route look-ups once a new permalink is created.
-
-If you are adding multiple permalinks at a time (let's say, creating 500+ entities with permalinks), this may turn into a perfromance issue. This feature can be disabled via the config option `permalink.refresh_route_lookups` and then run `Devio\Permalink\Routing\Router::refreshRoutes()` when you are ready to update the look-ups table.
-
-Example:
-
-```php
-Router::disableRefreshingRouteLookupsOnCreate(); // or config(['permalink.refresh_route_lookups' => false]);
-factory(User::class)->times(500)->create();
-Router::refreshRouteLookups()->enableRefreshingRouteLookupsOnCreate();
-```
-
 WORK IN PROGRESS...

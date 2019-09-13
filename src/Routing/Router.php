@@ -150,28 +150,4 @@ class Router extends LaravelRouter
         $this->getRoutes()->refreshNameLookups();
         $this->getRoutes()->refreshActionLookups();
     }
-
-    /**
-     * Enable the route look-usp refreshing.
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
-    public function enableRefreshingRouteLookupsOnCreate()
-    {
-        $this->container->make('config')
-                        ->set('permalink.refresh_route_lookups', true);
-
-        return $this;
-    }
-
-    /**
-     * Disable the route look-ups refreshing.
-     */
-    public function disableRefreshingRouteLookupsOnCreate()
-    {
-        $this->container->make('config')
-                        ->set('permalink.refresh_route_lookups', false);
-
-        return $this;
-    }
 }
