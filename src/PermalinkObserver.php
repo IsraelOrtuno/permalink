@@ -14,6 +14,8 @@ class PermalinkObserver
 
     /**
      * PermalinkObserver constructor.
+     *
+     * @param SlugService $slugService
      */
     public function __construct(SlugService $slugService)
     {

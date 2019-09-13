@@ -91,7 +91,7 @@ class Router extends LaravelRouter
      *
      * @param array $permalinks
      * @param bool $forceRefresh
-     * @return OldRouter
+     * @return Router
      */
     public function addPermalinks($permalinks = [], $forceRefresh = false)
     {
@@ -104,7 +104,6 @@ class Router extends LaravelRouter
         }
 
         if ($forceRefresh || config('permalink.refresh_route_lookups')) {
-            dd('¡test');
             $this->refreshRouteLookups();
         }
 
@@ -115,7 +114,7 @@ class Router extends LaravelRouter
      * Add a single permalink to the router.
      *
      * @param $permalink
-     * @return OldRouter
+     * @return Router
      */
     protected function addPermalink($permalink)
     {
@@ -128,6 +127,14 @@ class Router extends LaravelRouter
         return $this;
     }
 
+    /**
+     * Create a new route.
+     *
+     * @param array|string $methods
+     * @param string $uri
+     * @param mixed $action
+     * @return Route
+     */
     protected function newRoute($methods, $uri, $action)
     {
         return (new Route($methods, $uri, $action))
@@ -136,7 +143,7 @@ class Router extends LaravelRouter
     }
 
     /**
-     * Refesh the route name and action lookups.
+     * Refresh the route name and action lookups.
      */
     public function refreshRouteLookups()
     {
@@ -145,7 +152,7 @@ class Router extends LaravelRouter
     }
 
     /**
-     * Enlable the route look-usp refreshing.
+     * Enable the route look-usp refreshing.
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
@@ -153,16 +160,18 @@ class Router extends LaravelRouter
     {
         $this->container->make('config')
                         ->set('permalink.refresh_route_lookups', true);
+
+        return $this;
     }
 
     /**
      * Disable the route look-ups refreshing.
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function disableRefreshingRouteLookupsOnCreate()
     {
         $this->container->make('config')
                         ->set('permalink.refresh_route_lookups', false);
+
+        return $this;
     }
 }
