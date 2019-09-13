@@ -27,17 +27,18 @@ class PermalinkObserver
      *
      * @param $model
      */
-    public function creating($model)
+    public function creating($permalink)
     {
-        $this->nestToParent($model);
+        $this->nestToParent($permalink);
 
-        if ($model->isDirty('slug') && ! empty($model->slug)) {
-            $this->ensureSlugIsUnique($model);
+        if ($permalink->isDirty('slug') && ! empty($permalink->slug)) {
+            $this->ensureSlugIsUnique($permalink);
         } else {
-            $this->slugService->slug($model);
+            $this->slugService->slug($permalink);
         }
 
-        (new NestingService)->single($model);
+        (new NestingService)->single($permalink);
+    }
     }
 
     /**
@@ -45,11 +46,11 @@ class PermalinkObserver
      *
      * @param $model
      */
-    public function updating($model)
+    public function updating($permalink)
     {
-        if ($model->getOriginal('slug') !== $model->slug) {
-            $this->ensureSlugIsUnique($model);
-            (new NestingService)->single($model);
+        if ($permalink->getOriginal('slug') !== $permalink->slug) {
+            $this->ensureSlugIsUnique($permalink);
+            (new NestingService)->single($permalink);
         }
     }
 
@@ -58,16 +59,16 @@ class PermalinkObserver
      *
      * @param $model
      */
-    protected function ensureSlugIsUnique($model)
+    protected function ensureSlugIsUnique($permalink)
     {
-        if (! $model->isDirty('slug') || empty($model->slug)) {
+        if (! $permalink->isDirty('slug') || empty($permalink->slug)) {
             return;
         }
 
         // If the user has provided an slug manually, we have to make sure
         // that that slug is unique. If it is not, the SlugService class
         // will append an incremental suffix to ensure its uniqueness.
-        $model->slug = SlugService::createSlug($model, 'slug', $model->slug, []);
+        $permalink->slug = SlugService::createSlug($permalink, 'slug', $permalink->slug, []);
     }
 
     /**
@@ -75,11 +76,11 @@ class PermalinkObserver
      *
      * @param $model
      */
-    protected function nestToParent($model)
+    protected function nestToParent($permalink)
     {
-        if (! $model->exists && $model->entity && $parent = NestingService::parentFor($model->entity)) {
-            $model->parent_id = $parent->getKey();
-            $model->setRelation('parent', $parent);
+        if (! $permalink->exists && $permalink->entity && $parent = NestingService::parentFor($permalink->entity)) {
+            $permalink->parent_id = $parent->getKey();
+            $permalink->setRelation('parent', $parent);
         }
     }
 }
