@@ -3,27 +3,24 @@
 namespace Devio\Permalink\Services;
 
 use Devio\Permalink\Permalink;
+use Devio\Permalink\Contracts\PathBuilder as Builder;
 
-class NestingService
+class PathBuilder implements Builder
 {
     protected $cache = [];
 
-    public function nest($model)
+    public function build($model)
     {
         if (! $model->exists) {
             return $this->single($model);
         } elseif ($model->isDirty('slug')) {
             return $this->recursive($model);
         }
-
-        return $model;
     }
 
     public function single($model)
     {
         $model->final_path = $this->getFullyQualifiedPath($model);
-
-        return $model;
     }
 
     public function all()
@@ -51,8 +48,6 @@ class NestingService
             $permalink->final_path = $model->final_path . '/' . $permalink->slug;
             $permalink->save();
         });
-
-        return $model;
     }
 
     /**
@@ -74,6 +69,10 @@ class NestingService
      */
     public static function parentFor($model)
     {
+        if (is_null($model) || (! is_object($model) && ! class_exists($model))) {
+            return null;
+        }
+
         if (! is_object($model)) {
             $model = new $model;
         }

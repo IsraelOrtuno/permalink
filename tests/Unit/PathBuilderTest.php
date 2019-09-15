@@ -2,10 +2,10 @@
 
 use Devio\Permalink\Permalink;
 use Devio\Permalink\Tests\TestCase;
-use Devio\Permalink\Services\NestingService;
+use Devio\Permalink\Services\PathBuilder;
 use Devio\Permalink\Tests\Support\Models\User;
 
-class NestingServiceTest extends TestCase
+class PathBuilderTest extends TestCase
 {
     /** @test */
     public function it_generates_parent_path()
@@ -15,7 +15,7 @@ class NestingServiceTest extends TestCase
             'parent_for' => User::class
         ]);
 
-        $slugs = NestingService::parentPath(User::class);
+        $slugs = PathBuilder::parentPath(User::class);
 
         $this->assertEquals(['users'], $slugs);
     }
@@ -28,7 +28,7 @@ class NestingServiceTest extends TestCase
             'parent_for' => User::class
         ]);
 
-        $slugs = NestingService::parentPath(new User);
+        $slugs = PathBuilder::parentPath(new User);
 
         $this->assertEquals(['users'], $slugs);
     }
@@ -47,7 +47,7 @@ class NestingServiceTest extends TestCase
         ]);
 
 
-        $slugs = NestingService::parentPath(new User);
+        $slugs = PathBuilder::parentPath(new User);
 
         $this->assertEquals(['account', 'users'], $slugs);
     }

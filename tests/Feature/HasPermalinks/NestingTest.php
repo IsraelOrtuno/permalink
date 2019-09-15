@@ -29,4 +29,17 @@ class NestingTest extends TestCase
         Permalink::create(['slug' => 'foo', 'parent_for' => User::class]);
         Permalink::create(['slug' => 'foo', 'parent_for' => User::class]);
     }
+
+    /** @test */
+    public function it_wont_nest_permalink_if_disabled()
+    {
+        factory(User::class)->create();
+        config()->set('permalink.nest_to_parent_on_create', false);
+
+        $parent = Permalink::create(['slug' => 'foo', 'parent_for' => User::class]);
+        $child = Permalink::create(['slug' => 'bar', 'entity_type' => User::class, 'entity_id' => 1]);
+
+        $this->assertNull($child->parent);
+        $this->assertCount(0, $parent->children);
+    }
 }

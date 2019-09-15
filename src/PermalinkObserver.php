@@ -2,23 +2,34 @@
 
 namespace Devio\Permalink;
 
-use Devio\Permalink\Services\NestingService;
+use Devio\Permalink\Services\PathBuilder;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class PermalinkObserver
 {
     /**
+     * The PathBuilder instance.
+     *
+     * @var PathBuilder
+     */
+    protected $path;
+
+    /**
+     * The SlugService instance.
+     *
      * @var SlugService
      */
-    private $slugService;
+    protected $slugService;
 
     /**
      * PermalinkObserver constructor.
      *
+     * @param PathBuilder $path
      * @param SlugService $slugService
      */
-    public function __construct(SlugService $slugService)
+    public function __construct(PathBuilder $path, SlugService $slugService)
     {
+        $this->path = $path;
         $this->slugService = $slugService;
     }
 
@@ -37,8 +48,7 @@ class PermalinkObserver
             $this->slugService->slug($permalink);
         }
 
-        (new NestingService)->single($permalink);
-    }
+        $this->path->build($permalink);
     }
 
     /**
@@ -50,7 +60,10 @@ class PermalinkObserver
     {
         if ($permalink->getOriginal('slug') !== $permalink->slug) {
             $this->ensureSlugIsUnique($permalink);
-            (new NestingService)->single($permalink);
+
+            config('rebuild_children_final_path_on_update')
+                ? $this->path->recursive($permalink)
+                : $this->path->single($permalink);
         }
     }
 
@@ -78,7 +91,13 @@ class PermalinkObserver
      */
     protected function nestToParent($permalink)
     {
-        if (! $permalink->exists && $permalink->entity && $parent = NestingService::parentFor($permalink->entity)) {
+        if (! config('permalink.nest_to_parent_on_create')) {
+            return;
+        }
+
+        $parent = PathBuilder::parentFor($permalink->entity);
+
+        if (! $permalink->exists && $permalink->entity && $parent) {
             $permalink->parent_id = $parent->getKey();
             $permalink->setRelation('parent', $parent);
         }

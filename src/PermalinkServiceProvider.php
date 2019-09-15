@@ -2,9 +2,10 @@
 
 namespace Devio\Permalink;
 
-use Devio\Permalink\Routing\Router;
 use Illuminate\Support\Arr;
+use Devio\Permalink\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Devio\Permalink\Contracts\PathBuilder;
 use Devio\Permalink\Contracts\NameResolver;
 use Devio\Permalink\Contracts\ActionFactory;
 use Arcanedev\SeoHelper\Contracts\SeoHelper;
@@ -78,7 +79,11 @@ class PermalinkServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(NameResolver::class, function () {
-            return new Services\NameResolver();
+            return new Services\NameResolver;
+        });
+
+        $this->app->singleton(PathBuilder::class, function() {
+            return new Services\PathBuilder;
         });
 
         $this->app->singleton(ActionFactory::class, function () {
