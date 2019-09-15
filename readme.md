@@ -92,7 +92,7 @@ Both of these methods will replace the default Laravel Router by an extended ver
 
 **IMPORTANT:** Use either `Http\Kernel.php` or `bootstrap/app.php`. **Do not** use both as it may cause unexpected behaviour.
 
-### Create a Permalink
+### Creating a Permalink
 
 That's pretty much it for setting up the dynamic routing system. Let's create a Permalink record and test it out!
 
@@ -104,6 +104,51 @@ Permalink::create([
 // Then visit /home
 ```
 
+### Binding Models to Permalinks
+
+You may want to bind a permalink to a model resource, so you can create a unique URL to access that particular resource. If you want to do so, you just have to use the `HasPermalink` trait and implement the contract `Permalinkable` to your model.
+
+```php
+class User extends Model implements \Devio\Permalink\Contracts\Permalinkable;
+{
+    use \Devio\Permalink\HasPermalinks;
+    
+    public function permalinkAction()
+    {
+        return UserController::class . '@show';
+    }
+
+    public function permalinkSlug(): array 
+    {
+        return ['entity.name'];
+    }
+}
+```
+
+The `Permalinkable` interface will force you to define two methods:
+#### `permalinkAction()`
+
+This method will return the controller action responsible for handling the request for this particular model. The model itself will be injected into the action (as Laravel usually does for route model binding).
+
+```php 
+public function show($user)
+{
+    return $user;
+}
+```
+
+#### `permalinkSlug`
+
+This method is a bit more tricky. Since all the slugging task is being handled by the brilliant are using the brilliant [Sluggable](https://github.com/cviebrock/eloquent-sluggable) package, we do have to provide the info this package requires [sluggable](https://github.com/cviebrock/eloquent-sluggable#updating-your-eloquent-models) method.
+
+The permalink model will expose an `entity` polymorphic relationship to this model. Since the slugging occurs in the `Permalink` model class, we do have to specify which is going to be the source for our slug, in this case `entity.name`, so the model itself, attribute `name`. Return multiple items if you would like to concatenate multiple properties:
+
+```
+['entity.name', 'entity.city']
+```
+
+**NOTE:** This method should return an array compatible with the Sluggable package, please [check the package documentation](https://github.com/cviebrock/eloquent-sluggable#updating-your-eloquent-models) if you want to go deeper.
+  
 ### Creating Permalinks
 ### Manual creation
 ### Automatic creation
