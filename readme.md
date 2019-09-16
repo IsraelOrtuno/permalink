@@ -4,6 +4,8 @@
 
 This package allows to create dynamic routes right from database, just like WordPress and other CMS do.
 
+**IMPORTANT** Despite the functionality of this package is not complex at all, there are a few things to and good practices  to consider. I really recommend to carefully read the entire documentation to deeply understand how this package works as you will be replacing the default Laravel Routing System and do not want to mess up with your URLs and SEO!
+
 ## Roadmap
 - [ ] [Resources for visual SEO management](https://github.com/IsraelOrtuno/permalink-form) (in progress)
 
