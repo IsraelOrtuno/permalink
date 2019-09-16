@@ -23,7 +23,6 @@ class EntityObserver
 
     public function saved(Model $model)
     {
-
         if (! $model->permalinkHandling()) {
             return;
         }
@@ -60,7 +59,7 @@ class EntityObserver
      */
     public function deleted(Model $model)
     {
-        if (! $model->hasPermalink()) {
+        if (! $model->hasPermalink() || ! $model->permalinkHandling()) {
             return;
         }
 
