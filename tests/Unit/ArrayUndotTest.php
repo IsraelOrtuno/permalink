@@ -2,8 +2,8 @@
 
 namespace Devio\Permalink\Tests\Unit;
 
-use Devio\Permalink\Tests\TestCase;
 use Illuminate\Support\Arr;
+use Devio\Permalink\Tests\TestCase;
 
 class ArrayUndotTest extends TestCase
 {

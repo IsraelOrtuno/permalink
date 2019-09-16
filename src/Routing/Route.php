@@ -77,6 +77,12 @@ class Route extends \Illuminate\Routing\Route
         return (bool) $this->permalink;
     }
 
+    /**
+     * Get a new permalink instance.
+     *
+     * @param array $permalink
+     * @return Permalink
+     */
     public function buildPermalink(array $permalink)
     {
         return new Permalink($permalink);
