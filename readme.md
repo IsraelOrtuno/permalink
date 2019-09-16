@@ -189,7 +189,7 @@ This package handles this for you out of the box:
 
 The `permalinks` table has a column for automatically nesting models: `parent_for`. This attribute should contain the FQN class name of the model you want it to be parent for. Once set, when you create a new permalink for the specified model, it will automatically nested to the given parent.
 
-This will usually be a manual procedure you will do in you database so it may look like like the [example above](#usage).
+This will usually be a manual procedure you will do in you database so it may look like like the [example above](#example).
 
 #### Disable Automatic Nesting
 
