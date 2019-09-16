@@ -15,23 +15,22 @@ This package allows to create dynamic routes right from database, just like Word
 
 * [Installation](#installation)
 * [Getting Started](#getting-started)
-* [Usage](#usage)
-    * [Replacing the Default Router](#replacing-the-default-router)
-    * [Creating a Permalink](#creating-a-permalink)
-    * [Binding Models to Permalinks](#binding-models-to-permalinks)
-    * [Automatically Handling Permalinks](#automatically-handling-permalinks)
-    * [Nesting Permalinks](#nesting-permalinks)
+* [Replacing the Default Router](#replacing-the-default-router)
+* [Creating a Permalink](#creating-a-permalink)
+* [Binding Models to Permalinks](#binding-models-to-permalinks)
+* [Automatically Handling Permalinks](#automatically-handling-permalinks)
+* [Nesting Permalinks](#nesting-permalinks)
 * [Caching Permalinks](#caching.-permalinks)
 
 ## Installation
 
-### Install the package
+## Install the package
 
 ```shell
 composer require devio/permalink
 ```
 
-### Run the migrations
+## Run the migrations
 
 ```shell
 php artisan migrate
@@ -52,7 +51,7 @@ Basically, the package stores routes in a `permalinks` table which contains info
 
 By default, this package will try to find if there's a a permalink in the `permalinks` table matching the current request path in a single SQL query. This is ok for most of the use cases. If for some reason you want to cache your permalinks information into the Laravel Routing Cache, please refer to the [Caching Permalinks](#caching) section.
 
-### Example
+## Example
 
 Let check out a very basic example to understand how it internally works:
 
@@ -74,9 +73,7 @@ $router->get('users/israel-ortuno', 'UserController@show');
 
 **NOTE:** The `show` method will receive the user as parameter `App\User::find(1)` the route is bound to that model.
 
-## Usage
-
-### Replacing the Default Router
+## Replacing the Default Router
 This package has it's own router which extends the default Laravel router. To replace the default router for the one included in this package you have two options:
 
 ```shell
@@ -95,7 +92,7 @@ Both of these methods will replace the default Laravel Router by an extended ver
 
 **IMPORTANT:** Use either `Http\Kernel.php` or `bootstrap/app.php`. **Do not** use both as it may cause unexpected behaviour.
 
-### Creating a Permalink
+## Creating a Permalink
 
 That's pretty much it for setting up the dynamic routing system. Let's create a Permalink record and test it out!
 
@@ -124,7 +121,7 @@ Any existing key in the `permalink` array will override its default value when c
 
 **NOTE:** This will only work if `permalinkHandling` has not been disabled, read more about it below.
 
-### Binding Models to Permalinks
+## Binding Models to Permalinks
 
 You may want to bind a permalink to a model resource, so you can create a unique URL to access that particular resource. If you want to do so, you just have to use the tait `HasPermalinks` and implement the contract `Permalinkable` to your model.
 
@@ -174,7 +171,7 @@ The permalink model will expose an `entity` polymorphic relationship to this mod
 
 **NOTE:** This method should return an array compatible with the Sluggable package, please [check the package documentation](https://github.com/cviebrock/eloquent-sluggable#updating-your-eloquent-models) if you want to go deeper.
 
-### Automatically Handling Permalinks
+## Automatically Handling Permalinks
 
 By default, this package takes care of creating/updating/deleting your permalinks based on the actions performed in the bound model. If you do not want this to happen and want to decide when decide the precise moment the permalink has to be created/updated/deleted for this particular model. You can disable the permalink handling in two ways:
 
@@ -192,7 +189,7 @@ public function permalinkHanlding()
 }
 ```
 
-### Nesting Permalinks
+## Nesting Permalinks
 
 You may want to have a nested permalink structure, let's say, for your blog. Parent will be `/blog` and every post should be inside this path, so you can do things like:
 
@@ -205,13 +202,13 @@ You may want to have a nested permalink structure, let's say, for your blog. Par
 
 This package handles this for you out of the box:
 
-#### Automatic Permalink Nesting
+### Automatic Permalink Nesting
 
 The `permalinks` table has a column for automatically nesting models: `parent_for`. This attribute should contain the FQN class name of the model you want it to be parent for. Once set, when you create a new permalink for the specified model, it will automatically nested to the given parent.
 
 This will usually be a manual procedure you will do in you database so it may look like like the [example above](#example).
 
-#### Disable Automatic Nesting
+### Disable Automatic Nesting
 
 If you are deep into this package and want to manage the nesting of your permalinks manually (why would you do so? but just in case...), feel free to disable this feature from the config:
 
@@ -228,7 +225,7 @@ public function permalinkNestToParentOnCreate()
 }
 ```
 
-#### Manually Nesting
+### Manually Nesting
 
 If you wish to nest a permalink to other manually, all you have to do is to set the `id` of the parent permalink to the `parent_id` attribute on the child permalink:
 
@@ -236,11 +233,11 @@ If you wish to nest a permalink to other manually, all you have to do is to set 
 Permalink::create(['slug' => 'my-article', 'parent_id' => 1, 'action' => '...']);
 ```
 
-### Permalink Actions
+## Permalink Actions
 
 The `action` attribute on your permalink record will be providing the information about what's going to handle the request when that permalink matches the current request URI.
 
-#### Controllers as Actions
+### Controllers as Actions
 
 Every permalink should have a action, specifically those which are not bound to models. You should specify a `controller@action` into the `action` column of your permalink record.
 
@@ -255,7 +252,7 @@ class UserController {
 }
 ```
 
-#### Views as Actions
+### Views as Actions
 
 For simple use cases you could simply specify a view's path as an action for your permalink. The permalink entity (if bound to a model) will also be available in this view as mentioned above:
 
@@ -272,7 +269,7 @@ Permalink::create(['slug' => 'israel-ortuno', 'entity_type' => User::class, 'ent
 <h1>Welcome {{ $user->name }}</h1>
 ```
 
-#### Default Actions (in Models)
+### Default Actions (in Models)
 
 If you have a model bound to a permalink, you may define a default action in your model like this:
 
@@ -285,7 +282,7 @@ public function permalinkAction()
 
 This method is mandatory once you implement the `Permalinkable` interface.
 
-#### Overriding the Default Action
+### Overriding the Default Action
 
 By default, the permalink will resolve the action based on the `permlainkAction` method of the permalink entity. However, if you specifiy a value to the `action` column in the permalink record, it will override the default action. For example:
 
@@ -313,7 +310,7 @@ $user = User::create([
 
 When accessing the permalink for this particular entity, `user/show.blade.php` will be responsible for handling the request rather than the default controller. Isn't it cool?
 
-### Caching Permalinks (Read Carefully!)
+## Caching Permalinks (Read Carefully!)
 
 As mentioned above, this package will perform a single SQL query on every request in order to find a matching permalink for the current URI. This is quite performant and should be ok for most use cases. This query may also be cached for super-fast access if needed.
 
