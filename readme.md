@@ -15,9 +15,7 @@ This package allows to create dynamic routes right from database, just like Word
     - [Creating a permalink]()
 - [Route names](#route-names)
 - [Getting the route for a resource](#getting-the-route-for-a-resource)
-- [Routes and route groups](#routes-and-route-groups)
 - [Nesting routes](#nesting-routes)
-- [Creating/updating permalinks manually](#creatingupdating-permalinks-manually)
 - [Overriding the default action](#overriding-the-default-action)
 - [Support for morphMap & actionMap](#support-for-morphmap--actionmap)
 - [Automatic SEO generation](#automatic-seo-generation)
@@ -114,6 +112,25 @@ Permalink::create([
     'action' => 'App\Http\Controllers\HomeController@index'
 ]);
 // Then visit /home
+```
+
+If your permalink is bound to a model (read next section), you may create your permalink record like this:
+
+```php
+$user = User::create([
+    'name' => 'israel',
+    'permalink' => [
+        'slug' => 'israel-ortuno',
+        'action' => 'user.show',
+        'seo' => [...] // omit this attribute until you read more about it
+    ]
+]);
+```
+
+Any existing key in the `permalink` array will override its default value when creating the permalink.
+
+**NOTE:** This will only work if `permalinkHandling` has not been disabled, read more about it below.
+
 ```
 
 ### Binding Models to Permalinks
@@ -216,7 +233,7 @@ config()->set('permalink.nest_to_parent_on_create', false);
 // Disable this feature for a particular model. Define this method in your model class:
 public function permalinkNestToParentOnCreate()
 {
-	return false;
+    return false;
 }
 ```
 
@@ -227,6 +244,83 @@ If you wish to nest a permalink to other manually, all you have to do is to set 
 ```php
 Permalink::create(['slug' => 'my-article', 'parent_id' => 1, 'action' => '...']);
 ```
+
+### Permalink Actions
+
+The `action` attribute on your permalink record will be providing the information about what's going to handle the request when that permalink matches the current request URI.
+
+#### Controllers as Actions
+
+Every permalink should have a action, specifically those which are not bound to models. You should specify a `controller@action` into the `action` column of your permalink record.
+
+If there's a model bound to the permalink (entity), it will be passed as parameter to the controller action:
+
+```php
+class UserController {
+    public function show($user)
+    {
+        return view('users.show', compact('user'));
+    }
+}
+```
+
+#### Views as Actions
+
+For simple use cases you could simply specify a view's path as an action for your permalink. The permalink entity (if bound to a model) will also be available in this view as mentioned above:
+
+```php
+Permalink::create(['slug' => 'users', 'action' => 'users.index']);
+```
+
+If bound to a model...
+
+```php
+Permalink::create(['slug' => 'israel-ortuno', 'entity_type' => User::class, 'entity_id' => 1, 'action' => 'users.show']);
+
+// And then in users/show.blade.php
+<h1>Welcome {{ $user->name }}</h1>
+```
+
+#### Default Actions (in Models)
+
+If you have a model bound to a permalink, you may define a default action in your model like this:
+
+```php
+public function permalinkAction()
+{
+    return UserController::class . '@show';
+}
+```
+
+This method is mandatory once you implement the `Permalinkable` interface.
+
+#### Overriding the Default Action
+
+By default, the permalink will resolve the action based on the `permlainkAction` method of the permalink entity. However, if you specifiy a value to the `action` column in the permalink record, it will override the default action. For example:
+
+```php
+class User extends Model
+{
+    use HasPermalinks;
+    ...
+    public function permalinkAction()
+    {
+        return UserController::class . '@index';
+    }
+    ...
+}
+
+// And then...
+$user = User::create([
+    'name' => 'israel',
+    'permalink' => [
+        'action' => 'user.show'
+    ]
+]);
+// Or just update the action attribute as you like
+```
+
+When accessing the permalink for this particular entity, `user/show.blade.php` will be responsible for handling the request rather than the default controller. Isn't it cool?
 
 ### Caching Permalinks (Read Carefully!)
 
