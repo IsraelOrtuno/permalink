@@ -44,4 +44,41 @@ class ActionTest extends TestCase
 
         $this->assertEquals('user.index', $permalink->rawAction);
     }
+
+    /** @test */
+    public function it_can_override_default_actions()
+    {
+        $user = factory(User::class)->create([
+            'permalink' => [
+                'slug' => 'foo',
+                'action' => \Devio\Permalink\Tests\Support\Controllers\TestController::class . '@override'
+            ]
+        ]);
+
+        $this->get('foo')->assertSee('override');
+    }
+
+    /** @test */
+    public function it_supports_view_paths_as_actions()
+    {
+        Permalink::create(['slug' => 'foo', 'action' => 'welcome']);
+
+        $this->get('foo')->assertViewIs('welcome');
+    }
+
+    /** @test */
+    public function it_will_pass_the_entity_to_the_view()
+    {
+        $user = factory(User::class)->create([
+            'permalink' => [
+                'slug'   => 'foo',
+                'action' => 'welcome'
+            ]
+        ]);
+
+        $response = $this->get('foo');
+        $response->assertViewHas('user');
+
+        $this->assertEquals($user->getKey(), $response->viewData('user')->getKey());
+    }
 }

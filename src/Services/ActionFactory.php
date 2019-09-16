@@ -2,40 +2,46 @@
 
 namespace Devio\Permalink\Services;
 
-use ReflectionClass;
 use Illuminate\Support\Str;
 use Devio\Permalink\Permalink;
-use Illuminate\Database\Eloquent\Model;
+use Devio\Permalink\Http\PermalinkController;
 
 class ActionFactory implements \Devio\Permalink\Contracts\ActionFactory
 {
-    public function action(Model $model)
+    /**
+     * Resolve the action for the given permalink.
+     *
+     * @param Permalink $permalink
+     * @return mixed
+     */
+    public function resolve(Permalink $permalink)
     {
-        if ($action = $model->getAttributes()['action'] ?? false) {
-            return Permalink::getMappedaction($action) ?? $action;
+        if ($action = $permalink->rawAction) {
+            $action = Permalink::getMappedaction($action) ?? $action;
+        } elseif ($entity = $permalink->getRelationValue('entity')) {
+            $action = $entity->permalinkAction();
         }
 
-        $entity = $model->getRelationValue('entity');
+        return tap($this->buildAction($action), function ($action) use ($permalink) {
+            abort_unless($action, 404, 'Could not resolve an action for permalink ' . $permalink->id);
+        });
+    }
 
-        // If the action is mapped or a fallback action has been set to the
-        // permalinkable entity, we will assume it exists. Otherwise it's
-        // not possible to provide an action to be bound to the router.
-        if ($entity && method_exists($entity, 'permalinkAction')) {
-            return $entity->permalinkAction();
+    /**
+     * Resolve the view or controller for the given action.
+     *
+     * @param $action
+     * @return string
+     */
+    protected function buildAction($action)
+    {
+        if (view()->exists($action)) {
+            return PermalinkController::class . '@view';
+        } elseif (Str::contains($action, '@')) {
+            $class = explode('@', $action);
+            return method_exists($class[0], $class[1]) ? $action : null;
         }
 
         return null;
-    }
-
-    public function rootName(Permalink $permalink)
-    {
-        if (! Str::contains($action = $permalink->action, '@')) {
-            return null;
-        }
-
-        [$class, $method] = explode('@', $action);
-        $name = str_replace('Controller', '', (new ReflectionClass($class))->getShortName());
-
-        return strtolower($name . '.' . $method);
     }
 }

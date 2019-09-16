@@ -37,19 +37,12 @@ class RoutingTest extends TestCase
     }
 
     /** @test */
-    public function it_gives_404_if_action_is_null()
+    public function it_gives_404_if_action_cannot_be_resolved()
     {
-        $this->get('/bar')
-             ->assertNotFound();
-    }
-
-    /** @test */
-    public function it_gives_500_if_action_is_not_found()
-    {
-        Permalink::create(['slug' => 'baz', 'action' => TestController::class . '@other']);
+        Permalink::create(['slug' => 'baz', 'action' => TestController::class . '@nonexisting']);
 
         $this->get('/baz')
-             ->assertStatus(500);
+             ->assertStatus(404);
     }
 
     /** @test */

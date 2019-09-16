@@ -163,7 +163,7 @@ class Permalink extends Model
      */
     public function getActionAttribute()
     {
-        return app(ActionFactory::class)->action($this);
+        return app(ActionFactory::class)->resolve($this);
     }
 
     /**

@@ -11,6 +11,11 @@ class TestController
         return 'ok';
     }
 
+    public function override()
+    {
+        return 'override';
+    }
+
     public function manual()
     {
         return request()->route()->permalink()->seo['title'];
