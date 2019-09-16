@@ -7,17 +7,8 @@ This package allows to create dynamic routes right from database, just like Word
 ## Roadmap
 - [ ] [Resources for visual SEO management](https://github.com/IsraelOrtuno/permalink-form) (in progress)
 
-## Documentation
-- [Installation](#installation)
-- [Getting started](#getting-started)
-- [Usage](#usage)
-    - [Replace the default Router]()
-    - [Creating a permalink]()
-- [Route names](#route-names)
+## Documentation)
 - [Getting the route for a resource](#getting-the-route-for-a-resource)
-- [Nesting routes](#nesting-routes)
-- [Overriding the default action](#overriding-the-default-action)
-- [Support for morphMap & actionMap](#support-for-morphmap--actionmap)
 - [Automatic SEO generation](#automatic-seo-generation)
 
 - [Installation](#installation)
