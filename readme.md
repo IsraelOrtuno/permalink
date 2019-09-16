@@ -156,7 +156,7 @@ The permalink model will expose an `entity` polymorphic relationship to this mod
 
 ### Automatically Handling Permalinks
 
-By default, this package takes care of creating/updating/deleting your permalinks based on the actions performed in the bound model. If you do not want this to happen and want to decide when decide the precise moment the permalink has to be created/updated/deleted for this particular model. You can disable the permalink handling in multiple two ways:
+By default, this package takes care of creating/updating/deleting your permalinks based on the actions performed in the bound model. If you do not want this to happen and want to decide when decide the precise moment the permalink has to be created/updated/deleted for this particular model. You can disable the permalink handling in two ways:
 
 ```php
 
@@ -172,7 +172,18 @@ public function permalinkHanlding()
 }
 ```
 
-### Automatic Nesting for Bound Models
+### Nesting Permalinks
+
+You may want to have a nested permalink structure, let's say, for your blog. Parent will be `/blog` and every post should be inside this path, so you can do things like:
+
+```
+/blog           -> Blog index, show all blog posts
+/blog/post-1
+/blog/post-2
+...
+```
+
+This package handles this for you out of the box:
 
 #### Automatic Permalink Nesting
 
@@ -189,6 +200,14 @@ If you are deep into this package and want to manage the nesting of your permali
 'nest_to_parent_on_create' => false
 // or
 config()->set('permalink.nest_to_parent_on_create', false);
+```
+
+### Manually Nesting
+
+If you wish to nest a permalink to other manually, all you have to do is to set the `id` of the parent permalink to the `parent_id` attribute on the child permalink:
+
+```php
+Permalink::create(['slug' => 'my-article', 'parent_id' => 1, 'action' => '...']);
 ```
 
 ---
