@@ -202,7 +202,7 @@ If you are deep into this package and want to manage the nesting of your permali
 config()->set('permalink.nest_to_parent_on_create', false);
 ```
 
-### Manually Nesting
+#### Manually Nesting
 
 If you wish to nest a permalink to other manually, all you have to do is to set the `id` of the parent permalink to the `parent_id` attribute on the child permalink:
 
