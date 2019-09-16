@@ -6,7 +6,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Cviebrock\EloquentSluggable\Sluggable;
-use Devio\Permalink\Contracts\NameResolver;
 use Devio\Permalink\Contracts\ActionFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -175,27 +174,6 @@ class Permalink extends Model
     public function setActionAttribute($value)
     {
         $this->attributes['action'] = array_search($value, static::actionMap()) ?: $value;
-    }
-
-    /**
-     * Get the permalink name.
-     *
-     * @return null|string
-     */
-    public function getNameAttribute()
-    {
-        return app(NameResolver::class)->resolve($this);
-    }
-
-    /**
-     * Get the action root base name.
-     *
-     * @return null|string
-     * @throws \ReflectionException
-     */
-    public function getActionRootName()
-    {
-        return app(ActionFactory::class)->rootName($this);
     }
 
     /**
