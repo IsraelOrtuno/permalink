@@ -122,8 +122,6 @@ Any existing key in the `permalink` array will override its default value when c
 
 **NOTE:** This will only work if `permalinkHandling` has not been disabled, read more about it below.
 
-```
-
 ### Binding Models to Permalinks
 
 You may want to bind a permalink to a model resource, so you can create a unique URL to access that particular resource. If you want to do so, you just have to use the tait `HasPermalinks` and implement the contract `Permalinkable` to your model.
