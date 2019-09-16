@@ -269,6 +269,35 @@ Permalink::create(['slug' => 'israel-ortuno', 'entity_type' => User::class, 'ent
 <h1>Welcome {{ $user->name }}</h1>
 ```
 
+#### Using a Custom Controller for View Actions
+
+Under the hood, view actions are handled by a controller provided by this package `Devio\Permalink\Http\PermalinkController`. You can update this controller with your own implementation if needed. Maybe you want to apply some middleware, or resolve views in a different way...
+
+All you have to do is to bind your implementation to the container in your `AppServiceProvider` (or other):
+
+```php
+// In your AppServiceProvider.php
+public function register()
+{
+    $this->bind('Devio\Permalink\Http\PermalinkController', YourController::class);
+}
+
+// And then...
+class YourController 
+{
+    use Devio\Permalink\Http\ResolvesPermalinkView;
+
+    public function __construct()
+    {
+        // Do your stuff.
+    }
+}
+```
+
+This way, Laravel will now resolve your implementation out of the container.
+
+If you wish to have your own implementation for resolving the views, do not use the `Devio\Permalink\Http\ResolvesPermalinkView` trait and create your own `view()` method.
+
 ### Default Actions (in Models)
 
 If you have a model bound to a permalink, you may define a default action in your model like this:
