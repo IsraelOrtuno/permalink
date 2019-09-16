@@ -41,6 +41,9 @@ class Router extends LaravelRouter
         return parent::findRoute($request);
     }
 
+    /**
+     * Get the permalink for the current request if any.
+     */
     public function findPermalink($request)
     {
         $path = trim($request->getPathInfo(), '/');

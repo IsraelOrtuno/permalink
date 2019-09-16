@@ -51,7 +51,7 @@ Basically, the package stores routes in a `permalinks` table which contains info
 
 ### Example
 
-Let's review a very basic example to understand how it works:
+Let check out a very basic example to understand how it internally works:
 
 | id | slug          | parent_id | parent_for | entity_type        | entity_id        | action               | final_path            |
 | -- | ------------- | --------- | ---------- | ------------------ | ---------------- | -------------------- | --------------------- |
@@ -106,7 +106,7 @@ Permalink::create([
 
 ### Binding Models to Permalinks
 
-You may want to bind a permalink to a model resource, so you can create a unique URL to access that particular resource. If you want to do so, you just have to use the `HasPermalink` trait and implement the contract `Permalinkable` to your model.
+You may want to bind a permalink to a model resource, so you can create a unique URL to access that particular resource. If you want to do so, you just have to use the tait `HasPermalinks` and implement the contract `Permalinkable` to your model.
 
 ```php
 class User extends Model implements \Devio\Permalink\Contracts\Permalinkable;
@@ -125,33 +125,71 @@ class User extends Model implements \Devio\Permalink\Contracts\Permalinkable;
 }
 ```
 
-The `Permalinkable` interface will force you to define two methods:
-#### `permalinkAction()`
+Once you have this setup, this package will generate a permalink for every new record of this model automatically.
 
-This method will return the controller action responsible for handling the request for this particular model. The model itself will be injected into the action (as Laravel usually does for route model binding).
+Also, the `Permalinkable` interface will force you to define two simple methods:
+
+**permalinkAction()**
+
+This method will return the default controller action responsible for handling the request for this particular model. The model itself will be injected into the action (as Laravel usually does for route model binding).
 
 ```php 
 public function show($user)
 {
-    return $user;
+    return view('users.show', $user);
 }
 ```
 
-#### `permalinkSlug`
+**NOTE:** This action will be overwritten by any existing value on the `action` column in your permalink record, so you could have multiple actions for the same model in case you need them. 
 
-This method is a bit more tricky. Since all the slugging task is being handled by the brilliant are using the brilliant [Sluggable](https://github.com/cviebrock/eloquent-sluggable) package, we do have to provide the info this package requires [sluggable](https://github.com/cviebrock/eloquent-sluggable#updating-your-eloquent-models) method.
+**permalinkSlug()**
 
-The permalink model will expose an `entity` polymorphic relationship to this model. Since the slugging occurs in the `Permalink` model class, we do have to specify which is going to be the source for our slug, in this case `entity.name`, so the model itself, attribute `name`. Return multiple items if you would like to concatenate multiple properties:
+This method is a bit more tricky. Since all the slugging task is being handled by the brilliant [Sluggable](https://github.com/cviebrock/eloquent-sluggable) package, we do have to provide the info this package requires on its [sluggable](https://github.com/cviebrock/eloquent-sluggable#updating-your-eloquent-models) method.
+
+The permalink model will expose an `entity` polymorphic relationship to this model. Since the slugging occurs in the `Permalink` model class, we do have to specify which is going to be the source for our slug. You can consider `entity` as `$this`, so in this case `entity.name` would be equivalent to `$this->name`. Return multiple items if you would like to concatenate multiple properties:
 
 ```
 ['entity.name', 'entity.city']
 ```
 
 **NOTE:** This method should return an array compatible with the Sluggable package, please [check the package documentation](https://github.com/cviebrock/eloquent-sluggable#updating-your-eloquent-models) if you want to go deeper.
-  
-### Creating Permalinks
-### Manual creation
-### Automatic creation
+
+### Automatically Handling Permalinks
+
+By default, this package takes care of creating/updating/deleting your permalinks based on the actions performed in the bound model. If you do not want this to happen and want to decide when decide the precise moment the permalink has to be created/updated/deleted for this particular model. You can disable the permalink handling in multiple two ways:
+
+```php
+
+// Temporally disable/enable:
+$model->disablePermalinkHandling();
+$model->enablePermalinkHandling();
+
+// Permanent disable or return a condition.
+// Create this method in you model:
+public function permalinkHanlding()
+{
+    return false;
+}
+```
+
+### Automatic Nesting for Bound Models
+
+#### Automatic Permalink Nesting
+
+The `permalinks` table has a column for automatically nesting models: `parent_for`. This attribute should contain the FQN class name of the model you want it to be parent for. Once set, when you create a new permalink for the specified model, it will automatically nested to the given parent.
+
+This will usually be a manual procedure you will do in you database so it may look like like the [example above](#usage).
+
+#### Disable Automatic Nesting
+
+If you are deep into this package and want to manage the nesting of your permalinks manually (why would you do so? but just in case...), feel free to disable this feature from the config:
+
+```php
+// permalink.php
+'nest_to_parent_on_create' => false
+// or
+config()->set('permalink.nest_to_parent_on_create', false);
+```
 
 ---
 
