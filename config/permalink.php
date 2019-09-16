@@ -37,8 +37,8 @@ return [
     | Check the NestingService class to understand how it works.
     */
 
-    'nest_to_parent_on_create'              => true,
-    'rebuild_children_final_path_on_update' => true,
+    'nest_to_parent_on_create'   => true,
+    'rebuild_children_on_update' => true,
 
 
     /*

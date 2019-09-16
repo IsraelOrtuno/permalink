@@ -145,6 +145,16 @@ trait HasPermalinks
     }
 
     /**
+     * Determine if this permalink should be nested to its parent when created.
+     *
+     * @return bool
+     */
+    public function permalinkNestToParentOnCreate()
+    {
+        return config('permalink.nest_to_parent_on_create');
+    }
+
+    /**
      * Determine if automatic permalink handling should be done.
      *
      * @return bool
