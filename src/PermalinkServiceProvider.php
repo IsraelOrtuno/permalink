@@ -35,6 +35,10 @@ class PermalinkServiceProvider extends ServiceProvider
             $this->middlewareGroups = $middlewareGroups;
         });
 
+        \Illuminate\Http\Request::macro('permalink', function() {
+            return method_exists($this->route(), 'permalink') ? $this->route()->permalink() : null;
+        });
+
         Arr::macro('undot', function (array $dotArray) {
             $array = [];
             foreach ($dotArray as $key => $value) {
