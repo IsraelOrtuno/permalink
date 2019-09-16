@@ -13,15 +13,15 @@ This package allows to create dynamic routes right from database, just like Word
 - [Getting the route for a resource](#getting-the-route-for-a-resource)
 - [Automatic SEO generation](#automatic-seo-generation)
 
-- [Installation](#installation)
-- [Getting Started](#getting-started)
-- [Usage](#usage)
-    - [Replacing the Default Router](#replacing-the-default-router)
-    - [Creating a Permalink](#creating-a-permalink)
-    - [Binding Models to Permalinks](#binding-models-to-permalinks)
-    - [Automatically Handling Permalinks](#automatically-handling-permalinks)
-    - [Nesting Permalinks](#nesting-permalinks)
-- [Caching Permalinks](#caching.-permalinks)
+* [Installation](#installation)
+* [Getting Started](#getting-started)
+* [Usage](#usage)
+    * [Replacing the Default Router](#replacing-the-default-router)
+    * [Creating a Permalink](#creating-a-permalink)
+    * [Binding Models to Permalinks](#binding-models-to-permalinks)
+    * [Automatically Handling Permalinks](#automatically-handling-permalinks)
+    * [Nesting Permalinks](#nesting-permalinks)
+* [Caching Permalinks](#caching.-permalinks)
 
 ## Installation
 
