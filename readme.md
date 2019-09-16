@@ -22,6 +22,16 @@ This package allows to create dynamic routes right from database, just like Word
 - [Support for morphMap & actionMap](#support-for-morphmap--actionmap)
 - [Automatic SEO generation](#automatic-seo-generation)
 
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+	- [Replacing the Default Router](#replacing-the-default-router)
+	- [Creating a Permalink](#creating-a-permalink)
+	- [Binding Models to Permalinks](#binding-models-to-permalinks)
+	- [Automatically Handling Permalinks](#automatically-handling-permalinks)
+	- [Nesting Permalinks](#nesting-permalinks)
+- [Caching Permalinks](#caching.-permalinks)
+
 ## Installation
 
 ### Install the package
@@ -36,7 +46,7 @@ composer require devio/permalink
 php artisan migrate
 ```
 
-## Getting started
+## Getting started (PLEASE READ)
 
 This package handles dynamic routing directly from our database. Nested routes are also supported, so we can easily create routes like this `/jobs/frontend-web-developer`.
 
@@ -48,6 +58,8 @@ Basically, the package stores routes in a `permalinks` table which contains info
 - Model (if any)
 - Action (controller action or model default action)
 - SEO options (title, metas...)
+
+By default, this package will try to find if there's a a permalink in the `permalinks` table matching the current request path in a single SQL query. This is ok for most of the use cases. If for some reason you want to cache your permalinks information into the Laravel Routing Cache, please refer to the [Caching Permalinks](#caching) section.
 
 ### Example
 
@@ -73,7 +85,7 @@ $router->get('users/israel-ortuno', 'UserController@show');
 
 ## Usage
 
-### Replace default Router
+### Replacing the Default Router
 This package has it's own router which extends the default Laravel router. To replace the default router for the one included in this package you have two options:
 
 ```shell
@@ -196,10 +208,16 @@ This will usually be a manual procedure you will do in you database so it may lo
 If you are deep into this package and want to manage the nesting of your permalinks manually (why would you do so? but just in case...), feel free to disable this feature from the config:
 
 ```php
-// permalink.php
+// Globally disable this feature for all models in your permalink.php config file
 'nest_to_parent_on_create' => false
 // or
 config()->set('permalink.nest_to_parent_on_create', false);
+
+// Disable this feature for a particular model. Define this method in your model class:
+public function permalinkNestToParentOnCreate()
+{
+	return false;
+}
 ```
 
 #### Manually Nesting
@@ -209,6 +227,21 @@ If you wish to nest a permalink to other manually, all you have to do is to set 
 ```php
 Permalink::create(['slug' => 'my-article', 'parent_id' => 1, 'action' => '...']);
 ```
+
+### Caching Permalinks (Read Carefully!)
+
+As mentioned above, this package will perform a single SQL query on every request in order to find a matching permalink for the current URI. This is quite performant and should be ok for most use cases. This query may also be cached for super-fast access if needed.
+
+You may cache your permalink routes into the default Laravel Route Caching system, but be aware that it will generate a route for every single record in your `permalinks` table, so I **DO NOT** recommend it if you have a large amount of permalinks, as you may end up with a huge base64 encoded string in your `bootstrap/cache/routes.php` which may really slow down your application bootstrapping. Perform some tests to know if you are really improving performance for the amount of routes you pretend to cache.
+
+In order to cache you permalinks, all you have to do is to load the entire `permalinks` dataset into the Router and then run the Route Caching command:
+
+```php
+Router::loadPermalinks();
+Artisan::call('route:cache');
+```
+
+You could create a command to perform this two actions or whatever you consider. From now on, you will have to manually update this cache every time a permalink record has been updated.
 
 ---
 
