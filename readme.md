@@ -24,13 +24,13 @@ This package allows to create dynamic routes right from database, just like Word
 
 ## Installation
 
-## Install the package
+### Install the package
 
 ```shell
 composer require devio/permalink
 ```
 
-## Run the migrations
+### Run the migrations
 
 ```shell
 php artisan migrate
@@ -51,7 +51,7 @@ Basically, the package stores routes in a `permalinks` table which contains info
 
 By default, this package will try to find if there's a a permalink in the `permalinks` table matching the current request path in a single SQL query. This is ok for most of the use cases. If for some reason you want to cache your permalinks information into the Laravel Routing Cache, please refer to the [Caching Permalinks](#caching) section.
 
-## Example
+### Example
 
 Let check out a very basic example to understand how it internally works:
 
@@ -276,7 +276,7 @@ If you have a model bound to a permalink, you may define a default action in you
 ```php
 public function permalinkAction()
 {
-    return UserController::class . '@show';
+    return UserController::class . '@show'; // Or a view
 }
 ```
 
