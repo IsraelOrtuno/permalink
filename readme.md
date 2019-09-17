@@ -430,13 +430,9 @@ You could create a command to perform this two actions or whatever you consider.
 
 This package wouldn't be complete if you could not configure your SEO attributes for every single permalink record, it would have been almost useless!
 
-As you may have already noticed, there is a `seo` column in your `permalinks` table. This column will store all your SEO information in a JSON format.
-
 ## Automatic SEO generation
 
 For SEO tags generation [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) is being used. This package offers a powerful set of tools to manage your SEO meta tags.
-
-Permalink package provides content for [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) form a specific `seo` column in the permalinks table. This column is supposed to store all the SEO related data for a given permalink in a JSON format:
 
 ```
 {
@@ -458,6 +454,8 @@ Permalink package provides content for [ARCANDEV/SEO-Helper](https://github.com/
 }
 ```
 
+**NOTE:** This is just an example of the most common tags but you could any kind of tag supported (index, noindex...) by [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper), just make sure to nest it correctly.
+
 In order to have all this content rendered in your HTML you should add the following you your `<meta>`:
 
 ```blade
@@ -476,6 +474,8 @@ In order to have all this content rendered in your HTML you should add the follo
 
 Plase visit [SEO-Helper – Laravel Usage](https://github.com/ARCANEDEV/SEO-Helper/blob/master/_docs/3-Usage.md#4-laravel-usage) to know more about what and how to render.
 
+### Understanding How it Works
+
 Under the hood, this JSON structure is calling to the different SEO helpers (meta, opengraph and twitter). Let's understand:
 
 ```json
@@ -493,7 +493,7 @@ Under the hood, this JSON structure is calling to the different SEO helpers (met
 }
 ```
 
-This structure will allow you to set a base value for the `title` in all the builders plus changing exclusively the title for the _Meta_ builder. Same with the image, Twitter and OpenGraph will inherit the parent image but OpenGraph will replace its for the one on its builder.
+This structure will allow you to set a base value for the `title` in all the builders plus changing exclusively the title for the _Meta_ section. Same with the image, Twitter and OpenGraph will inherit the parent image but OpenGraph will replace its for the one on its builder. This way you will be able to display different information on every section!
 
 This will call [setTitle](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoMeta.php#L127) from the `SeoMeta` helper and [setImage](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoOpenGraph.php#L78) from the `SeoOpenGraph` helper. Same would happen with Twitter. Take some time to review these three contracts in order to know all the methods available:
 
@@ -505,29 +505,40 @@ In order to match any of the helper methods, every JSON option will be transform
 
 All methods are called via `call_user_func_array`, so if an option contains an array, every key will be pased as parameter to the helper method. See `setTitle` or `addWebmaster` which allows multiple parameters.
 
-### Populate SEO with default content
+### Populating SEO Attributes
 
-If you wish that your newly created permalinks get some default value rather than having to specify it, you may define some default fallback methods in your "Permalinkable" entity.
+You can specify the SEO attributes for your permalink by just passing an array of data to the `seo` attribute:
 
 ```php
-class User extends Model {
-  use HasPermalinks;
+Peramlink::create([
+  'slug' => 'foo',
+  'seo' => [
+    'title' => 'this is a title',
+    'description' => 'this is a description',
+    'opengraph' => [
+      'title' => 'this is a custom title for og:title'
+    ]
+  ]
+);
+```
+
+#### Populating SEO Attributes with Default Content
+
+You will usually want to automatically populate your SEO information directly from your bound model information. You can do so by creating fallback methods in you model as shown below:
+
+```php
+public function getPeramlinkSeoTitleAttribute() 
+{
+  return $this->name;
+}
   
-  // ...
-  public function getPeramlinkSeoTitleAttribute() 
-  {
-    return $this->name;
-  }
-  
-  public function getPermalinkSeoOpenGraphTitleAttribute()
-  {
-    return $this->name . ' for OpenGraph';
-  }
-  // ...
+public function getPermalinkSeoOpenGraphTitleAttribute()
+{
+  return $this->name . ' for OpenGraph';
 }
 ```
 
-This fallbacks will be used if they indeed exist and the value for that field has not been provided when creating the permalink. Note that these methods should be called as an Eloquent accessor. Use the "seo" prefix and then the path to the default value in a _StudlyCase_, for example:
+This fallbacks will be used if they indeed exist and the value for that field has not been provided when creating the permalink. Note that these methods should be called as an Eloquent accessor. Use the _permalinkSeo_ prefix and then the path to the default value in a _StudlyCase_, for example:
 
 ```
 seo.title                   => getPermalinkSeoTitleAttribute()
@@ -538,7 +549,9 @@ seo.opengraph.title         => getPermalinkSeoTwitterOpenGraphAttribute()
 seo.opengraph.description   => getPermalinkSeoOpenGraphDescriptionAttribute()
 ```
 
-### Builders
+The package will look for any matching method, so you can create as many methods as your seo set-up may need, even if you are just creating custom meta tags so `getPermalinkMyCustomMetaDescriptionAttribute` would match if there's a `seo.my.custom.meta.description` object.
+
+### SEO Builders
 
 To provide even more flexibility, the method calls are piped through 3 classes (one for each helper) called [Builders](https://github.com/IsraelOrtuno/permalink/tree/master/src/Builders). These builders are responsible for calling the right method on the [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) package.
 
