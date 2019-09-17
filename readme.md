@@ -136,6 +136,10 @@ You can easily update a permalink just like any other Eloquent model. **BE CAREF
 
 When updating a slug, the package will recursively update its nested permalinks `final_url` attribute reemplacing the previous slug semgment with the new one. You can control this behaviour from the `rebuild_children_on_update` option in your `config/permalink.php` config file. Disable this option if you wish to handle this task manually (NOT RECOMMENDED).
 
+Check out `Devio\Permalink\Services\PathBuilder` class to discover the methods available for performing the manual update.
+
+**NOTE:** Make sure to rebuild childen's final path in the current request lifecycle.
+
 ## Binding Models to Permalinks
 
 You may want to bind a permalink to a model resource, so you can create a unique URL to access that particular resource. If you want to do so, you just have to use the tait `HasPermalinks` and implement the contract `Permalinkable` to your model.
