@@ -20,6 +20,7 @@ This package allows to create dynamic routes right from database, just like Word
 * [Binding Models to Permalinks](#binding-models-to-permalinks)
 * [Automatically Handling Permalinks](#automatically-handling-permalinks)
 * [Nesting Permalinks](#nesting-permalinks)
+* [Deleting Permalinks](#deleting-permalinks)
 * [Caching Permalinks](#caching.-permalinks)
 
 ## Installation
@@ -107,6 +108,8 @@ Permalink::create([
 If your permalink is bound to a model (read next section), you may create your permalink record as follows:
 
 ```php
+// Note: when using the User::create method, even if permalinkHandling (read more about it below)
+// is disabled, it will create the permalink record.
 $user = User::create([
     'name' => 'israel',
     'permalink' => [
@@ -175,6 +178,8 @@ The permalink model will expose an `entity` polymorphic relationship to this mod
 
 **NOTE:** This method should return an array compatible with the Sluggable package, please [check the package documentation](https://github.com/cviebrock/eloquent-sluggable#updating-your-eloquent-models) if you want to go deeper.
 
+## Updating Peramlinks
+
 ## Automatically Handling Permalinks
 
 By default, this package takes care of creating/updating/deleting your permalinks based on the actions performed in the bound model. If you do not want this to happen and want to decide when decide the precise moment the permalink has to be created/updated/deleted for this particular model. You can disable the permalink handling in two ways:
@@ -192,6 +197,51 @@ public function permalinkHanlding()
     return false;
 }
 ```
+
+### Creating
+
+A permalink will be created automatically when your resource fires a `saved` event. It will be populate with the default data unless you have provided a `peramlink` key array to the creation array or used the `setPermalinkAttribute` mutator.
+
+```php
+User::create(['name' => 'israel', 'permalink' => ['slug' => 'israel']]);
+//
+$user = new User;
+$user->permalink = ['slug' => 'israel'];
+$user->save();
+```
+
+If `permalinkHandling` is disabled, you will be able to decide when to create the permalink:
+
+```php
+// Assume permalinkHanlding() returns false
+$user = User::create(['name' => 'israel']);
+// Perform other tasks...
+$user->createPermalink(); // Array is optional, provide data to override default values
+```
+
+**NOTE:** Be aware that the permalink record will be still created if the data provided for creation contains a `permalink` key.
+
+### Updating
+
+You can update your permalink right like creating:
+
+```php
+$user = User::find(1);
+
+$user->updatePermalink(['seo' => ['title' => 'changed']]);
+```
+
+**NOTE:** By default, if you update a permalink's slug, it will recursively update all its nested elements with the new segment. Read more about [updating permalinks](#updating-permalinks).
+
+### Deleting
+
+If you delete a resource which is bound to a permalink record, the package will automatically destroy the permalink for us. Again, if you do not want this to happen and want to handle this yourself, disable the permalink handling in your model.
+
+### Support for SoftDeleting
+
+SoftDeleting support comes out of the box, so if your resource is soft deleted, the permalink will be soft deleted too. If you restore your resource, it will be restored automatically too. Disable handling for dealing with this task manually.
+
+**NOTE:** If you `forceDelete()` your resource, the permalink will also be deleted permanently.
 
 ## Nesting Permalinks
 
@@ -342,6 +392,12 @@ $user = User::create([
 ```
 
 When accessing the permalink for this particular entity, `user/show.blade.php` will be responsible for handling the request rather than the default controller. Isn't it cool?
+
+## Deleting Permalinks
+
+By default, and if
+
+### Support for SoftDeleting
 
 ## Caching Permalinks (Read Carefully!)
 
