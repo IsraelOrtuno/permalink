@@ -23,7 +23,7 @@ class EntityObserver
 
     public function saved(Model $model)
     {
-        if (! $model->permalinkHandling()) {
+        if (! $model->permalinkHandling() && is_null($model->getPermalinkAttributes())) {
             return;
         }
 

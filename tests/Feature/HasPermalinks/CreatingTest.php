@@ -37,6 +37,21 @@ class CreatingTest extends TestCase
     }
 
     /** @test */
+    public function it_will_create_a_permalink_when_key_exists_even_if_disabled()
+    {
+        $user = factory(User::class)->make([
+            'permalink' => [
+                'slug' => 'foo',
+                'action' => 'bar'
+            ]
+        ]);
+        $user->disablePermalinkHandling();
+        $user->save();
+
+        $this->assertNotNull($user->permalink);
+    }
+
+    /** @test */
     public function it_loads_permalink_relation()
     {
         $user = factory(User::class)->create();
