@@ -6,7 +6,7 @@ use Devio\Permalink\Tests\TestCase;
 use Devio\Permalink\Tests\Support\Models\User;
 use Devio\Permalink\Tests\Support\Models\UserWithSoftDeletes;
 
-class SoftDeletingTest extends TestCase
+class DeletingTest extends TestCase
 {
     /** @test */
     public function it_deletes_permalink_in_cascade()
@@ -39,5 +39,15 @@ class SoftDeletingTest extends TestCase
         $user->delete();
         $user->restore();
         $this->assertFalse($user->permalink->trashed());
+    }
+
+    /** @test */
+    public function it_wont_delete_permalink_if_handling_is_disabled()
+    {
+        $user = factory(User::class)->create();
+        $user->disablePermalinkHandling();
+        $user->delete();
+        $this->assertTrue($user->hasPermalink());
+        $this->assertDatabaseHas('permalinks', ['entity_id' => $user->id]);
     }
 }
