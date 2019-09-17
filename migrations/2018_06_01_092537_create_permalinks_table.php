@@ -24,11 +24,7 @@ class CreatePermalinksTable extends Migration
             $table->unsignedBigInteger('entity_id')->nullable();
 
             $table->string('action')->nullable();
-
-            $table->json('options')->nullable();
-
             $table->string('final_path')->nullable();
-
             $table->json('seo')->nullable();
 
             $table->softDeletes();
