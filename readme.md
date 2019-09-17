@@ -104,7 +104,7 @@ Permalink::create([
 // Then visit /home
 ```
 
-If your permalink is bound to a model (read next section), you may create your permalink record like this:
+If your permalink is bound to a model (read next section), you may create your permalink record as follows:
 
 ```php
 $user = User::create([
@@ -115,9 +115,13 @@ $user = User::create([
         'seo' => [...] // omit this attribute until you read more about it
     ]
 ]);
+
+// Or
+
+$user->createPermalink([...);
 ```
 
-Any existing key in the `permalink` array will override its default value when creating the permalink.
+If you do not provide any data to the `permalink` key when using `User::create` or `createPermalink`, it will automatcally use the default data. Any existing key in the data array will override its default value when creating the permalink.
 
 **NOTE:** This will only work if `permalinkHandling` has not been disabled, read more about it below.
 
