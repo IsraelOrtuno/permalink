@@ -16,12 +16,14 @@ This package allows to create dynamic routes right from database, just like Word
 * [Installation](#installation)
 * [Getting Started](#getting-started)
 * [Replacing the Default Router](#replacing-the-default-router)
-* [Creating a Permalink](#creating-a-permalink)
+* [Creating a Permalink](#creating-permalinks)
+* [Updating a Permalink](#updating-permalinks)
 * [Binding Models to Permalinks](#binding-models-to-permalinks)
 * [Automatically Handling Permalinks](#automatically-handling-permalinks)
 * [Nesting Permalinks](#nesting-permalinks)
 * [Deleting Permalinks](#deleting-permalinks)
 * [Caching Permalinks](#caching.-permalinks)
+* [Handling SEO Attributes](#handling-seo-attributes)
 
 ## Installation
 
@@ -93,7 +95,7 @@ Both of these methods will replace the default Laravel Router by an extended ver
 
 **IMPORTANT:** Use either `Http\Kernel.php` or `bootstrap/app.php`. **Do not** use both as it may cause unexpected behaviour.
 
-## Creating a Permalink
+## Creating Permalinks
 
 That's pretty much it for setting up the dynamic routing system. Let's create a Permalink record and test it out!
 
@@ -423,6 +425,159 @@ Artisan::call('route:cache');
 ```
 
 You could create a command to perform this two actions or whatever you consider. From now on, you will have to manually update this cache every time a permalink record has been updated.
+
+## Handling SEO Attributes
+
+This package wouldn't be complete if you could not configure your SEO attributes for every single permalink record, it would have been almost useless!
+
+As you may have already noticed, there is a `seo` column in your `permalinks` table. This column will store all your SEO information in a JSON format.
+
+## Automatic SEO generation
+
+For SEO tags generation [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) is being used. This package offers a powerful set of tools to manage your SEO meta tags.
+
+Permalink package provides content for [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) form a specific `seo` column in the permalinks table. This column is supposed to store all the SEO related data for a given permalink in a JSON format:
+
+```
+{
+  "meta": {
+    "title": "Specific title",                  // The <title>
+    "description": "The meta description",      // The page meta description
+    "robots": "noindex,nofollow"                // Robots control
+  },
+  "opengraph":{
+    "title": "Specific OG title",               // The og:title tag
+    "description": "The og description",        // The og:description tag
+    "image": "path/to/og-image.jpg"             // The og:image tag
+  },
+  "twitter":{
+    "title": "Specific Twitter title",          // The twitter:title tag
+    "description": "The twitter description",   // The twitter:description tag
+    "image": "path/to/og-image.jpg"             // The twitter:image tag
+  }
+}
+```
+
+In order to have all this content rendered in your HTML you should add the following you your `<meta>`:
+
+```blade
+<head>
+    {!! seo_helper()->render() !!}
+</head>
+```
+
+##### OR
+
+```blade
+<head>
+    {{ seo_helper()->renderHtml() }}
+</head>
+```
+
+Plase visit [SEO-Helper – Laravel Usage](https://github.com/ARCANEDEV/SEO-Helper/blob/master/_docs/3-Usage.md#4-laravel-usage) to know more about what and how to render.
+
+Under the hood, this JSON structure is calling to the different SEO helpers (meta, opengraph and twitter). Let's understand:
+
+```json
+{ 
+  "title": "Generic title",
+  "image": "path/to/image.jpg",
+  "description": "Generic description",
+  
+  "meta": {
+    "title": "Default title",
+  },
+  "opengraph": {
+    "image": "path/to/og-image.jpg"
+  }
+}
+```
+
+This structure will allow you to set a base value for the `title` in all the builders plus changing exclusively the title for the _Meta_ builder. Same with the image, Twitter and OpenGraph will inherit the parent image but OpenGraph will replace its for the one on its builder.
+
+This will call [setTitle](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoMeta.php#L127) from the `SeoMeta` helper and [setImage](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoOpenGraph.php#L78) from the `SeoOpenGraph` helper. Same would happen with Twitter. Take some time to review these three contracts in order to know all the methods available:
+
+- [Metas](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoMeta.php)
+- [OpenGraph](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoOpenGraph.php)
+- [Twitter](https://github.com/ARCANEDEV/SEO-Helper/blob/master/src/Contracts/SeoTwitter.php)
+
+In order to match any of the helper methods, every JSON option will be transformed to `studly_case` prefixed by `set` and `add`, so `title` will be converted to `setTitle` and `google_analytics` to `setGoogleAnalytics`. How cool is that?
+
+All methods are called via `call_user_func_array`, so if an option contains an array, every key will be pased as parameter to the helper method. See `setTitle` or `addWebmaster` which allows multiple parameters.
+
+### Populate SEO with default content
+
+If you wish that your newly created permalinks get some default value rather than having to specify it, you may define some default fallback methods in your "Permalinkable" entity.
+
+```php
+class User extends Model {
+  use HasPermalinks;
+  
+  // ...
+  public function getPeramlinkSeoTitleAttribute() 
+  {
+    return $this->name;
+  }
+  
+  public function getPermalinkSeoOpenGraphTitleAttribute()
+  {
+    return $this->name . ' for OpenGraph';
+  }
+  // ...
+}
+```
+
+This fallbacks will be used if they indeed exist and the value for that field has not been provided when creating the permalink. Note that these methods should be called as an Eloquent accessor. Use the "seo" prefix and then the path to the default value in a _StudlyCase_, for example:
+
+```
+seo.title                   => getPermalinkSeoTitleAttribute()
+seo.description             => getPermalinkSeoDescriptionAttribute()
+seo.twitter.title           => getPermalinkSeoTwitterTitleAttribute()
+seo.twitter.description     => getPermalinkSeoTwitterDescriptionAttribute()
+seo.opengraph.title         => getPermalinkSeoTwitterOpenGraphAttribute()
+seo.opengraph.description   => getPermalinkSeoOpenGraphDescriptionAttribute()
+```
+
+### Builders
+
+To provide even more flexibility, the method calls are piped through 3 classes (one for each helper) called [Builders](https://github.com/IsraelOrtuno/permalink/tree/master/src/Builders). These builders are responsible for calling the right method on the [ARCANDEV/SEO-Helper](https://github.com/ARCANEDEV/SEO-Helper) package.
+
+If there is a method in this builders matching any of the JSON options, the package will execute that method instead of the default behaviour, which would be calling the method (if exists) from the *SEO-Helper* package.
+
+Review the [MetaBuilder](https://github.com/IsraelOrtuno/permalink/blob/master/src/Builders/MetaBuilder.php) as example. This builder contains a `setCanonical` method which is basically used as an alias for `setUrl` (just to be more explicit).
+
+#### Extending Builders
+
+In order to modify the behaviour of any of these builders, you can create your own Builder which should extend the `Devio\Permalink\Contracts\SeoBuilder` interface or inherit the `Devio\Permalink\Builders\Builder` class.
+
+Once you have created your own Builder, just replace the default one in the Container. Add the following to the `register` method of any Service Provider in your application:
+
+```php
+// Singleton or not, whatever you require
+$this->app->singleton("permalink.meta", function ($app) { // meta, opengraph, twitter or base
+  return new MyCustomBuilder;
+  
+  // Or if you are inheriting the default builder class
+  
+  return (new MyCustomBuilder($app->make(SeoHelper::class)));
+});
+```
+
+If you wish to use other package for generating the SEO meta tags, extending and modifying the builders will do the trick.
+
+### Disabling SEO generation
+
+If you wish to prevent the rendering of any of the three Builders (meta, OpenGraph or Twitter), just set its JSON option to false:
+
+```json
+{
+  "meta": { },
+  "opengraph": false,
+  "twitter": false
+}
+```
+
+This will disable the execution of the OpenGraph and Twitter builders.
 
 ---
 
