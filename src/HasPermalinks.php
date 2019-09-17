@@ -133,18 +133,6 @@ trait HasPermalinks
     }
 
     /**
-     * Get the entity route name (must be unique).
-     *
-     * @return string
-     * @throws \ReflectionException
-     */
-    public function permalinkRouteName()
-    {
-        // You can be creative here. Make sure the route name is unique or it may create route conflicts
-        return camel_case((new \ReflectionClass($this))->getShortName()) . '.' . $this->getKey();
-    }
-
-    /**
      * Determine if this permalink should be nested to its parent when created.
      *
      * @return bool

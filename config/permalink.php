@@ -40,21 +40,6 @@ return [
     'nest_to_parent_on_create'   => true,
     'rebuild_children_on_update' => true,
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Route Name
-    |--------------------------------------------------------------------------
-    |
-    | Whenever a permalink is registered as a Laravel Route, it will receive a
-    | name. Here you can customize the name that will be suffixed by the key
-    | of the permalink (name.id). You could also set a fallback method in
-    | your models to make this names more
-    |
-    */
-
-    'route_name' => 'permalink',
-
     /*
     |--------------------------------------------------------------------------
     | Automatically Refresh Routes
