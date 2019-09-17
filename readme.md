@@ -128,6 +128,14 @@ If you do not provide any data to the `permalink` key when using `User::create` 
 
 **NOTE:** This will only work if `permalinkHandling` has not been disabled, read more about it below.
 
+## Updating Peramlinks
+
+You can easily update a permalink just like any other Eloquent model. **BE CAREFUL** when updating a permalink slug as the previous URL won't be available anymore and this package does not handle 301/302 redirections.
+
+### Rebuilding Final Path (PLEASE READ)
+
+When updating a slug, the package will recursively update its nested permalinks `final_url` attribute reemplacing the previous slug semgment with the new one. You can control this behaviour from the `rebuild_children_on_update` option in your `config/permalink.php` config file. Disable this option if you wish to handle this task manually (NOT RECOMMENDED).
+
 ## Binding Models to Permalinks
 
 You may want to bind a permalink to a model resource, so you can create a unique URL to access that particular resource. If you want to do so, you just have to use the tait `HasPermalinks` and implement the contract `Permalinkable` to your model.
@@ -177,8 +185,6 @@ The permalink model will expose an `entity` polymorphic relationship to this mod
 ```
 
 **NOTE:** This method should return an array compatible with the Sluggable package, please [check the package documentation](https://github.com/cviebrock/eloquent-sluggable#updating-your-eloquent-models) if you want to go deeper.
-
-## Updating Peramlinks
 
 ## Automatically Handling Permalinks
 
