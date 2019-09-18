@@ -37,12 +37,12 @@ class RoutingTest extends TestCase
     }
 
     /** @test */
-    public function it_gives_404_if_action_cannot_be_resolved()
+    public function it_gets_500_code_if_action_cannot_be_resolved()
     {
         Permalink::create(['slug' => 'baz', 'action' => TestController::class . '@nonexisting']);
 
         $this->get('/baz')
-             ->assertStatus(404);
+             ->assertStatus(500);
     }
 
     /** @test */

@@ -22,9 +22,7 @@ class ActionFactory implements \Devio\Permalink\Contracts\ActionFactory
             $action = $entity->permalinkAction();
         }
 
-        return tap($this->buildAction($action), function ($action) use ($permalink) {
-            abort_unless($action, 404, 'Could not resolve an action for permalink ' . $permalink->id);
-        });
+        return $this->buildAction($action);
     }
 
     /**
@@ -35,13 +33,8 @@ class ActionFactory implements \Devio\Permalink\Contracts\ActionFactory
      */
     protected function buildAction($action)
     {
-        if (view()->exists($action)) {
-            return PermalinkController::class . '@view';
-        } elseif (Str::contains($action, '@')) {
-            $class = explode('@', $action);
-            return method_exists($class[0], $class[1]) ? $action : null;
-        }
-
-        return null;
+        return view()->exists($action)
+            ? PermalinkController::class . '@view'
+            : $action;
     }
 }
