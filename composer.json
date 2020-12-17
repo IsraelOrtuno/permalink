@@ -21,7 +21,8 @@
         "illuminate/database": "^6.0|^7.0|^8.0",
         "illuminate/routing": "^6.0|^7.0|^8.0",
         "cviebrock/eloquent-sluggable": "^6.0|^7.0|^8.0",
-        "arcanedev/seo-helper": "^2.0|^3.0|^4.0"
+        "arcanedev/seo-helper": "^2.0|^3.0|^4.0",
+        "laravel/legacy-factories": "^1.1"
     },
     "require-dev": {
         "orchestra/testbench": "^4.0|^5.0|^6.0",
