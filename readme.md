@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/IsraelOrtuno/permalink.svg?branch=master)](https://travis-ci.com/IsraelOrtuno/permalink) [![Latest Stable Version](https://poser.pugx.org/devio/permalink/version)](https://packagist.org/packages/devio/permalink)
 
-## Looking for maintainer
+## 2021-08-25: Looking for maintainer
 
 Despite it's pretty stable, I do not have time to keep maintaining this package for future Laravel releases and add more features so I am looking for anyone who found this useful and would like to maintain it. Feel free to contact!
 israel@devio.es
